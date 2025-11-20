@@ -11,11 +11,8 @@ import {
   ChevronDown,
 } from "lucide-react";
 
-/*
-  Using the local file you uploaded as the footer logo.
-  Project-relative URL (Vite/React will resolve this during build):
-*/
-const LOGO_URL = "/src/assets/ecommerce-logo12.png";
+// ✅ Correct way — Import image from assets
+import logo from "../assets/ecommerce-logo12.png";
 
 function SmallTitle({ children }) {
   return <h4 className="text-white font-semibold mb-3">{children}</h4>;
@@ -28,11 +25,19 @@ export default function Footer() {
 
         {/* Top area */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
+          
           {/* Brand & info */}
           <div className="space-y-4">
-            <img src={LOGO_URL} alt="Shop logo" className="w-28 h-28 object-cover rounded-lg shadow-md" />
+            {/* ✅ Updated Image */}
+            <img
+              src={logo}
+              alt="Shop logo"
+              className="w-28 h-28 object-cover rounded-lg shadow-md"
+            />
+
             <p className="text-sm text-gray-300/90">
-              ShopMart — your trusted online marketplace for electronics, fashion, beauty, home & more. Fast delivery and secure payments.
+              ShopMart — your trusted online marketplace for electronics, fashion,
+              beauty, home & more. Fast delivery and secure payments.
             </p>
 
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 gap-2">
@@ -52,7 +57,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Quick links (collapsible on mobile) */}
+          {/* Quick links */}
           <div>
             <details className="group" open>
               <summary className="flex items-center justify-between cursor-pointer text-sm md:text-base">
@@ -70,7 +75,7 @@ export default function Footer() {
             </details>
           </div>
 
-          {/* Customer service (collapsible on mobile) */}
+          {/* Customer service */}
           <div>
             <details className="group" open>
               <summary className="flex items-center justify-between cursor-pointer text-sm md:text-base">
@@ -88,7 +93,7 @@ export default function Footer() {
             </details>
           </div>
 
-          {/* Newsletter / Payments */}
+          {/* Newsletter */}
           <div>
             <SmallTitle>Get deals & offers</SmallTitle>
 
@@ -99,12 +104,13 @@ export default function Footer() {
                 className="flex-1 px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500"
                 aria-label="Email"
               />
-              <button className="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-lg text-sm">Subscribe</button>
+              <button className="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-lg text-sm">
+                Subscribe
+              </button>
             </form>
 
             <div className="mt-4">
               <SmallTitle>We Accept</SmallTitle>
-              {/* Example payment icons (use your own images in /public or /src/assets if available) */}
               <div className="flex items-center gap-3">
                 <div className="w-10 h-6 rounded bg-white/10 flex items-center justify-center text-xs">VISA</div>
                 <div className="w-10 h-6 rounded bg-white/10 flex items-center justify-center text-xs">MC</div>
@@ -132,6 +138,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
+
       </div>
     </footer>
   );
