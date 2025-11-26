@@ -1,0 +1,6 @@
+mvel qibp rhrf hrsp
+
+
+
+EMAIL_USER=digambarmarathe.380@gmail.com
+EMAIL_PASS=mvelqibprhrfhrsp
