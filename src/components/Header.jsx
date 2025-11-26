@@ -27,16 +27,43 @@ export default function Header() {
           </button>
 
           {/* LOGO */}
-          <img src={LOGO} alt="Logo" className="w-11 h-11 object-contain ml-3" />
+        
+
+          <div className="flex items-center gap-2 ml-3">
+  <img src={LOGO} alt="Logo" className="w-11 h-11 object-contain" />
+
+  <h1 className="text-lg font-bold text-red-600">
+    ShopNow
+  </h1>
+</div>
+
 
           <div className="flex-1"></div>
 
           {/* MOBILE ICONS */}
           <div className="flex items-center gap-4">
-            <User size={20} className="cursor-pointer" />
-            <Heart size={20} className="cursor-pointer" />
-            <ShoppingBag size={20} className="cursor-pointer" />
-          </div>
+  <User size={20} className="cursor-pointer" />
+
+  {/* BOOKING ICON */}
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="w-5 h-5 cursor-pointer"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth="1.5"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9 17V7a3 3 0 013-3h0a3 3 0 013 3v10m5-6H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0H5"
+    />
+  </svg>
+
+  <Heart size={20} className="cursor-pointer" />
+  <ShoppingBag size={20} className="cursor-pointer" />
+</div>
+
         </div>
 
         {/* ===== DESKTOP LAYOUT ===== */}
@@ -44,7 +71,17 @@ export default function Header() {
 <div className="hidden md:flex w-full items-center justify-between">
 
   {/* LOGO */}
+  
+
+  <div className="flex items-center gap-2">
   <img src={LOGO} alt="Logo" className="w-12 h-12 object-contain" />
+
+  {/* BRAND NAME TEXT */}
+  <h1 className="text-xl font-bold text-red-600 tracking-wide">
+    ShopNow
+  </h1>
+</div>
+
 
   {/* CENTER NAV MENU */}
   <nav className="hidden lg:flex gap-8 text-[15px] font-semibold text-gray-800">
