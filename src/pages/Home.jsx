@@ -6,6 +6,7 @@ import Categories from "../components/Categories";
 import ProductList from "../components/ProductList";
 import Footer from "../components/Footer";
 import Sidebar from "../components/Sidebar";
+import BottomBar from "../components/BottomBar";   // 👈 Add this import
 
 export default function Home() {
   const [category, setCategory] = useState("all");
@@ -15,17 +16,17 @@ export default function Home() {
       <Header />
 
       <div className="flex w-full">
-        {/* Sidebar */}
+        {/* Sidebar (desktop only) */}
         <aside className="hidden md:block w-64 sticky top-16 h-[calc(100vh-4rem)] bg-white shadow-lg p-4 border-r">
           <Sidebar />
         </aside>
 
         {/* Main content */}
         <div className="flex-1 min-w-0">
-          {/* Search + Filter (desktop) */}
+          {/* Search + Filter (desktop only) */}
           <div className="hidden lg:flex items-center w-full bg-gray-100 px-4 py-2 border border-gray-200 focus-within:border-blue-500 focus-within:shadow-sm gap-4">
             <div className="flex items-center w-full bg-gray-100 px-4 py-2 border border-black border-2 rounded-xl focus-within:border-blue-500 focus-within:shadow-sm">
-              {/* icon + input */}
+              {/* Search icon + input */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -58,26 +59,25 @@ export default function Home() {
                 stroke="gray"
                 className="w-5 h-5"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 4h18M6 12h12M10 20h4"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18M6 12h12M10 20h4" />
               </svg>
               <span className="font-medium text-gray-700">Filter</span>
             </button>
           </div>
 
-          {/* Banner – full width of main */}
+          {/* Banner */}
           <Banner />
 
-          {/* Categories + Products – only top/bottom padding */}
+          {/* Categories + Products */}
           <div className="pt-4 pb-4 px-0">
             <Categories onSelect={setCategory} activeKey={category} />
             <ProductList category={category} />
           </div>
         </div>
       </div>
+
+      {/* 👇 Sticky Bottom Navigation (ONLY mobile + tablet) */}
+      <BottomBar />
 
       <Footer />
     </main>
