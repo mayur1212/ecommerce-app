@@ -12,51 +12,50 @@ export default function Header() {
     <header className="backdrop-blur-xl bg-white/70 sticky top-0 z-50 border-b border-red-300 shadow-sm">
 
       {/* ======= TOP ROW ======= */}
-      <div className="w-full px-4 py-3 flex items-center">
+      <div className="w-full px-1 py-1 flex items-center">
 
         {/* ===== MOBILE / TABLET LAYOUT ===== */}
-        <div className="flex md:hidden w-full items-center">
+        <div className="flex md:hidden w-full items-center justify-between h-14 px-2">
 
-          {/* HAMBURGER MENU */}
-          <button
-            className="p-2 rounded-md hover:bg-gray-100 transition"
-            onClick={() => setMobileOpen((s) => !s)}
-          >
-            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
+  {/* LEFT SIDE: LOGO */}
+  <div className="flex items-center gap-1">
+    <img src={LOGO} alt="Logo" className="w-9 h-9 object-contain" />
+    <h1 className="text-base font-bold text-red-600">ShopNow</h1>
+  </div>
 
-          {/* LOGO */}
-          <div className="flex items-center gap-2 ml-3">
-            <img src={LOGO} alt="Logo" className="w-11 h-11 object-contain" />
-            <h1 className="text-lg font-bold text-red-600">ShopNow</h1>
-          </div>
+  {/* RIGHT SIDE: ICONS */}
+  <div className="flex items-center gap-3">
 
-          <div className="flex-1"></div>
+    <User size={18} className="cursor-pointer" />
 
-          {/* MOBILE ICONS */}
-          <div className="flex items-center gap-4">
-            <User size={20} className="cursor-pointer" />
+    {/* BOOKING ICON */}
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="w-4 h-4 cursor-pointer"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth="1.5"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M9 17V7a3 3 0 013-3h0a3 3 0 013 3v10m5-6H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0H5"
+      />
+    </svg>
 
-            {/* BOOKING ICON */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-5 h-5 cursor-pointer"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9 17V7a3 3 0 013-3h0a3 3 0 013 3v10m5-6H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0H5"
-              />
-            </svg>
+    <Heart size={18} className="cursor-pointer" />
+    <ShoppingBag size={18} className="cursor-pointer" />
 
-            <Heart size={20} className="cursor-pointer" />
-            <ShoppingBag size={20} className="cursor-pointer" />
-          </div>
-        </div>
+    {/* HAMBURGER BUTTON */}
+    <button onClick={() => setMobileOpen((s) => !s)}>
+      {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+    </button>
+
+  </div>
+</div>
+
+
 
         {/* ===== DESKTOP LAYOUT ===== */}
         <div className="hidden md:flex w-full items-center justify-between">
@@ -140,76 +139,110 @@ export default function Header() {
       </div>
 
       {/* ===== MOBILE DELIVERY + CATEGORY + SEARCH ===== */}
-      <div className="md:hidden w-full px-4 pb-3">
+      <div className="md:hidden w-full px-4 pb-4 pt-2 bg-white">
 
-        {/* CATEGORY SCROLL */}
-        <div className="overflow-x-auto no-scrollbar mt-1">
-          <div className="flex gap-3 whitespace-nowrap text-sm font-medium">
-            {[
-              "All", "Mobiles", "Fashion", "Electronics",
-              "Grocery", "Beauty", "Furniture", "Books", "Toys",
-            ].map((cat) => (
-              <button
-                key={cat}
-                className="px-4 py-2 rounded-full border text-gray-700 hover:bg-red-600 hover:text-white transition"
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
+  {/* ===== BOTTOM NAV (HOME / FEED / CART / MSG / USER) ===== */}
+  <div className="flex justify-between items-center text-xs font-medium text-gray-600">
 
-        {/* DELIVER TO */}
-        <div className="flex items-center gap-2 text-[13px] font-semibold text-gray-800 mt-4">
-          <MapPin size={16} className="text-red-600" />
-          <span>Deliver to</span>
+  {/* HOME */}
+  <div className="flex flex-col items-center w-1/5">
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-purple-600" fill="none"
+      viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 9.5l9-6 9 6V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V9.5z" />
+    </svg>
+    <span className="text-purple-600 mt-1">Home</span>
+  </div>
 
-          <select
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="bg-transparent focus:outline-none font-semibold"
-          >
-            {["Mumbai", "Pune", "Nagpur", "Bengaluru"].map((city) => (
-              <option key={city} value={city} className="text-black">
-                {city}
-              </option>
-            ))}
-          </select>
-        </div>
+  {/* SHOPPING */}
+  <div className="flex flex-col items-center w-1/5">
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none"
+      viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round"
+        d="M16 11V7a4 4 0 10-8 0v4M5 11h14l-1 9H6l-1-9z" />
+    </svg>
+    <span className="mt-1">Shopping</span>
+  </div>
 
-        {/* ===== MOBILE SEARCH + FILTER ===== */}
-        <div className="w-full mt-4 mb-2">
+  {/* MARKET */}
+  <div className="flex flex-col items-center w-1/5">
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="none"
+      viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round"
+        d="M3 4h18l-1 14H4L3 4zM8 4V2h8v2" />
+    </svg>
+    <span className="mt-1">Market</span>
+  </div>
 
-          <div className="flex items-center gap-3">
+  {/* SERVICES */}
+  <div className="flex flex-col items-center w-1/5">
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none"
+      viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round"
+        d="M3 11l2-2m0 0l3-3m-3 3h4m12 8l-2 2m0 0l-3 3m3-3h-4M10 6h4M6 12h12M10 18h4" />
+    </svg>
+    <span className="mt-1">Services</span>
+  </div>
 
-            {/* SEARCH BAR */}
-            <div className="relative flex-1">
-              <input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Search products..."
-                className="w-full px-4 py-2 rounded-xl border border-gray-300 shadow-sm focus:ring-2 focus:ring-red-400 focus:outline-none"
-              />
-              <Search size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" />
-            </div>
+  {/* GROCERY */}
+  <div className="flex flex-col items-center w-1/5">
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none"
+      viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round"
+        d="M3 7h18l-2 12H5L3 7zM9 7V4h6v3" />
+    </svg>
+    <span className="mt-1">Grocery</span>
+  </div>
 
-            {/* FILTER ICON */}
-            <button className="p-3 rounded-xl border border-gray-300 bg-white shadow-sm active:scale-95 transition">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="gray"
-                className="w-5 h-5"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18M6 12h12M10 20h4" />
-              </svg>
-            </button>
+</div>
 
-          </div>
-        </div>
+
+  {/* ===== DELIVER TO ===== */}
+  <div className="flex items-center gap-2 text-[13px] font-semibold text-gray-800 mt-5">
+    <MapPin size={16} className="text-red-600" />
+    <span>Deliver to</span>
+
+    <select
+      value={location}
+      onChange={(e) => setLocation(e.target.value)}
+      className="bg-transparent focus:outline-none font-semibold"
+    >
+      {["Mumbai", "Pune", "Nagpur", "Bengaluru"].map((city) => (
+        <option key={city} value={city} className="text-black">
+          {city}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  {/* ===== SEARCH + FILTER ===== */}
+  <div className="w-full mt-4">
+
+    <div className="flex items-center gap-3">
+
+      {/* SEARCH BAR */}
+      <div className="relative flex-1">
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Search products..."
+          className="w-full px-4 py-2 rounded-xl border border-gray-300 shadow-sm focus:ring-2 focus:ring-red-400 focus:outline-none"
+        />
+        <Search size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" />
       </div>
+
+      {/* FILTER ICON */}
+      <button className="p-3 rounded-xl border border-gray-300 bg-white shadow-sm active:scale-95 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+          strokeWidth="1.5" stroke="gray" className="w-5 h-5">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18M6 12h12M10 20h4" />
+        </svg>
+      </button>
+
+    </div>
+  </div>
+
+</div>
+
 
       {/* ===== MOBILE DROPDOWN MENU ===== */}
       <div
