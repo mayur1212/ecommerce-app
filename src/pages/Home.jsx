@@ -6,7 +6,7 @@ import Categories from "../components/Categories";
 import ProductList from "../components/ProductList";
 import Footer from "../components/Footer";
 import Sidebar from "../components/Sidebar";
-import BottomBar from "../components/BottomBar";   // 👈 Add this import
+import BottomBar from "../components/BottomBar";
 
 export default function Home() {
   const [category, setCategory] = useState("all");
@@ -26,7 +26,6 @@ export default function Home() {
           {/* Search + Filter (desktop only) */}
           <div className="hidden lg:flex items-center w-full bg-gray-100 px-4 py-2 border border-gray-200 focus-within:border-blue-500 focus-within:shadow-sm gap-4">
             <div className="flex items-center w-full bg-gray-100 px-4 py-2 border border-black border-2 rounded-xl focus-within:border-blue-500 focus-within:shadow-sm">
-              {/* Search icon + input */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -50,7 +49,6 @@ export default function Home() {
             </div>
 
             <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-100 transition-all shadow-sm hover:shadow-md">
-              {/* filter icon */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -76,7 +74,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 👇 Sticky Bottom Navigation (ONLY mobile + tablet) */}
+      {/* Bottom Navigation (mobile only) */}
       <BottomBar />
 
       <Footer />
