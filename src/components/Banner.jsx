@@ -1,12 +1,10 @@
 // src/components/Banner.jsx
 import React, { useEffect, useState } from "react";
 
-// 🔥 Import your 3 banner images
 import top1 from "../assets/banner1.jpeg";
 import top2 from "../assets/banner2.jpg";
 import top3 from "../assets/banner4.jpeg";
 
-// 🔥 Default images array
 const DEFAULT = [top1, top2, top3];
 
 export default function Banner({ images = DEFAULT, interval = 3500 }) {
@@ -18,53 +16,80 @@ export default function Banner({ images = DEFAULT, interval = 3500 }) {
   }, [images, interval]);
 
   return (
-    <section className="w-full">  {/* FULL WIDTH */}
+    <section className="w-full">
+      <div
+        className="
+          relative w-full 
+          h-[30vh] sm:h-[35vh] md:h-[40vh] lg:h-[65vh]
+          overflow-hidden
 
-      {/* responsive heights:
-          mobile: 30vh, sm: 40vh, md: 50vh, lg: 65vh
-          This keeps aspect and looks good on all devices */}
-      <div className="relative w-full h-[30vh] sm:h-[40vh] md:h-[50vh] lg:h-[65vh] overflow-hidden shadow-lg">
+          /* Mobile + Tablet → Card */
+          rounded-2xl shadow-xl p-3
 
-        {/* Banner Image */}
+          /* Desktop → No card styling */
+          lg:rounded-none lg:p-0
+        "
+      >
+        {/* Background Image */}
         <img
           src={images[i]}
           alt={`banner-${i}`}
-          className="w-full h-full object-cover transition-transform duration-500 ease-in-out"
+          className="w-full h-full object-cover rounded-2xl lg:rounded-none"
         />
 
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30 pointer-events-none" />
+        {/* TEXT CONTENT */}
+        <div className="absolute top-4 left-4 text-white space-y-1">
+          <p className="bg-white/20 text-xs px-3 py-1 rounded-full backdrop-blur-sm">
+            Limited time!
+          </p>
 
-        {/* Previous Button (bigger tap target on mobile) */}
-        <button
-          onClick={() => setI((p) => (p - 1 + images.length) % images.length)}
-          className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 p-3 sm:p-2 rounded-full shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-sky-400"
-          aria-label="Previous"
-        >
-          ‹
-        </button>
+          <h2 className="text-lg font-semibold">Get Special Discount</h2>
 
-        {/* Next Button */}
-        <button
-          onClick={() => setI((p) => (p + 1) % images.length)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 p-3 sm:p-2 rounded-full shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-sky-400"
-          aria-label="Next"
-        >
-          ›
-        </button>
+          <p className="text-sm">Up to</p>
 
-        {/* Indicator Dots - larger on mobile for touch */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
-          {images.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setI(idx)}
-              className={`rounded-full transition-all
-                ${idx === i ? "bg-white w-3 h-3 sm:w-3 sm:h-3" : "bg-white/50 w-2 h-2 sm:w-2 sm:h-2"}`}
-              aria-label={`Go to slide ${idx + 1}`}
-            />
-          ))}
+          <h1 className="text-4xl font-bold -mt-2">40%</h1>
+
+          <p className="text-[10px] mt-1 opacity-80">
+            All Salons available | T&C Applied
+          </p>
         </div>
+
+        {/* CLAIM BUTTON */}
+        <button
+          className="
+            absolute bottom-4 right-4 
+            bg-red-500 text-white text-sm 
+            px-4 py-2 rounded-full shadow-md
+          "
+        >
+          Claim
+        </button>
+
+        {/* Prev Button */}
+        {/* Prev Button — hide on mobile/tablet */}
+<button
+  onClick={() => setI((p) => (p - 1 + images.length) % images.length)}
+  className="
+    hidden lg:flex
+    absolute left-3 top-1/2 -translate-y-1/2 
+    bg-white/90 p-3 rounded-full shadow
+  "
+>
+  ‹
+</button>
+
+{/* Next Button — hide on mobile/tablet */}
+<button
+  onClick={() => setI((p) => (p + 1) % images.length)}
+  className="
+    hidden lg:flex
+    absolute right-3 top-1/2 -translate-y-1/2 
+    bg-white/90 p-3 rounded-full shadow
+  "
+>
+  ›
+</button>
+
       </div>
     </section>
   );
