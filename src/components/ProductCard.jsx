@@ -4,31 +4,27 @@ import React from "react";
 const PLACEHOLDER = "/mnt/data/35afd0b2-528f-45fe-931b-b4f576aa50b7.png";
 
 export default function ProductCard({ product, onOpen }) {
-  // price: prefer priceAfterDiscount, else use priceCents (convert to rupees)
   const priceRupees =
     product.priceAfterDiscount ??
     (product.priceCents ? product.priceCents / 100 : product.price ?? 0);
 
-  // rating: support both number or {stars,count}
   const ratingStars =
     typeof product.rating === "number"
       ? product.rating
       : product.rating?.stars ?? "—";
 
-  // image: support product.image (single) or product.images array
   const imgSrc = product.image || product.images?.[0] || PLACEHOLDER;
 
-  // format price for IN locale
   const fmt = new Intl.NumberFormat("en-IN");
 
   return (
     <button
       onClick={onOpen}
       className="group bg-white rounded-2xl p-3 sm:p-4 shadow-sm hover:shadow-lg transition-transform transform hover:-translate-y-1 cursor-pointer flex flex-col items-stretch text-left
-                 focus:outline-none focus:ring-2 focus:ring-sky-400"
+                 focus:outline-none focus:ring-2 focus:ring-sky-400 h-full min-h-[300px]"
       aria-label={`Open ${product.name}`}
     >
-      {/* IMAGE: responsive container keeps aspect ratio across sizes */}
+      {/* IMAGE */}
       <div className="relative w-full overflow-hidden rounded-lg bg-slate-50 flex items-center justify-center">
         <div className="w-full aspect-[4/3] flex items-center justify-center">
           <img
@@ -39,7 +35,6 @@ export default function ProductCard({ product, onOpen }) {
           />
         </div>
 
-        {/* optional small sale badge */}
         {product.priceAfterDiscount && product.priceCents && (
           <div className="absolute top-3 left-3 bg-red-600 text-white text-xs px-2 py-1 rounded-md">
             Sale
@@ -49,7 +44,9 @@ export default function ProductCard({ product, onOpen }) {
 
       {/* INFO */}
       <div className="mt-3 sm:mt-4 flex flex-col gap-2">
-        <h3 className="text-sm sm:text-base font-semibold text-slate-800 line-clamp-2">
+        
+        {/* ⭐ PRODUCT NAME — ONLY ONE LINE */}
+        <h3 className="text-sm sm:text-base font-semibold text-slate-800 line-clamp-1">
           {product.name}
         </h3>
 
@@ -73,11 +70,23 @@ export default function ProductCard({ product, onOpen }) {
           </div>
         </div>
 
-        {/* small meta - hidden on very small screens to save space */}
         <div className="text-xs text-slate-500 line-clamp-1 sm:block hidden">
           {product.brand ? `${product.brand} • ` : ""}
           {product.category}
         </div>
+
+        {/* ADD TO CART BUTTON */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            alert(`${product.name} added to cart!`);
+          }}
+          className="mt-2 text-white text-sm font-semibold py-2 rounded-xl transition"
+          style={{ backgroundColor: "#df3c3c" }}
+        >
+          Add to Cart
+        </button>
       </div>
     </button>
   );
