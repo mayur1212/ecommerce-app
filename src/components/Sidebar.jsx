@@ -4,10 +4,11 @@ import { Home, ShoppingBag, Store, Shirt } from "lucide-react";
 
 export default function Sidebar() {
   const menu = [
-    { name: "Home", icon: <Home size={20} />, link: "/" },
+    
     { name: "Products", icon: <ShoppingBag size={20} />, link: "/products" },
     { name: "Grocery", icon: <Store size={20} />, link: "/grocery" },
     { name: "Clothes", icon: <Shirt size={20} />, link: "/clothes" },
+    { name: "News", icon: <Home size={20} />, link: "/News" },
   ];
 
   return (
