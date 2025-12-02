@@ -101,14 +101,16 @@ export default function SearchBar() {
             )
           ) : (
             <>
+              {/* 1️⃣ RECENT SEARCHES AT TOP */}
+              {history.length > 0 && (
+                <Section title="Recent Searches" list={history} onClickItem={saveSearch} />
+              )}
+
+              {/* 2️⃣ STATIC SECTIONS BELOW */}
               <Section title="Shopping" list={shopping} onClickItem={saveSearch} />
               <Section title="News" list={news} onClickItem={saveSearch} />
               <Section title="Store" list={store} onClickItem={saveSearch} />
               <Section title="Trending Searches" list={trending} onClickItem={saveSearch} />
-
-              {history.length > 0 && (
-                <Section title="Recent Searches" list={history} onClickItem={saveSearch} />
-              )}
             </>
           )}
         </div>

@@ -30,56 +30,51 @@ export default function Home() {
 
       {/* ===== MOBILE NAV + DELIVER TO ===== */}
       <div className="md:hidden w-full bg-white px-4 pb-4 pt-2">
-        
-        {/* Bottom Nav */}
-        <div className="flex justify-between items-center text-xs font-medium text-gray-600">
-          <div className="flex flex-col items-center w-1/5">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 9.5l9-6 9 6V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V9.5z" />
-            </svg>
-            <span className="text-purple-600 mt-1">Home</span>
-          </div>
 
-          <div className="flex flex-col items-center w-1/5">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 10-8 0v4M5 11h14l-1 9H6l-1-9z" />
-            </svg>
-            <span className="mt-1">Shopping</span>
-          </div>
+  {/* Bottom Nav */}
+  <div className="flex justify-between items-center text-sm font-semibold text-gray-700">
 
-          <div className="flex flex-col items-center w-1/5">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18l-1 14H4L3 4zM8 4V2h8v2" />
-            </svg>
-            <span className="mt-1">Market</span>
-          </div>
+  {/* SHOPPING */}
+  <button className="w-1/5 text-center py-2 rounded-lg hover:bg-blue-100 hover:text-blue-700 active:scale-95 transition">
+    Shopping
+  </button>
 
-          <div className="flex flex-col items-center w-1/5">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 11l2-2m0 0l3-3m-3 3h4m12 8l-2 2m0 0l-3 3m3-3h-4M10 6h4M6 12h12M10 18h4" />
-            </svg>
-            <span className="mt-1">Services</span>
-          </div>
+  {/* MARKET */}
+  <button className="w-1/5 text-center py-2 rounded-lg hover:bg-green-100 hover:text-green-700 active:scale-95 transition">
+    Market
+  </button>
 
-          <div className="flex flex-col items-center w-1/5">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18l-2 12H5L3 7zM9 7V4h6v3" />
-            </svg>
-            <span className="mt-1">Grocery</span>
-          </div>
-        </div>
+  {/* SERVICES */}
+  <button className="w-1/5 text-center py-2 rounded-lg hover:bg-orange-100 hover:text-orange-700 active:scale-95 transition">
+    Services
+  </button>
 
-        {/* Deliver To */}
-        <button
-          onClick={() => setShowLocationPopup(true)}
-          className="flex items-center gap-2 mt-5 bg-gray-100 w-full px-4 py-3 rounded-xl shadow-sm active:scale-95"
-        >
-          <MapPin size={18} className="text-red-600" />
-          <span className="text-[13px] font-semibold text-gray-800">
-            Deliver to: {location ? location : "Select location"}
-          </span>
-        </button>
-      </div>
+  {/* GROCERY */}
+  <button className="w-1/5 text-center py-2 rounded-lg hover:bg-red-100 hover:text-red-700 active:scale-95 transition">
+    Grocery
+  </button>
+
+  {/* NEWS (NEW) */}
+  <button className="w-1/5 text-center py-2 rounded-lg hover:bg-yellow-100 hover:text-yellow-700 active:scale-95 transition">
+    News
+  </button>
+
+</div>
+
+
+  {/* Deliver To */}
+  <button
+    onClick={() => setShowLocationPopup(true)}
+    className="flex items-center gap-2 mt-5 bg-gray-100 w-full px-4 py-3 rounded-xl shadow-sm active:scale-95"
+  >
+    <MapPin size={18} className="text-red-600" />
+    <span className="text-[13px] font-semibold text-gray-800">
+      Deliver to: {location ? location : "Select location"}
+    </span>
+  </button>
+
+</div>
+
 
       {/* ===== MOBILE SEARCH (NEW — SHOW DROPDOWN) ===== */}
       {/* ===== MOBILE SEARCH (FIXED — SEARCH + FILTER IN ONE ROW) ===== */}
