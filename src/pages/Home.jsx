@@ -82,9 +82,35 @@ export default function Home() {
       </div>
 
       {/* ===== MOBILE SEARCH (NEW — SHOW DROPDOWN) ===== */}
-      <div className="md:hidden w-full sticky top-0 z-40 bg-white px-4 pb-3 pt-3">
-        <SearchBar />
-      </div>
+      {/* ===== MOBILE SEARCH (FIXED — SEARCH + FILTER IN ONE ROW) ===== */}
+<div className="md:hidden w-full sticky top-0 z-40 bg-white px-4">
+  <div className="flex items-center gap-3">
+    
+    {/* Search Bar */}
+    <div className="flex-1">
+      <SearchBar />
+    </div>
+
+    {/* Filter Icon Button */}
+    <button className="p-3 rounded-xl border border-gray-300 bg-white shadow-sm active:scale-95 transition">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth="1.5"
+        stroke="gray"
+        className="w-5 h-5"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18M6 12h12M10 20h4" />
+      </svg>
+    </button>
+
+  </div>
+</div>
+
+
+
+      
 
       {/* Mobile Hamburger Dropdown */}
       {mobileOpen && (
