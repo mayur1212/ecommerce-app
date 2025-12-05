@@ -5,17 +5,14 @@ import products from "../../data/products.json";
 
 export default function ProductsDetails() {
   const { id } = useParams();
-  // ensure id is string for matching
   const product = products.find((p) => String(p.id) === String(id));
 
-  // initialize selectedImage safely (product may be undefined on first render)
   const [selectedImage, setSelectedImage] = useState("");
   const [qty, setQty] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
   const [wishlisted, setWishlisted] = useState(false);
-  const [addedMsg, setAddedMsg] = useState(""); // small feedback
+  const [addedMsg, setAddedMsg] = useState("");
 
-  // When id (route) changes — reset qty, tab and image
   useEffect(() => {
     setQty(1);
     setActiveTab("description");
@@ -27,13 +24,12 @@ export default function ProductsDetails() {
     }
   }, [id, product]);
 
-  // wishlist state persisted to localStorage by product id (guarded)
   useEffect(() => {
     if (!product) return;
     try {
       const saved = JSON.parse(localStorage.getItem("wishlist_v1") || "[]");
       setWishlisted(saved.includes(String(product.id)));
-    } catch (e) {
+    } catch {
       setWishlisted(false);
     }
   }, [product]);
@@ -42,7 +38,6 @@ export default function ProductsDetails() {
     return <h2 className="text-center text-red-600">Product Not Found</h2>;
   }
 
-  // helpers
   const price = (product.priceCents ?? 0) / 100;
   const mrp = (product.mrpCents ?? product.mrp ?? 0) / 100;
   const discountPercent = mrp > 0 ? Math.round(((mrp - price) / mrp) * 100) : product.discountPercent;
@@ -50,7 +45,6 @@ export default function ProductsDetails() {
     .filter((p) => p.category === product.category && String(p.id) !== String(product.id))
     .slice(0, 6);
 
-  // total for visible quantity
   const total = +(price * qty).toFixed(2);
 
   function toggleWishlist() {
@@ -68,14 +62,12 @@ export default function ProductsDetails() {
         setWishlisted(true);
       }
       localStorage.setItem(key, JSON.stringify(next));
-    } catch (e) {
+    } catch {
       setWishlisted((w) => !w);
     }
   }
 
-  // simple Add to Cart handler (placeholder — integrate with your cart store/backend)
   function handleAddToCart() {
-    // example payload
     const payload = {
       id: product.id,
       name: product.name,
@@ -83,20 +75,20 @@ export default function ProductsDetails() {
       qty,
       image: selectedImage || product.image,
     };
-
-    // TODO: dispatch to cart store or call API
-    // For now just show a temporary message
+    // TODO: integrate with cart store / backend
     setAddedMsg(`${qty} × ${product.name} added to cart • ₹${total}`);
     setTimeout(() => setAddedMsg(""), 3500);
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-4 sm:p-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+      {/* main grid: single column mobile, 2 columns on md+ */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* LEFT: Images */}
         <div>
-          <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <div className="w-full h-96 flex items-center justify-center bg-gray-50 rounded-lg overflow-hidden">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow">
+            {/* responsive image area */}
+            <div className="w-full bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center h-64 sm:h-80 md:h-96">
               <img
                 src={selectedImage || product.image}
                 alt={product.name}
@@ -104,28 +96,44 @@ export default function ProductsDetails() {
               />
             </div>
 
-            {/* thumbnails */}
-            <div className="mt-4 flex gap-3 items-center overflow-x-auto">
-              {(product.images && product.images.length ? product.images : [product.image]).map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedImage(img)}
-                  className={`w-14 h-14 rounded-lg overflow-hidden border-2 transition-shadow focus:outline-none flex-shrink-0 ${
-                    (selectedImage || product.image) === img ? "ring-2 ring-red-400" : "border-gray-200"
-                  }`}
-                >
-                  <img src={img} alt={`${product.name}-${idx}`} className="w-full h-full object-cover" />
-                </button>
-              ))}
+            {/* thumbnails: horizontal scroll on small, grid on md+ */}
+            <div className="mt-4">
+              <div className="hidden md:grid md:grid-cols-6 md:gap-3">
+                {(product.images && product.images.length ? product.images : [product.image]).map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImage(img)}
+                    className={`w-full h-20 rounded-lg overflow-hidden border-2 transition-shadow focus:outline-none ${
+                      (selectedImage || product.image) === img ? "ring-2 ring-red-400" : "border-gray-200"
+                    }`}
+                  >
+                    <img src={img} alt={`${product.name}-${idx}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+
+              <div className="md:hidden flex gap-3 overflow-x-auto py-1">
+                {(product.images && product.images.length ? product.images : [product.image]).map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImage(img)}
+                    className={`w-16 h-16 rounded-lg overflow-hidden border-2 flex-shrink-0 ${
+                      (selectedImage || product.image) === img ? "ring-2 ring-red-400" : "border-gray-200"
+                    }`}
+                  >
+                    <img src={img} alt={`${product.name}-${idx}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
         {/* RIGHT: Content */}
         <div>
-          <h1 className="text-3xl font-extrabold leading-tight">{product.name}</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold leading-tight">{product.name}</h1>
 
-          <p className="text-gray-500 mt-2">
+          <p className="text-gray-500 mt-2 text-sm sm:text-base">
             <span className="capitalize">{product.category}</span>
             {product.subCategory ? ` • ${product.subCategory}` : ""}
           </p>
@@ -133,13 +141,13 @@ export default function ProductsDetails() {
           <div className="flex items-center gap-3 mt-3">
             <div className="flex items-center text-yellow-500">
               <Star size={18} />
-              <span className="ml-1 font-medium">{product.rating?.stars ?? "-"}</span>
-              <span className="text-gray-500 ml-2">({product.rating?.count ?? 0} reviews)</span>
+              <span className="ml-1 font-medium text-sm sm:text-base">{product.rating?.stars ?? "-"}</span>
+              <span className="text-gray-500 ml-2 text-xs sm:text-sm">({product.rating?.count ?? 0} reviews)</span>
             </div>
 
-            <div className="ml-auto flex items-center gap-2 text-sm">
+            <div className="ml-auto flex items-center gap-2 text-xs sm:text-sm">
               {discountPercent > 0 && (
-                <div className="bg-green-50 text-green-700 px-2 py-1 rounded text-xs">{discountPercent}% off</div>
+                <div className="bg-green-50 text-green-700 px-2 py-1 rounded text-[10px] sm:text-xs">{discountPercent}% off</div>
               )}
               <div className="text-gray-400">SKU: {product.sku ?? "-"}</div>
             </div>
@@ -147,24 +155,22 @@ export default function ProductsDetails() {
 
           <div className="mt-4 flex items-baseline gap-4">
             <div>
-              <div className="text-3xl font-extrabold text-red-600">₹{price.toFixed(0)}</div>
-              {mrp > 0 && (
-                <div className="text-sm text-gray-400 line-through">₹{mrp.toFixed(0)}</div>
-              )}
+              <div className="text-2xl sm:text-3xl font-extrabold text-red-600">₹{price.toFixed(0)}</div>
+              {mrp > 0 && <div className="text-sm text-gray-400 line-through">₹{mrp.toFixed(0)}</div>}
             </div>
 
-            <div className="ml-4 text-sm text-gray-500">You save: ₹{(mrp - price > 0 ? (mrp - price).toFixed(0) : 0)}</div>
+            <div className="ml-2 text-sm text-gray-500 hidden sm:block">You save: ₹{(mrp - price > 0 ? (mrp - price).toFixed(0) : 0)}</div>
           </div>
 
-          <p className="mt-4 text-gray-700 leading-relaxed">{product.shortDescription || product.description}</p>
+          <p className="mt-3 text-gray-700 leading-relaxed text-sm sm:text-base">{product.shortDescription || product.description}</p>
 
           {/* small info box */}
-          <div className="mt-6 bg-gray-50 p-4 rounded-lg border">
-            <div className={`text-sm ${product.inStock ? "text-green-700" : "text-red-600"}`}>
+          <div className="mt-5 bg-gray-50 p-3 sm:p-4 rounded-lg border text-sm">
+            <div className={`${product.inStock ? "text-green-700" : "text-red-600"} font-medium`}>
               {product.inStock ? `In Stock • ${product.stock ?? 0} left` : "Out of stock"}
             </div>
 
-            <ul className="text-sm text-gray-600 mt-3 space-y-1">
+            <ul className="text-gray-600 mt-2 space-y-1 text-xs sm:text-sm">
               {product.delivery && <li><strong>Delivery:</strong> {product.delivery}</li>}
               {product.warranty && <li><strong>Warranty:</strong> {product.warranty}</li>}
               {product.returnPolicy && <li><strong>Return:</strong> {product.returnPolicy}</li>}
@@ -173,45 +179,50 @@ export default function ProductsDetails() {
           </div>
 
           {/* quantity + actions */}
-          <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-4">
-            <div className="flex items-center border rounded-lg">
+          <div className="mt-5 grid grid-cols-1 sm:flex sm:items-center sm:gap-4 gap-3">
+            <div className="flex items-center border rounded-lg px-2 py-1 w-full sm:w-auto">
               <button
                 onClick={() => setQty((q) => Math.max(1, q - 1))}
-                className="p-2"
+                className="p-2 touch-manipulation"
                 aria-label="Decrease quantity"
               >
                 <Minus />
               </button>
 
-              <div className="px-4 py-2 min-w-[56px] text-center">{qty}</div>
+              <div className="px-4 py-2 min-w-[56px] text-center text-sm">{qty}</div>
 
-              <button onClick={() => setQty((q) => q + 1)} className="p-2" aria-label="Increase quantity">
+              <button
+                onClick={() => setQty((q) => q + 1)}
+                className="p-2 touch-manipulation"
+                aria-label="Increase quantity"
+              >
                 <Plus />
               </button>
             </div>
 
-            <div className="flex gap-3 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               <button
                 onClick={handleAddToCart}
-                className="flex-1 sm:flex-none px-6 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:opacity-95 transition-shadow shadow-sm"
+                className="w-full sm:w-auto px-5 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:opacity-95 transition-shadow shadow-sm text-sm"
               >
                 Add to Cart
               </button>
 
-              {/* Wishlist button */}
               <button
                 onClick={toggleWishlist}
-                className={`flex items-center gap-3 px-6 py-3 border rounded-lg font-semibold w-full sm:w-auto justify-center ${wishlisted ? "border-blue-700 bg-blue-50" : "border-gray-300 bg-white"}`}
+                className={`w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 border rounded-lg font-semibold text-sm ${
+                  wishlisted ? "border-blue-700 bg-blue-50 text-blue-800" : "border-gray-300 bg-white text-gray-800"
+                }`}
                 aria-pressed={wishlisted}
                 aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
               >
                 <Heart size={16} className={`${wishlisted ? "text-blue-700" : "text-gray-600"}`} />
-                <span className="text-sm font-semibold text-blue-800">WISHLIST</span>
+                <span>WISHLIST</span>
               </button>
             </div>
           </div>
 
-          {/* total summary + feedback */}
+          {/* total + feedback */}
           <div className="mt-3 text-sm text-gray-600">
             <div>Total for {qty} item{qty > 1 ? "s" : ""}: <span className="font-semibold">₹{total}</span></div>
             {addedMsg && <div className="mt-2 text-green-700">{addedMsg}</div>}
@@ -219,16 +230,16 @@ export default function ProductsDetails() {
 
           {/* tags / extra */}
           <div className="mt-4 text-sm text-gray-500">
-            {product.minOrder && <div>Minimum Order Quantity: {product.minOrder}</div>}
-            {product.tags && <div>Tags: {product.tags.join(", ")}</div>}
-            {product.dimensions && <div>Dimensions: {product.dimensions}</div>}
+            {product.minOrder && <div className="mt-1">Minimum Order Quantity: {product.minOrder}</div>}
+            {product.tags && <div className="mt-1">Tags: {product.tags.join(", ")}</div>}
+            {product.dimensions && <div className="mt-1">Dimensions: {product.dimensions}</div>}
           </div>
         </div>
       </div>
 
       {/* TABS */}
-      <div className="mt-10 bg-white rounded-2xl p-6 shadow">
-        <div className="flex gap-6 border-b pb-3 overflow-x-auto">
+      <div className="mt-8 bg-white rounded-2xl p-4 sm:p-6 shadow">
+        <div className="flex gap-4 border-b pb-3 overflow-x-auto">
           <button
             onClick={() => setActiveTab("description")}
             className={`pb-2 ${activeTab === "description" ? "border-b-2 border-red-500 text-red-600" : "text-gray-600"}`}
@@ -251,16 +262,16 @@ export default function ProductsDetails() {
           </button>
         </div>
 
-        <div className="mt-6 text-gray-700">
+        <div className="mt-4 text-gray-700">
           {activeTab === "description" && (
-            <div>
-              <p className="leading-relaxed">{product.description}</p>
+            <div className="text-sm sm:text-base leading-relaxed">
+              <p>{product.description}</p>
               {product.brand && <p className="mt-3 text-sm italic text-gray-500">Brand: {product.brand}</p>}
             </div>
           )}
 
           {activeTab === "specs" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               {product.specifications ? (
                 Object.entries(product.specifications).map(([k, v]) => (
                   <div key={k} className="text-sm">
@@ -275,7 +286,7 @@ export default function ProductsDetails() {
           )}
 
           {activeTab === "reviews" && (
-            <div>
+            <div className="text-sm">
               {product.reviews && product.reviews.length > 0 ? (
                 product.reviews.map((r, i) => (
                   <div key={i} className="border-b py-4">

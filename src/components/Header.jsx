@@ -19,9 +19,33 @@ export default function Header({ mobileOpen, setMobileOpen, setActivePage }) {
 
   const navigate = useNavigate(); // 👈 router navigation
 
+  // local handler: set active & close mobile menu & navigate to route
   const handleNavClick = (key) => {
-    setActivePage(key);
-    setMobileOpen(false);
+    // keep parent state in sync
+    if (typeof setActivePage === "function") setActivePage(key);
+    // close mobile menu if open
+    if (typeof setMobileOpen === "function") setMobileOpen(false);
+
+    // navigation mapping
+    switch (key) {
+      case "shopping":
+        navigate("/shopping");
+        break;
+      case "market":
+        navigate("/market");
+        break;
+      case "services":
+        navigate("/services");
+        break;
+      case "grocery":
+        navigate("/grocery");
+        break;
+      case "news":
+        navigate("/blog");
+        break;
+      default:
+        navigate("/");
+    }
   };
 
   return (
