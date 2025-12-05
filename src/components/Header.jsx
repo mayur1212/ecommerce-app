@@ -1,16 +1,31 @@
 // src/components/Header.jsx
 import React, { useState } from "react";
-import { MapPin, Heart, ShoppingBag, User, Menu, X } from "lucide-react";
+import {
+  MapPin,
+  Heart,
+  ShoppingBag,
+  User,
+  Menu,
+  X,
+  CalendarCheck,
+} from "lucide-react";
 import LOGO from "../assets/ecommerce-logo12.png";
 import LocationPopup from "./LocationPopup";
+import { useNavigate } from "react-router-dom";
 
-export default function Header({ mobileOpen, setMobileOpen }) {
+export default function Header({ mobileOpen, setMobileOpen, setActivePage }) {
   const [location, setLocation] = useState("Select Location");
   const [openPopup, setOpenPopup] = useState(false);
 
+  const navigate = useNavigate(); // 👈 router navigation
+
+  const handleNavClick = (key) => {
+    setActivePage(key);
+    setMobileOpen(false);
+  };
+
   return (
     <>
-      {/* Location Popup Component */}
       {openPopup && (
         <LocationPopup
           close={() => setOpenPopup(false)}
@@ -19,16 +34,23 @@ export default function Header({ mobileOpen, setMobileOpen }) {
       )}
 
       <header className="backdrop-blur-xl bg-white/70 border-b border-red-300 shadow-sm lg:sticky lg:top-0 lg:z-50">
-        <div className="w-full px-1 py-1 flex items-center">
-          {/* MOBILE HEADER */}
+        <div className="w-full px-1 py-1 flex flex-col">
+
+          {/* ================= MOBILE HEADER ================= */}
           <div className="flex md:hidden w-full items-center justify-between h-14 px-2">
-            <div className="flex items-center gap-1">
+
+            {/* CLICK = REDIRECT "/" */}
+            <div
+              className="flex items-center gap-1 cursor-pointer"
+              onClick={() => navigate("/")}
+            >
               <img src={LOGO} alt="Logo" className="w-9 h-9 object-contain" />
               <h1 className="text-base font-bold text-red-600">ShopNow</h1>
             </div>
 
             <div className="flex items-center gap-3">
               <User size={18} className="cursor-pointer" />
+              <CalendarCheck size={18} className="cursor-pointer" />
               <Heart size={18} className="cursor-pointer" />
               <ShoppingBag size={18} className="cursor-pointer" />
 
@@ -38,9 +60,14 @@ export default function Header({ mobileOpen, setMobileOpen }) {
             </div>
           </div>
 
-          {/* DESKTOP HEADER */}
+          {/* ================= DESKTOP HEADER ================= */}
           <div className="hidden md:flex w-full items-center justify-between">
-            <div className="flex items-center gap-2">
+
+            {/* CLICK = REDIRECT "/" */}
+            <div
+              className="flex items-center gap-2 cursor-pointer"
+              onClick={() => navigate("/")}
+            >
               <img src={LOGO} alt="Logo" className="w-12 h-12 object-contain" />
               <h1 className="text-xl font-bold text-red-600 tracking-wide">
                 ShopNow
@@ -49,23 +76,50 @@ export default function Header({ mobileOpen, setMobileOpen }) {
 
             {/* CENTER MENU */}
             <nav className="hidden lg:flex gap-8 text-[15px] font-semibold text-gray-800">
-              {["Home", "Shopping", "Market", "Services", "Grocery", "News"].map(
-                (item) => (
-                  <a
-                    key={item}
-                    href="#"
-                    className="relative group transition text-gray-700 hover:text-red-600"
-                  >
-                    {item}
-                    <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-red-600 transition-all duration-300 group-hover:w-full"></span>
-                  </a>
-                )
-              )}
+              <button
+                onClick={() => handleNavClick("shopping")}
+                className="relative group transition text-gray-700 hover:text-red-600"
+              >
+                Shopping
+                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-red-600 transition-all duration-300 group-hover:w-full"></span>
+              </button>
+
+              <button
+                onClick={() => handleNavClick("market")}
+                className="relative group transition text-gray-700 hover:text-red-600"
+              >
+                Market
+                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-red-600 transition-all duration-300 group-hover:w-full"></span>
+              </button>
+
+              <button
+                onClick={() => handleNavClick("services")}
+                className="relative group transition text-gray-700 hover:text-red-600"
+              >
+                Services
+                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-red-600 transition-all duration-300 group-hover:w-full"></span>
+              </button>
+
+              <button
+                onClick={() => handleNavClick("grocery")}
+                className="relative group transition text-gray-700 hover:text-red-600"
+              >
+                Grocery
+                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-red-600 transition-all duration-300 group-hover:w-full"></span>
+              </button>
+
+              <button
+                onClick={() => handleNavClick("news")}
+                className="relative group transition text-gray-700 hover:text-red-600"
+              >
+                News
+                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-red-600 transition-all duration-300 group-hover:w-full"></span>
+              </button>
             </nav>
 
             {/* RIGHT ICONS */}
             <div className="hidden md:flex items-center gap-10 ml-6">
-              {/* 🚨 CLICK → OPEN POPUP */}
+
               <div
                 onClick={() => setOpenPopup(true)}
                 className="hidden lg:flex items-center gap-2 text-sm font-semibold cursor-pointer hover:text-red-600 transition"
@@ -75,9 +129,15 @@ export default function Header({ mobileOpen, setMobileOpen }) {
               </div>
 
               <div className="flex items-center gap-8 text-gray-700">
+
                 <div className="flex flex-col items-center text-[11px] font-medium hover:text-red-600 transition cursor-pointer">
                   <User size={22} />
                   <span>Profile</span>
+                </div>
+
+                <div className="flex flex-col items-center text-[11px] font-medium hover:text-red-600 transition cursor-pointer">
+                  <CalendarCheck size={22} />
+                  <span>Booking</span>
                 </div>
 
                 <div className="flex flex-col items-center text-[11px] font-medium hover:text-red-600 transition cursor-pointer">
@@ -89,8 +149,10 @@ export default function Header({ mobileOpen, setMobileOpen }) {
                   <ShoppingBag size={22} />
                   <span>Bag</span>
                 </div>
+
               </div>
             </div>
+
           </div>
         </div>
       </header>
