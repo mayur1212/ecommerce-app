@@ -13,20 +13,16 @@ import LOGO from "../assets/ecommerce-logo12.png";
 import LocationPopup from "./LocationPopup";
 import { useNavigate } from "react-router-dom";
 
-export default function Header({ mobileOpen, setMobileOpen, setActivePage }) {
+export default function Header({ mobileOpen, setMobileOpen }) {
   const [location, setLocation] = useState("Select Location");
   const [openPopup, setOpenPopup] = useState(false);
 
-  const navigate = useNavigate(); // 👈 router navigation
+  const navigate = useNavigate(); // router navigation
 
-  // local handler: set active & close mobile menu & navigate to route
+  // ✅ sirf route change + mobile close, NO sidebar activePage logic
   const handleNavClick = (key) => {
-    // keep parent state in sync
-    if (typeof setActivePage === "function") setActivePage(key);
-    // close mobile menu if open
     if (typeof setMobileOpen === "function") setMobileOpen(false);
 
-    // navigation mapping
     switch (key) {
       case "shopping":
         navigate("/shopping");
@@ -38,7 +34,7 @@ export default function Header({ mobileOpen, setMobileOpen, setActivePage }) {
         navigate("/services");
         break;
       case "grocery":
-        navigate("/grocery");
+        navigate("/Store"); // tu आधी Store वापरत होतास, तोच ठेवला
         break;
       case "news":
         navigate("/blog");
@@ -128,7 +124,7 @@ export default function Header({ mobileOpen, setMobileOpen, setActivePage }) {
                 onClick={() => handleNavClick("grocery")}
                 className="relative group transition text-gray-700 hover:text-red-600"
               >
-                Grocery
+                Store
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-red-600 transition-all duration-300 group-hover:w-full"></span>
               </button>
 
