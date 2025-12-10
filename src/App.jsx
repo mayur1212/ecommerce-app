@@ -16,6 +16,7 @@ import Blog from "./pages/blog/Blog";
 import BlogDetails from "./components/Blog/Blogdetails";
 import Shopping from "./pages/shoppingp/Shoppingp";
 import ProductsDetails from "./components/Shoping/ProductsDetailsp";
+import SellerPage from "./pages/shoppingp/SellerPage"; // ✅ NEW
 
 // Store
 import Storep from "./pages/Storep/Storep";
@@ -112,7 +113,11 @@ function MainAppLayout() {
               stroke="gray"
               className="w-5 h-5"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18M6 12h12M10 20h4" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 4h18M6 12h12M10 20h4"
+              />
             </svg>
           </button>
         </div>
@@ -153,7 +158,11 @@ function MainAppLayout() {
                 stroke="gray"
                 className="w-5 h-5"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18M6 12h12M10 20h4" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 4h18M6 12h12M10 20h4"
+                />
               </svg>
               <span className="font-medium text-gray-700">Filter</span>
             </button>
@@ -188,6 +197,9 @@ export default function App() {
         {/* Shopping */}
         <Route path="shopping" element={<Shopping />} />
         <Route path="shopping/:id" element={<ProductsDetails />} />
+
+        {/* Seller (View Shop) ✅ */}
+        <Route path="seller/:sellerSlug" element={<SellerPage />} />
 
         {/* Store */}
         <Route path="store" element={<Storep />} />

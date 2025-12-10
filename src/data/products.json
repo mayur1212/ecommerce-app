@@ -16,10 +16,20 @@
     "discount_price": 28990,
     "discount_percent": 17,
     "stock": 42,
+    "delivery_charge": 0,
     "rating": 4.8,
+    "rating_count": 5134,
+    "seller_name": "TechZone Electronics",
+    "seller_stats": {
+      "sellerRating": 4.3,
+      "sellerRatingCount": 84521,
+      "followers": 1542,
+      "productsCount": 96
+    },
     "variants": [
       {
         "color": "Black",
+        "stock": 20,
         "price": 28990,
         "mrp": 34990,
         "discount_price": 28990,
@@ -27,6 +37,7 @@
       },
       {
         "color": "Silver",
+        "stock": 22,
         "price": 29490,
         "mrp": 34990,
         "discount_price": 29490,
@@ -34,7 +45,6 @@
       }
     ]
   },
-
   {
     "id": 2,
     "name": "Apple iPhone 14",
@@ -52,12 +62,21 @@
     "discount_price": 68990,
     "discount_percent": 14,
     "stock": 25,
+    "delivery_charge": 100,
     "rating": 4.7,
+    "rating_count": 7890,
+    "seller_name": "Apple Authorised Store",
+    "seller_stats": {
+      "sellerRating": 4.6,
+      "sellerRatingCount": 116951,
+      "followers": 3059,
+      "productsCount": 74
+    },
     "variants": [
       {
         "storage": "128GB",
-        "size": "128GB",
         "color": "Blue",
+        "stock": 10,
         "price": 68990,
         "mrp": 79990,
         "discount_price": 68990,
@@ -65,8 +84,8 @@
       },
       {
         "storage": "256GB",
-        "size": "256GB",
         "color": "Midnight",
+        "stock": 15,
         "price": 78990,
         "mrp": 79990,
         "discount_price": 78990,
@@ -74,7 +93,6 @@
       }
     ]
   },
-
   {
     "id": 3,
     "name": "Samsung 50-inch Smart TV",
@@ -92,10 +110,20 @@
     "discount_price": 37990,
     "discount_percent": 31,
     "stock": 30,
+    "delivery_charge": 0,
     "rating": 4.5,
+    "rating_count": 4210,
+    "seller_name": "Electro World",
+    "seller_stats": {
+      "sellerRating": 4.2,
+      "sellerRatingCount": 69210,
+      "followers": 1890,
+      "productsCount": 112
+    },
     "variants": [
       {
         "size": "43-inch",
+        "stock": 8,
         "price": 31990,
         "mrp": 54990,
         "discount_price": 31990,
@@ -103,6 +131,7 @@
       },
       {
         "size": "50-inch",
+        "stock": 12,
         "price": 37990,
         "mrp": 54990,
         "discount_price": 37990,
@@ -110,6 +139,7 @@
       },
       {
         "size": "55-inch",
+        "stock": 10,
         "price": 42990,
         "mrp": 54990,
         "discount_price": 42990,
@@ -117,7 +147,6 @@
       }
     ]
   },
-
   {
     "id": 4,
     "name": "Nike Air Max Running Shoes",
@@ -135,11 +164,21 @@
     "discount_price": 6499,
     "discount_percent": 28,
     "stock": 60,
+    "delivery_charge": 100,
     "rating": 4.4,
+    "rating_count": 2987,
+    "seller_name": "HILL TOP FASHION",
+    "seller_stats": {
+      "sellerRating": 4.1,
+      "sellerRatingCount": 116951,
+      "followers": 1059,
+      "productsCount": 27
+    },
     "variants": [
       {
         "size": "7",
         "color": "Blue",
+        "stock": 18,
         "price": 6499,
         "mrp": 8999,
         "discount_price": 6499,
@@ -148,6 +187,7 @@
       {
         "size": "8",
         "color": "Black",
+        "stock": 20,
         "price": 6699,
         "mrp": 8999,
         "discount_price": 6699,
@@ -156,6 +196,7 @@
       {
         "size": "9",
         "color": "White",
+        "stock": 22,
         "price": 6499,
         "mrp": 8999,
         "discount_price": 6499,
@@ -163,7 +204,6 @@
       }
     ]
   },
-
   {
     "id": 5,
     "name": "Boat Airdopes 141",
@@ -181,10 +221,20 @@
     "discount_price": 1199,
     "discount_percent": 60,
     "stock": 85,
+    "delivery_charge": 0,
     "rating": 4.3,
+    "rating_count": 9123,
+    "seller_name": "boAt Official Store",
+    "seller_stats": {
+      "sellerRating": 4.4,
+      "sellerRatingCount": 135421,
+      "followers": 2543,
+      "productsCount": 54
+    },
     "variants": [
       {
         "color": "Black",
+        "stock": 40,
         "price": 1199,
         "mrp": 2990,
         "discount_price": 1199,
@@ -192,6 +242,7 @@
       },
       {
         "color": "White",
+        "stock": 45,
         "price": 1399,
         "mrp": 2990,
         "discount_price": 1399,
@@ -199,7 +250,6 @@
       }
     ]
   },
-
   {
     "id": 6,
     "name": "Puma Men's Sports T-Shirt",
@@ -217,11 +267,21 @@
     "discount_price": 899,
     "discount_percent": 40,
     "stock": 120,
+    "delivery_charge": 100,
     "rating": 4.2,
+    "rating_count": 1875,
+    "seller_name": "HILL TOP FASHION",
+    "seller_stats": {
+      "sellerRating": 4.1,
+      "sellerRatingCount": 116951,
+      "followers": 1059,
+      "productsCount": 27
+    },
     "variants": [
       {
         "size": "M",
         "color": "Blue",
+        "stock": 60,
         "price": 899,
         "mrp": 1499,
         "discount_price": 899,
@@ -230,6 +290,7 @@
       {
         "size": "L",
         "color": "Red",
+        "stock": 60,
         "price": 999,
         "mrp": 1499,
         "discount_price": 999,
@@ -237,7 +298,6 @@
       }
     ]
   },
-
   {
     "id": 7,
     "name": "HP Victus Gaming Laptop",
@@ -255,11 +315,21 @@
     "discount_price": 64990,
     "discount_percent": 19,
     "stock": 14,
+    "delivery_charge": 0,
     "rating": 4.6,
+    "rating_count": 954,
+    "seller_name": "HP Brand Store",
+    "seller_stats": {
+      "sellerRating": 4.5,
+      "sellerRatingCount": 48210,
+      "followers": 980,
+      "productsCount": 39
+    },
     "variants": [
       {
         "ram": "16GB",
         "ssd": "512GB",
+        "stock": 14,
         "price": 64990,
         "mrp": 79990,
         "discount_price": 64990,
@@ -267,7 +337,6 @@
       }
     ]
   },
-
   {
     "id": 8,
     "name": "Roadster Casual Sneakers",
@@ -285,12 +354,22 @@
     "discount_price": 1499,
     "discount_percent": 25,
     "stock": 75,
+    "delivery_charge": 100,
     "rating": 4.1,
+    "rating_count": 1320,
+    "seller_name": "Urban Footwear Hub",
+    "seller_stats": {
+      "sellerRating": 4.0,
+      "sellerRatingCount": 25110,
+      "followers": 620,
+      "productsCount": 48
+    },
     "variants": [
       {
         "size": "7",
         "color": "Black",
         "weight": "650g",
+        "stock": 35,
         "price": 1499,
         "mrp": 1999,
         "discount_price": 1499,
@@ -300,6 +379,7 @@
         "size": "8",
         "color": "White",
         "weight": "650g",
+        "stock": 40,
         "price": 1599,
         "mrp": 1999,
         "discount_price": 1599,
@@ -307,7 +387,6 @@
       }
     ]
   },
-
   {
     "id": 9,
     "name": "Lenovo Wireless Mouse",
@@ -325,10 +404,20 @@
     "discount_price": 799,
     "discount_percent": 33,
     "stock": 130,
+    "delivery_charge": 0,
     "rating": 4.3,
+    "rating_count": 3421,
+    "seller_name": "Lenovo Store",
+    "seller_stats": {
+      "sellerRating": 4.3,
+      "sellerRatingCount": 38910,
+      "followers": 730,
+      "productsCount": 33
+    },
     "variants": [
       {
         "color": "Black",
+        "stock": 130,
         "price": 799,
         "mrp": 1199,
         "discount_price": 799,
@@ -336,7 +425,6 @@
       }
     ]
   },
-
   {
     "id": 10,
     "name": "Noise ColorFit Smartwatch",
@@ -354,10 +442,20 @@
     "discount_price": 2999,
     "discount_percent": 40,
     "stock": 90,
+    "delivery_charge": 0,
     "rating": 4.4,
+    "rating_count": 5632,
+    "seller_name": "Noise Official Store",
+    "seller_stats": {
+      "sellerRating": 4.4,
+      "sellerRatingCount": 74210,
+      "followers": 2100,
+      "productsCount": 41
+    },
     "variants": [
       {
         "color": "Black",
+        "stock": 45,
         "price": 2999,
         "mrp": 4999,
         "discount_price": 2999,
@@ -365,6 +463,7 @@
       },
       {
         "color": "Gold",
+        "stock": 45,
         "price": 3299,
         "mrp": 4999,
         "discount_price": 3299,

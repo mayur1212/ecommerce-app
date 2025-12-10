@@ -5,16 +5,24 @@ import products from "../../data/products.json";
 
 const formatPrice = (price) => `₹${price.toLocaleString()}`;
 
-const getStars = (rating = 4) => {
-  const stars = [];
-  for (let i = 1; i <= 5; i++) {
-    stars.push(
-      <span key={i} className={i <= rating ? "text-yellow-500" : "text-gray-300"}>
-        ★
-      </span>
+// Total available quantity (from variants or product.stock)
+const getTotalStock = (product) => {
+  if (Array.isArray(product.variants) && product.variants.length > 0) {
+    return product.variants.reduce(
+      (sum, v) => sum + (v.stock ?? 0),
+      0
     );
   }
-  return stars;
+  return product.stock ?? 0;
+};
+
+// Delivery label helper
+const getDeliveryLabel = (product) => {
+  const charge = product.delivery_charge;
+
+  if (charge === 0) return "Free Delivery";
+  if (typeof charge === "number") return `Delivery ₹${charge}`;
+  return "Delivery info at checkout";
 };
 
 export default function Productlist() {
@@ -41,6 +49,16 @@ export default function Productlist() {
         products.map((product) => {
           const inStock = isInStock(product);
           const isWish = !!wishlisted[product.id];
+
+          // rating value (supports object or number, fallback 4.5)
+          const ratingValue =
+            product.rating?.stars ??
+            product.rating?.value ??
+            (typeof product.rating === "number" ? product.rating : null) ??
+            4.5;
+
+          const totalStock = getTotalStock(product);
+          const deliveryLabel = getDeliveryLabel(product);
 
           return (
             <Link
@@ -121,9 +139,34 @@ export default function Productlist() {
                   )}
                 </div>
 
-                <div className="text-xs">
-                  {getStars(product.rating || 4)}
+                {/* SINGLE GOLD STAR + RATING NUMBER */}
+                <div className="flex items-center text-xs gap-1 text-gray-800">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-4 h-4 text-yellow-500"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 .587l3.668 7.431 8.2 1.193-5.934 5.787 1.402 8.168L12 18.896l-7.336 3.87 1.402-8.168L.132 9.211l8.2-1.193z" />
+                  </svg>
+                  <span className="font-medium">
+                    {Number(ratingValue).toFixed(1)}
+                  </span>
                 </div>
+              </div>
+
+              {/* QUANTITY + DELIVERY STATUS UNDER PRICE/RATING */}
+              <div className="mt-1 flex items-center justify-between text-[11px] text-gray-600">
+                <span>
+                  Qty:{" "}
+                  {totalStock > 0
+                    ? totalStock
+                    : "Not specified"}
+                </span>
+
+                <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-medium">
+                  {deliveryLabel}
+                </span>
               </div>
             </Link>
           );

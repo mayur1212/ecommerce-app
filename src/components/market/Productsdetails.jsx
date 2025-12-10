@@ -103,8 +103,16 @@ export default function Productsdetails() {
 
   const totalStock = selectedVariant?.stock ?? product.stock ?? 0;
   const inStock = totalStock > 0;
-  const rating = product.rating ?? 0;
-  const ratingCount = product.rating_count ?? 0;
+
+  // ✅ robust rating handling (object or number)
+  const ratingValue =
+    product.rating?.stars ??
+    product.rating?.value ??
+    (typeof product.rating === "number" ? product.rating : null) ??
+    0;
+
+  const ratingCount =
+    product.rating_count ?? product.rating?.count ?? 0;
 
   const youSave = mrp > salePrice ? mrp - salePrice : 0;
 
@@ -361,23 +369,20 @@ export default function Productsdetails() {
             </span>
           </p>
 
-          {/* Rating */}
+          {/* ✅ Rating – single gold star + value + count */}
           <div className="flex items-center gap-2 mt-1">
-            <div className="flex text-yellow-400">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <svg
-                  key={i}
-                  fill={i < Math.floor(rating) ? "currentColor" : "none"}
-                  stroke="currentColor"
-                  className="w-4 h-4 md:w-5 md:h-5"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M10 1.5l2.9 6 6.1.9-4.5 4.6 1.1 6.3L10 16.5l-5.6 3 1.1-6.3-4.5-4.6 6.1-.9L10 1.5z" />
-                </svg>
-              ))}
+            <div className="flex items-center text-yellow-500">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-5 h-5 md:w-6 md:h-6"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M12 .587l3.668 7.431 8.2 1.193-5.934 5.787 1.402 8.168L12 18.896l-7.336 3.87 1.402-8.168L.132 9.211l8.2-1.193z" />
+              </svg>
             </div>
-            <span className="text-xs sm:text-sm font-medium text-gray-800">
-              {rating.toFixed(1)}
+            <span className="text-xs sm:text-sm font-semibold text-gray-900">
+              {Number(ratingValue).toFixed(1)}
             </span>
             <span className="text-[11px] sm:text-xs text-gray-500">
               ({ratingCount} reviews)
@@ -583,7 +588,7 @@ export default function Productsdetails() {
           {activeTab === "reviews" && (
             <div>
               <p className="font-semibold mb-2 text-sm sm:text-base">
-                Rating: {rating.toFixed(1)} / 5
+                Rating: {Number(ratingValue).toFixed(1)} / 5
               </p>
               {ratingCount === 0 ? (
                 <p className="text-gray-500 text-xs sm:text-sm">
