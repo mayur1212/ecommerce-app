@@ -43,7 +43,28 @@
         "discount_price": 29490,
         "discount_percent": 16
       }
-    ]
+    ],
+    "reviews": [
+      {
+        "id": "r1-1",
+        "author": "Arjun Mehta",
+        "rating": 5,
+        "date": "05 Dec 2025",
+        "text": "Outstanding ANC and very comfortable for long flights. Battery easily lasts a day of heavy use.",
+        "images": ["https://m.media-amazon.com/images/I/61NGnpjoRDL._SL1500_.jpg"],
+        "helpful_count": 42
+      },
+      {
+        "id": "r1-2",
+        "author": "Priya Sharma",
+        "rating": 4,
+        "date": "22 Nov 2025",
+        "text": "Sound quality is premium but a bit pricey. Build feels excellent.",
+        "images": [],
+        "helpful_count": 16
+      }
+    ],
+    "related_ids": [3, 5]
   },
   {
     "id": 2,
@@ -91,7 +112,28 @@
         "discount_price": 78990,
         "discount_percent": 1
       }
-    ]
+    ],
+    "reviews": [
+      {
+        "id": "r2-1",
+        "author": "Neha Desai",
+        "rating": 5,
+        "date": "01 Dec 2025",
+        "text": "Sleek design and superb camera performance. Very satisfied with the purchase.",
+        "images": ["https://m.media-amazon.com/images/I/61bK6PMOC3L._SL1500_.jpg"],
+        "helpful_count": 68
+      },
+      {
+        "id": "r2-2",
+        "author": "Rakesh Kumar",
+        "rating": 4,
+        "date": "15 Nov 2025",
+        "text": "Battery could be better under heavy use but overall a solid phone.",
+        "images": [],
+        "helpful_count": 21
+      }
+    ],
+    "related_ids": []
   },
   {
     "id": 3,
@@ -145,7 +187,19 @@
         "discount_price": 42990,
         "discount_percent": 22
       }
-    ]
+    ],
+    "reviews": [
+      {
+        "id": "r3-1",
+        "author": "Sonia Verma",
+        "rating": 5,
+        "date": "10 Dec 2025",
+        "text": "Picture quality is excellent for the price. Smart features are responsive.",
+        "images": ["https://m.media-amazon.com/images/I/81pA7nOymhL._SL1500_.jpg"],
+        "helpful_count": 34
+      }
+    ],
+    "related_ids": [1, 5]
   },
   {
     "id": 4,
@@ -202,7 +256,33 @@
         "discount_price": 6499,
         "discount_percent": 28
       }
-    ]
+    ],
+    "reviews": [
+      {
+        "id": "r4-1",
+        "author": "Sangeeta Chaudhary",
+        "rating": 5,
+        "date": "21 Nov 2025",
+        "text": "Overall good fabric quality color and size and agent behavior also good",
+        "images": [
+          "https://m.media-amazon.com/images/I/71J1cRZ1G3L._SL1500_.jpg",
+          "https://m.media-amazon.com/images/I/71rSz5o1wTL._SL1500_.jpg"
+        ],
+        "helpful_count": 14
+      },
+      {
+        "id": "r4-2",
+        "author": "Meesho User",
+        "rating": 5,
+        "date": "13 Sep 2025",
+        "text": "thank you so much me so many Apne dad ke liye mangaya tha my dad was so shocked and thanks",
+        "images": [
+          "https://m.media-amazon.com/images/I/71J1cRZ1G3L._SL1500_.jpg"
+        ],
+        "helpful_count": 56
+      }
+    ],
+    "related_ids": [8]
   },
   {
     "id": 5,
@@ -248,7 +328,19 @@
         "discount_price": 1399,
         "discount_percent": 53
       }
-    ]
+    ],
+    "reviews": [
+      {
+        "id": "r5-1",
+        "author": "Amit Patel",
+        "rating": 4,
+        "date": "02 Dec 2025",
+        "text": "Great battery life and value for money. Fit is comfortable.",
+        "images": [],
+        "helpful_count": 9
+      }
+    ],
+    "related_ids": [1, 3]
   },
   {
     "id": 6,
@@ -296,7 +388,19 @@
         "discount_price": 999,
         "discount_percent": 33
       }
-    ]
+    ],
+    "reviews": [
+      {
+        "id": "r6-1",
+        "author": "Rahul Singh",
+        "rating": 4,
+        "date": "18 Nov 2025",
+        "text": "Comfortable fabric and fits true to size. Good for workouts.",
+        "images": [],
+        "helpful_count": 11
+      }
+    ],
+    "related_ids": []
   },
   {
     "id": 7,
@@ -335,7 +439,19 @@
         "discount_price": 64990,
         "discount_percent": 19
       }
-    ]
+    ],
+    "reviews": [
+      {
+        "id": "r7-1",
+        "author": "Karan Malhotra",
+        "rating": 5,
+        "date": "20 Nov 2025",
+        "text": "Runs modern games smoothly on medium-high settings. Thermals are decent.",
+        "images": [],
+        "helpful_count": 7
+      }
+    ],
+    "related_ids": []
   },
   {
     "id": 8,
@@ -385,7 +501,19 @@
         "discount_price": 1599,
         "discount_percent": 20
       }
-    ]
+    ],
+    "reviews": [
+      {
+        "id": "r8-1",
+        "author": "Deepa Nair",
+        "rating": 4,
+        "date": "12 Oct 2025",
+        "text": "Good casual sneaker for daily wear. Comfortable sole.",
+        "images": [],
+        "helpful_count": 5
+      }
+    ],
+    "related_ids": [4]
   },
   {
     "id": 9,
@@ -423,7 +551,19 @@
         "discount_price": 799,
         "discount_percent": 33
       }
-    ]
+    ],
+    "reviews": [
+      {
+        "id": "r9-1",
+        "author": "Suresh Iyer",
+        "rating": 4,
+        "date": "25 Nov 2025",
+        "text": "Simple, reliable mouse with long battery life. Comfortable grip.",
+        "images": [],
+        "helpful_count": 8
+      }
+    ],
+    "related_ids": []
   },
   {
     "id": 10,
@@ -469,6 +609,18 @@
         "discount_price": 3299,
         "discount_percent": 34
       }
-    ]
+    ],
+    "reviews": [
+      {
+        "id": "r10-1",
+        "author": "Anita Rao",
+        "rating": 5,
+        "date": "30 Nov 2025",
+        "text": "Excellent display and accurate heart-rate tracking. Great value.",
+        "images": ["https://m.media-amazon.com/images/I/71WkY54bR7L._SL1500_.jpg"],
+        "helpful_count": 19
+      }
+    ],
+    "related_ids": []
   }
 ]
