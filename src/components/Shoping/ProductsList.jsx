@@ -3,7 +3,35 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import products from "../../data/products.json";
 
-const formatPrice = (price) => `₹${price.toLocaleString()}`;
+/* ================= SAFE HELPERS (NO UI CHANGE) ================= */
+
+// safe price formatter (prevents toLocaleString crash)
+const formatPrice = (price) => {
+  const value = Number(price);
+  return `₹${isNaN(value) ? "0" : value.toLocaleString()}`;
+};
+
+// get lowest variant price OR product price
+const getDisplayPrice = (product) => {
+  if (Array.isArray(product.variants) && product.variants.length > 0) {
+    const prices = product.variants
+      .map((v) => v.price)
+      .filter((p) => typeof p === "number");
+    return prices.length > 0 ? Math.min(...prices) : 0;
+  }
+  return product.discount_price ?? product.price ?? 0;
+};
+
+// get highest MRP for strike-through
+const getDisplayMRP = (product) => {
+  if (Array.isArray(product.variants) && product.variants.length > 0) {
+    const mrps = product.variants
+      .map((v) => v.mrp)
+      .filter((m) => typeof m === "number");
+    return mrps.length > 0 ? Math.max(...mrps) : null;
+  }
+  return product.price ?? null;
+};
 
 // Total quantity from variants OR main stock
 const getTotalStock = (product) => {
@@ -19,11 +47,20 @@ const getTotalStock = (product) => {
 // Delivery label
 const getDeliveryLabel = (product) => {
   const charge = product.delivery_charge;
-
   if (charge === 0) return "Free Delivery";
   if (typeof charge === "number") return `Delivery ₹${charge}`;
   return "Delivery at checkout";
 };
+
+// Check if available in variants / stock
+const isInStock = (product) => {
+  if (product.variants?.length > 0) {
+    return product.variants.some((v) => (v.stock ?? 0) > 0);
+  }
+  return (product.stock ?? 0) > 0;
+};
+
+/* =============================================================== */
 
 export default function ProductsList() {
   const [wishlisted, setWishlisted] = useState({});
@@ -33,14 +70,6 @@ export default function ProductsList() {
       ...prev,
       [id]: !prev[id],
     }));
-  };
-
-  // Check if available in variants / stock
-  const isInStock = (product) => {
-    if (product.variants?.length > 0) {
-      return product.variants.some((v) => (v.stock ?? 0) > 0);
-    }
-    return (product.stock ?? 0) > 0;
   };
 
   return (
@@ -53,11 +82,13 @@ export default function ProductsList() {
           const ratingValue =
             product.rating?.stars ??
             product.rating?.value ??
-            product.rating ??
-            4.5;
+            (typeof product.rating === "number" ? product.rating : 4.5);
 
           const totalStock = getTotalStock(product);
           const deliveryLabel = getDeliveryLabel(product);
+
+          const salePrice = getDisplayPrice(product);
+          const mrp = getDisplayMRP(product);
 
           return (
             <Link
@@ -114,23 +145,25 @@ export default function ProductsList() {
               </h3>
 
               {/* CATEGORY */}
-              <p className="text-xs text-gray-500 mt-1">{product.category}</p>
+              <p className="text-xs text-gray-500 mt-1">
+                {product.category}
+              </p>
 
               {/* PRICE + RATING */}
               <div className="mt-2 flex items-center justify-between">
                 <div>
-                  {product.discount_price < product.price ? (
+                  {mrp && mrp > salePrice ? (
                     <div className="flex items-center gap-2">
                       <span className="text-base font-bold text-red-600">
-                        {formatPrice(product.discount_price)}
+                        {formatPrice(salePrice)}
                       </span>
                       <span className="text-xs line-through text-gray-400">
-                        {formatPrice(product.price)}
+                        {formatPrice(mrp)}
                       </span>
                     </div>
                   ) : (
                     <span className="text-base font-bold text-red-600">
-                      {formatPrice(product.price)}
+                      {formatPrice(salePrice)}
                     </span>
                   )}
                 </div>

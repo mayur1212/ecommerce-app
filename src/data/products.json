@@ -6,6 +6,7 @@
     "brand_id": 201,
     "category": "Electronics",
     "sku_id": "SONY-WHXM5-01",
+    "attributes": { "color": true },
     "thumbnail": "https://m.media-amazon.com/images/I/61NGnpjoRDL._SL1500_.jpg",
     "images": [
       "https://m.media-amazon.com/images/I/61NGnpjoRDL._SL1500_.jpg",
@@ -66,6 +67,7 @@
     ],
     "related_ids": [3, 5]
   },
+
   {
     "id": 2,
     "name": "Apple iPhone 14",
@@ -73,6 +75,7 @@
     "brand_id": 101,
     "category": "Mobiles",
     "sku_id": "APL-IP14-128",
+    "attributes": { "color": true, "storage": true },
     "thumbnail": "https://m.media-amazon.com/images/I/61bK6PMOC3L._SL1500_.jpg",
     "images": [
       "https://m.media-amazon.com/images/I/61bK6PMOC3L._SL1500_.jpg",
@@ -135,6 +138,7 @@
     ],
     "related_ids": []
   },
+
   {
     "id": 3,
     "name": "Samsung 50-inch Smart TV",
@@ -142,6 +146,7 @@
     "brand_id": 301,
     "category": "Electronics",
     "sku_id": "SMSG-TV50UHD",
+    "attributes": { "size": true },
     "thumbnail": "https://m.media-amazon.com/images/I/81pA7nOymhL._SL1500_.jpg",
     "images": [
       "https://m.media-amazon.com/images/I/81pA7nOymhL._SL1500_.jpg",
@@ -201,6 +206,7 @@
     ],
     "related_ids": [1, 5]
   },
+
   {
     "id": 4,
     "name": "Nike Air Max Running Shoes",
@@ -208,6 +214,7 @@
     "brand_id": 401,
     "category": "Shoes",
     "sku_id": "NK-AMX-04",
+    "attributes": { "size": true, "color": true },
     "thumbnail": "https://m.media-amazon.com/images/I/71J1cRZ1G3L._SL1500_.jpg",
     "images": [
       "https://m.media-amazon.com/images/I/71J1cRZ1G3L._SL1500_.jpg",
@@ -284,6 +291,7 @@
     ],
     "related_ids": [8]
   },
+
   {
     "id": 5,
     "name": "Boat Airdopes 141",
@@ -291,6 +299,7 @@
     "brand_id": 501,
     "category": "Electronics",
     "sku_id": "BOAT-AD141",
+    "attributes": { "color": true },
     "thumbnail": "https://m.media-amazon.com/images/I/51HBom8xz7L._SL1500_.jpg",
     "images": [
       "https://m.media-amazon.com/images/I/51HBom8xz7L._SL1500_.jpg",
@@ -342,6 +351,7 @@
     ],
     "related_ids": [1, 3]
   },
+
   {
     "id": 6,
     "name": "Puma Men's Sports T-Shirt",
@@ -349,6 +359,7 @@
     "brand_id": 601,
     "category": "Clothing",
     "sku_id": "PUMA-TSHIRT-06",
+    "attributes": { "size": true, "color": true },
     "thumbnail": "https://m.media-amazon.com/images/I/81MZtX6JGUL._SL1500_.jpg",
     "images": [
       "https://m.media-amazon.com/images/I/81MZtX6JGUL._SL1500_.jpg",
@@ -402,6 +413,7 @@
     ],
     "related_ids": []
   },
+
   {
     "id": 7,
     "name": "HP Victus Gaming Laptop",
@@ -409,6 +421,7 @@
     "brand_id": 701,
     "category": "Laptops",
     "sku_id": "HP-VICTUS-7",
+    "attributes": { "ram": true, "ssd": true },
     "thumbnail": "https://m.media-amazon.com/images/I/71KCwNV6MuL._SL1500_.jpg",
     "images": [
       "https://m.media-amazon.com/images/I/71KCwNV6MuL._SL1500_.jpg",
@@ -453,6 +466,7 @@
     ],
     "related_ids": []
   },
+
   {
     "id": 8,
     "name": "Roadster Casual Sneakers",
@@ -460,6 +474,7 @@
     "brand_id": 115,
     "category": "Shoes",
     "sku_id": "RD-SNK-15",
+    "attributes": { "size": true, "color": true, "weight": true },
     "thumbnail": "https://i.pinimg.com/736x/b4/68/72/b46872cfa2edd2ac55916ddb3b8897e3.jpg",
     "images": [
       "https://i.pinimg.com/736x/b4/68/72/b46872cfa2edd2ac55916ddb3b8897e3.jpg",
@@ -515,6 +530,7 @@
     ],
     "related_ids": [4]
   },
+
   {
     "id": 9,
     "name": "Lenovo Wireless Mouse",
@@ -522,6 +538,7 @@
     "brand_id": 801,
     "category": "Accessories",
     "sku_id": "LEN-MSE-09",
+    "attributes": { "color": true },
     "thumbnail": "https://m.media-amazon.com/images/I/51NqZm9NwCL._SL1500_.jpg",
     "images": [
       "https://m.media-amazon.com/images/I/51NqZm9NwCL._SL1500_.jpg",
@@ -565,6 +582,7 @@
     ],
     "related_ids": []
   },
+
   {
     "id": 10,
     "name": "Noise ColorFit Smartwatch",
@@ -572,6 +590,7 @@
     "brand_id": 901,
     "category": "Wearables",
     "sku_id": "NOISE-WATCH-10",
+    "attributes": { "color": true },
     "thumbnail": "https://m.media-amazon.com/images/I/71WkY54bR7L._SL1500_.jpg",
     "images": [
       "https://m.media-amazon.com/images/I/71WkY54bR7L._SL1500_.jpg",

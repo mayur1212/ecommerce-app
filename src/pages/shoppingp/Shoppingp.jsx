@@ -1,6 +1,12 @@
-// src/pages/shopping/Shopping.jsx
 import React from "react";
 import ProductsList from "../../components/Shoping/ProductsList";
+import TrendingProducts from "../../components/Shoping/TrendingProducts";
+
+
+
+import HeroOfferBanner from "../../components/Shoping/HeroOfferBanner";
+
+
 
 export default function Shopping() {
   return (
@@ -10,6 +16,13 @@ export default function Shopping() {
         Explore trending products across beauty, electronics, fashion, home & fitness.
       </p>
 
+      
+<HeroOfferBanner />
+
+      {/* 🔥 TRENDING SECTION */}
+      <TrendingProducts />
+
+      {/* 🛍 ALL PRODUCTS */}
       <ProductsList />
     </div>
   );

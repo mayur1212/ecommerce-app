@@ -240,12 +240,14 @@ export default function ProductsDetails() {
   // variant selection
   const [selectedColor, setSelectedColor] = useState(variants[0]?.color || null);
   const [selectedSize, setSelectedSize] = useState(variants[0]?.size || null);
+  const [selectedWeight, setSelectedWeight] = useState(variants[0]?.weight || null); // <-- weight state added
 
   const selectedVariant =
     variants.find(
       (v) =>
         (!selectedColor || v.color === selectedColor) &&
-        (!selectedSize || v.size === selectedSize)
+        (!selectedSize || v.size === selectedSize) &&
+        (!selectedWeight || v.weight === selectedWeight) // <-- weight condition added
     ) || variants[0] || {};
 
   // image
@@ -306,6 +308,7 @@ export default function ProductsDetails() {
 
   const uniqueColors = [...new Set(variants.map((v) => v.color).filter(Boolean))];
   const uniqueSizes = [...new Set(variants.map((v) => v.size).filter(Boolean))];
+  const uniqueWeights = [...new Set(variants.map((v) => v.weight).filter(Boolean))]; // <-- unique weights
 
   const [activeTab, setActiveTab] = useState("description");
   const tags = product.tags || [];
@@ -415,6 +418,44 @@ export default function ProductsDetails() {
                       setSelectedColor(variants[0]?.color || null);
                       setSelectedSize(variants[0]?.size || null);
                     }}
+                    className="ml-3 text-xs underline text-gray-500"
+                  >
+                    CLEAR
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* WEIGHT SELECTOR - NEW ADDITION */}
+            {uniqueWeights.length > 0 && (
+              <div>
+                <p className="font-semibold mb-2 text-xs uppercase tracking-wide">Weight</p>
+                <div className="flex flex-wrap gap-3 items-center">
+                  {uniqueWeights.map((weight) => {
+                    const isSelected = selectedWeight === weight;
+                    const available = variants.some(
+                      (v) =>
+                        v.weight === weight &&
+                        (!selectedColor || v.color === selectedColor) &&
+                        (!selectedSize || v.size === selectedSize)
+                    );
+
+                    return (
+                      <button
+                        key={weight}
+                        disabled={!available}
+                        onClick={() => available && setSelectedWeight(weight)}
+                        className={`px-4 py-2 rounded-full flex items-center justify-center border text-sm
+                          ${isSelected ? "bg-black text-white" : "bg-white text-gray-700 border-gray-300"}
+                          ${!available ? "opacity-40 cursor-not-allowed" : ""}`}
+                      >
+                        {weight}
+                      </button>
+                    );
+                  })}
+
+                  <button
+                    onClick={() => setSelectedWeight(null)}
                     className="ml-3 text-xs underline text-gray-500"
                   >
                     CLEAR
