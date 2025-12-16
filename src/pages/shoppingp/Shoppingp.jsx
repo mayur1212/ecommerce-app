@@ -1,9 +1,11 @@
 import React from "react";
-import ShoppingBanner from "../../components/Shoping/shoppingbanner";
 
+
+import ShoppingBanner from "../../components/Shoping/shoppingbanner";
 import ProductsList from "../../components/Shoping/ProductsList";
 import TrendingProducts from "../../components/Shoping/TrendingProducts";
 import HeroOfferBanner from "../../components/Shoping/HeroOfferBanner";
+
 
 export default function Shoppingp() {
   return (
