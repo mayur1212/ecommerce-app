@@ -1,8 +1,14 @@
+
 import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import products from "../../data/products.json";
 import RelatedProducts from "./RelatedProducts";
 import ReviewsDrawer from "./ReviewsDrawer"; // <-- corrected
+import { useNavigate } from "react-router-dom";
+import { useCart } from "../../context/CartContext";
+
+
+
 
 
 const formatPrice = (price) => `₹${price?.toLocaleString() || "0"}`;
@@ -230,6 +236,41 @@ function SellerSection({ ratingValue, ratingCount, sellerName, sellerStats, onVi
 }
 
 export default function ProductsDetails() {
+
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
+
+  const handleAddToCart = () => {
+    const cartItem = {
+      productId: product.id,
+      name: product.name,
+      price: salePrice,
+      qty: quantity,
+      image: selectedImage,
+      variant: selectedVariant,
+    };
+
+    addToCart(cartItem);
+  };
+
+  const handleBuyNow = () => {
+    const cartItem = {
+      productId: product.id,
+      name: product.name,
+      price: salePrice,
+      qty: quantity,
+      image: selectedImage,
+      variant: selectedVariant,
+    };
+
+    addToCart(cartItem);
+    navigate("/checkout");
+  };
+
+
+
+
+
   const { id } = useParams();
   const product = products.find((p) => String(p.id) === id);
 
@@ -240,14 +281,12 @@ export default function ProductsDetails() {
   // variant selection
   const [selectedColor, setSelectedColor] = useState(variants[0]?.color || null);
   const [selectedSize, setSelectedSize] = useState(variants[0]?.size || null);
-  const [selectedWeight, setSelectedWeight] = useState(variants[0]?.weight || null); // <-- weight state added
 
   const selectedVariant =
     variants.find(
       (v) =>
         (!selectedColor || v.color === selectedColor) &&
-        (!selectedSize || v.size === selectedSize) &&
-        (!selectedWeight || v.weight === selectedWeight) // <-- weight condition added
+        (!selectedSize || v.size === selectedSize)
     ) || variants[0] || {};
 
   // image
@@ -308,7 +347,6 @@ export default function ProductsDetails() {
 
   const uniqueColors = [...new Set(variants.map((v) => v.color).filter(Boolean))];
   const uniqueSizes = [...new Set(variants.map((v) => v.size).filter(Boolean))];
-  const uniqueWeights = [...new Set(variants.map((v) => v.weight).filter(Boolean))]; // <-- unique weights
 
   const [activeTab, setActiveTab] = useState("description");
   const tags = product.tags || [];
@@ -425,44 +463,6 @@ export default function ProductsDetails() {
                 </div>
               </div>
             )}
-
-            {/* WEIGHT SELECTOR - NEW ADDITION */}
-            {uniqueWeights.length > 0 && (
-              <div>
-                <p className="font-semibold mb-2 text-xs uppercase tracking-wide">Weight</p>
-                <div className="flex flex-wrap gap-3 items-center">
-                  {uniqueWeights.map((weight) => {
-                    const isSelected = selectedWeight === weight;
-                    const available = variants.some(
-                      (v) =>
-                        v.weight === weight &&
-                        (!selectedColor || v.color === selectedColor) &&
-                        (!selectedSize || v.size === selectedSize)
-                    );
-
-                    return (
-                      <button
-                        key={weight}
-                        disabled={!available}
-                        onClick={() => available && setSelectedWeight(weight)}
-                        className={`px-4 py-2 rounded-full flex items-center justify-center border text-sm
-                          ${isSelected ? "bg-black text-white" : "bg-white text-gray-700 border-gray-300"}
-                          ${!available ? "opacity-40 cursor-not-allowed" : ""}`}
-                      >
-                        {weight}
-                      </button>
-                    );
-                  })}
-
-                  <button
-                    onClick={() => setSelectedWeight(null)}
-                    className="ml-3 text-xs underline text-gray-500"
-                  >
-                    CLEAR
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
@@ -553,13 +553,23 @@ export default function ProductsDetails() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="flex-1 bg-amber-500 text-white py-3 rounded-2xl font-semibold hover:bg-amber-600 disabled:opacity-60" disabled={!inStock}>
-                Add to Cart
-              </button>
+              <button
+  onClick={handleAddToCart}
+  className="flex-1 bg-amber-500 text-white py-3 rounded-2xl font-semibold hover:bg-amber-600 disabled:opacity-60"
+  disabled={!inStock}
+>
+  Add to Cart
+</button>
 
-              <button className="flex-1 bg-orange-500 text-white py-3 rounded-2xl font-semibold hover:bg-orange-600 disabled:opacity-60" disabled={!inStock}>
-                Buy Now
-              </button>
+
+              <button
+  onClick={handleBuyNow}
+  className="flex-1 bg-orange-500 text-white py-3 rounded-2xl font-semibold hover:bg-orange-600 disabled:opacity-60"
+  disabled={!inStock}
+>
+  Buy Now
+</button>
+
             </div>
           </div>
         </div>

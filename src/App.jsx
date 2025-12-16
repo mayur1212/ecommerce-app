@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Routes, Route, useNavigate, Outlet } from "react-router-dom";
 
+/* ================= COMPONENTS ================= */
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import BottomBar from "./components/BottomBar";
@@ -10,33 +11,46 @@ import LocationPopup from "./components/LocationPopup";
 import SearchBar from "./components/SearchBar";
 import { MapPin } from "lucide-react";
 
-// Pages
+/* ================= PAGES ================= */
 import Home from "./pages/Home";
 import Blog from "./pages/blog/Blog";
 import BlogDetails from "./components/Blog/Blogdetails";
+
 import Shopping from "./pages/shoppingp/Shoppingp";
 import ProductsDetails from "./components/Shoping/ProductsDetailsp";
-import SellerPage from "./pages/shoppingp/SellerPage"; // ✅ NEW
+import SellerPage from "./pages/shoppingp/SellerPage";
 
-// Store
 import Storep from "./pages/Storep/Storep";
 import Storedetails from "./components/Store/Storedetails";
 
-// ✅ Market
 import Marketp from "./pages/marketp/marketp";
 import MarketProductsdetails from "./components/market/Productsdetails";
 
-// Simple placeholder Services page
+/* ====== E-COMMERCE FLOW PAGES (NEW) ====== */
+import CartPage from "./pages/CartP/CartPage";
+import CheckoutPage from "./pages/CheckoutP/CheckoutPage";
+import OrderSuccess from "./pages/OrderSuccess/OrderSuccess";
+
+
+import MyOrders from "./pages/MyOrders/MyOrders";
+
+/* ================= CONTEXT ================= */
+import { CartProvider } from "./context/CartContext";
+import { OrderProvider } from "./context/OrderContext";
+
+/* ================= SERVICES PAGE ================= */
 function ServicesPage() {
   return (
     <div className="p-4">
       <h1 className="text-xl font-semibold mb-2">Services</h1>
-      <p className="text-gray-600 text-sm">Services page content goes here.</p>
+      <p className="text-gray-600 text-sm">
+        Services page content goes here.
+      </p>
     </div>
   );
 }
 
-// ================= MAIN LAYOUT =================
+/* ================= MAIN LAYOUT ================= */
 function MainAppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userLocation, setUserLocation] = useState("");
@@ -73,7 +87,7 @@ function MainAppLayout() {
     <main className="min-h-screen flex flex-col bg-gray-50">
       <Header mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
 
-      {/* Mobile Nav Tabs */}
+      {/* ========== MOBILE NAV TABS ========== */}
       <div className="md:hidden w-full bg-white px-4 pb-4 pt-2">
         <div className="flex justify-between items-center text-sm font-semibold text-gray-700">
           {navKeys.map((key) => (
@@ -98,32 +112,16 @@ function MainAppLayout() {
         </button>
       </div>
 
-      {/* Mobile Search */}
+      {/* ========== MOBILE SEARCH ========== */}
       <div className="md:hidden w-full sticky top-0 z-40 bg-white px-4">
         <div className="flex items-center gap-3">
           <div className="flex-1">
             <SearchBar />
           </div>
-          <button className="p-3 rounded-xl border border-gray-300 bg-white shadow-sm active:scale-95 transition">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="gray"
-              className="w-5 h-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 4h18M6 12h12M10 20h4"
-              />
-            </svg>
-          </button>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* ========== MOBILE DRAWER ========== */}
       {mobileOpen && (
         <div className="md:hidden w-full bg-white border-b border-gray-200 shadow-sm">
           <nav className="flex flex-col py-2">
@@ -131,7 +129,7 @@ function MainAppLayout() {
               <button
                 key={key}
                 onClick={() => handleNavClick(key)}
-                className="px-4 py-2 text-left text-sm text-gray-800 hover:bg-gray-100 active:bg-gray-200"
+                className="px-4 py-2 text-left text-sm text-gray-800 hover:bg-gray-100"
               >
                 {key.charAt(0).toUpperCase() + key.slice(1)}
               </button>
@@ -140,7 +138,7 @@ function MainAppLayout() {
         </div>
       )}
 
-      {/* Desktop Layout */}
+      {/* ========== DESKTOP LAYOUT ========== */}
       <div className="flex w-full">
         <aside className="hidden md:block w-64 sticky top-16 h-[calc(100vh-4rem)] bg-white shadow-lg p-4 border-r">
           <Sidebar />
@@ -149,23 +147,6 @@ function MainAppLayout() {
         <div className="flex-1 min-w-0">
           <div className="hidden lg:flex items-center w-full bg-gray-100 px-4 py-2 border border-gray-200 gap-4">
             <SearchBar />
-            <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-100 shadow-sm">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="gray"
-                className="w-5 h-5"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 4h18M6 12h12M10 20h4"
-                />
-              </svg>
-              <span className="font-medium text-gray-700">Filter</span>
-            </button>
           </div>
 
           <div className="px-4 pb-10">
@@ -187,35 +168,38 @@ function MainAppLayout() {
   );
 }
 
-// ================= MAIN APP =================
+/* ================= MAIN APP ================= */
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<MainAppLayout />}>
-        <Route index element={<Home />} />
+    <CartProvider>
+      <OrderProvider>
+        <Routes>
+          <Route path="/" element={<MainAppLayout />}>
+            <Route index element={<Home />} />
 
-        {/* Shopping */}
-        <Route path="shopping" element={<Shopping />} />
-        <Route path="shopping/:id" element={<ProductsDetails />} />
+            <Route path="shopping" element={<Shopping />} />
+            <Route path="shopping/:id" element={<ProductsDetails />} />
+            <Route path="seller/:sellerSlug" element={<SellerPage />} />
 
-        {/* Seller (View Shop) ✅ */}
-        <Route path="seller/:sellerSlug" element={<SellerPage />} />
+            {/* ✅ ECOM FLOW */}
+            <Route path="cart" element={<CartPage />} />
+            <Route path="checkout" element={<CheckoutPage />} />
+            <Route path="order-success/:id" element={<OrderSuccess />} />
+            <Route path="my-orders" element={<MyOrders />} />
 
-        {/* Store */}
-        <Route path="store" element={<Storep />} />
-        <Route path="store/:id" element={<Storedetails />} />
+            <Route path="store" element={<Storep />} />
+            <Route path="store/:id" element={<Storedetails />} />
 
-        {/* ✅ Market */}
-        <Route path="market" element={<Marketp />} />
-        <Route path="market/:id" element={<MarketProductsdetails />} />
+            <Route path="market" element={<Marketp />} />
+            <Route path="market/:id" element={<MarketProductsdetails />} />
 
-        {/* Services */}
-        <Route path="services" element={<ServicesPage />} />
+            <Route path="services" element={<ServicesPage />} />
 
-        {/* Blog */}
-        <Route path="blog" element={<Blog />} />
-        <Route path="blog/:slug" element={<BlogDetails />} />
-      </Route>
-    </Routes>
+            <Route path="blog" element={<Blog />} />
+            <Route path="blog/:slug" element={<BlogDetails />} />
+          </Route>
+        </Routes>
+      </OrderProvider>
+    </CartProvider>
   );
 }

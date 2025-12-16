@@ -17,9 +17,9 @@ export default function Header({ mobileOpen, setMobileOpen }) {
   const [location, setLocation] = useState("Select Location");
   const [openPopup, setOpenPopup] = useState(false);
 
-  const navigate = useNavigate(); // router navigation
+  const navigate = useNavigate();
 
-  // ✅ sirf route change + mobile close, NO sidebar activePage logic
+  // ✅ only route navigation
   const handleNavClick = (key) => {
     if (typeof setMobileOpen === "function") setMobileOpen(false);
 
@@ -34,7 +34,7 @@ export default function Header({ mobileOpen, setMobileOpen }) {
         navigate("/services");
         break;
       case "grocery":
-        navigate("/Store"); // tu आधी Store वापरत होतास, तोच ठेवला
+        navigate("/store");
         break;
       case "news":
         navigate("/blog");
@@ -58,8 +58,7 @@ export default function Header({ mobileOpen, setMobileOpen }) {
 
           {/* ================= MOBILE HEADER ================= */}
           <div className="flex md:hidden w-full items-center justify-between h-14 px-2">
-
-            {/* CLICK = REDIRECT "/" */}
+            {/* LOGO */}
             <div
               className="flex items-center gap-1 cursor-pointer"
               onClick={() => navigate("/")}
@@ -68,11 +67,18 @@ export default function Header({ mobileOpen, setMobileOpen }) {
               <h1 className="text-base font-bold text-red-600">ShopNow</h1>
             </div>
 
+            {/* ICONS */}
             <div className="flex items-center gap-3">
               <User size={18} className="cursor-pointer" />
               <CalendarCheck size={18} className="cursor-pointer" />
               <Heart size={18} className="cursor-pointer" />
-              <ShoppingBag size={18} className="cursor-pointer" />
+
+              {/* ✅ CART */}
+              <ShoppingBag
+                size={18}
+                className="cursor-pointer"
+                onClick={() => navigate("/cart")}
+              />
 
               <button onClick={() => setMobileOpen((s) => !s)}>
                 {mobileOpen ? <X size={20} /> : <Menu size={20} />}
@@ -82,8 +88,7 @@ export default function Header({ mobileOpen, setMobileOpen }) {
 
           {/* ================= DESKTOP HEADER ================= */}
           <div className="hidden md:flex w-full items-center justify-between">
-
-            {/* CLICK = REDIRECT "/" */}
+            {/* LOGO */}
             <div
               className="flex items-center gap-2 cursor-pointer"
               onClick={() => navigate("/")}
@@ -96,84 +101,52 @@ export default function Header({ mobileOpen, setMobileOpen }) {
 
             {/* CENTER MENU */}
             <nav className="hidden lg:flex gap-8 text-[15px] font-semibold text-gray-800">
-              <button
-                onClick={() => handleNavClick("shopping")}
-                className="relative group transition text-gray-700 hover:text-red-600"
-              >
-                Shopping
-                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-red-600 transition-all duration-300 group-hover:w-full"></span>
-              </button>
-
-              <button
-                onClick={() => handleNavClick("market")}
-                className="relative group transition text-gray-700 hover:text-red-600"
-              >
-                Market
-                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-red-600 transition-all duration-300 group-hover:w-full"></span>
-              </button>
-
-              <button
-                onClick={() => handleNavClick("services")}
-                className="relative group transition text-gray-700 hover:text-red-600"
-              >
-                Services
-                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-red-600 transition-all duration-300 group-hover:w-full"></span>
-              </button>
-
-              <button
-                onClick={() => handleNavClick("grocery")}
-                className="relative group transition text-gray-700 hover:text-red-600"
-              >
-                Store
-                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-red-600 transition-all duration-300 group-hover:w-full"></span>
-              </button>
-
-              <button
-                onClick={() => handleNavClick("news")}
-                className="relative group transition text-gray-700 hover:text-red-600"
-              >
-                News
-                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-red-600 transition-all duration-300 group-hover:w-full"></span>
-              </button>
+              <button onClick={() => handleNavClick("shopping")}>Shopping</button>
+              <button onClick={() => handleNavClick("market")}>Market</button>
+              <button onClick={() => handleNavClick("services")}>Services</button>
+              <button onClick={() => handleNavClick("grocery")}>Store</button>
+              <button onClick={() => handleNavClick("news")}>News</button>
             </nav>
 
             {/* RIGHT ICONS */}
             <div className="hidden md:flex items-center gap-10 ml-6">
-
+              {/* LOCATION */}
               <div
                 onClick={() => setOpenPopup(true)}
-                className="hidden lg:flex items-center gap-2 text-sm font-semibold cursor-pointer hover:text-red-600 transition"
+                className="hidden lg:flex items-center gap-2 text-sm font-semibold cursor-pointer hover:text-red-600"
               >
                 <MapPin size={18} className="text-red-600" />
-                <span className="font-medium">{location}</span>
+                <span>{location}</span>
               </div>
 
               <div className="flex items-center gap-8 text-gray-700">
-
-                <div className="flex flex-col items-center text-[11px] font-medium hover:text-red-600 transition cursor-pointer">
+                <div className="flex flex-col items-center text-[11px] cursor-pointer">
                   <User size={22} />
                   <span>Profile</span>
                 </div>
 
-                <div className="flex flex-col items-center text-[11px] font-medium hover:text-red-600 transition cursor-pointer">
+                <div className="flex flex-col items-center text-[11px] cursor-pointer">
                   <CalendarCheck size={22} />
                   <span>Booking</span>
                 </div>
 
-                <div className="flex flex-col items-center text-[11px] font-medium hover:text-red-600 transition cursor-pointer">
+                <div className="flex flex-col items-center text-[11px] cursor-pointer">
                   <Heart size={22} />
                   <span>Wishlist</span>
                 </div>
 
-                <div className="flex flex-col items-center text-[11px] font-medium hover:text-red-600 transition cursor-pointer">
+                {/* ✅ CART */}
+                <div
+                  className="flex flex-col items-center text-[11px] cursor-pointer"
+                  onClick={() => navigate("/cart")}
+                >
                   <ShoppingBag size={22} />
-                  <span>Bag</span>
+                  <span>Cart</span>
                 </div>
-
               </div>
             </div>
-
           </div>
+
         </div>
       </header>
     </>
