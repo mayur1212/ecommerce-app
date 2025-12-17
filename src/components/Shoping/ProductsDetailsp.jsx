@@ -1,5 +1,7 @@
 
 import React, { useState } from "react";
+import toast from "react-hot-toast";
+
 import { useParams, Link } from "react-router-dom";
 import products from "../../data/products.json";
 import RelatedProducts from "./RelatedProducts";
@@ -241,17 +243,24 @@ export default function ProductsDetails() {
   const { addToCart } = useCart();
 
   const handleAddToCart = () => {
-    const cartItem = {
-      productId: product.id,
-      name: product.name,
-      price: salePrice,
-      qty: quantity,
-      image: selectedImage,
-      variant: selectedVariant,
-    };
-
-    addToCart(cartItem);
+  const cartItem = {
+    productId: product.id,
+    name: product.name,
+    price: salePrice,
+    qty: quantity,
+    image: selectedImage,
+    variant: selectedVariant,
   };
+
+  addToCart(cartItem);
+
+  // 🔥 Professional toast (Flipkart style)
+  toast.success("Added to cart", {
+    icon: "🛒",
+    duration: 2000,
+  });
+};
+
 
   const handleBuyNow = () => {
     const cartItem = {

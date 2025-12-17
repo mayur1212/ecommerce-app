@@ -1,77 +1,151 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { Package, ArrowRight } from "lucide-react";
 import { useOrders } from "../../context/OrderContext";
 
+const formatPrice = (p) => `₹${p}`;
+
 export default function MyOrders() {
-  const { orders } = useOrders();
+  const { orders, removeOrder } = useOrders();
+  const [activeTab, setActiveTab] = React.useState("All");
+
+  const filteredOrders = React.useMemo(() => {
+    if (activeTab === "All") return orders;
+    return orders.filter(
+      (o) => o.status.toLowerCase() === activeTab.toLowerCase()
+    );
+  }, [orders, activeTab]);
 
   if (!orders || orders.length === 0) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-12 text-center">
-        <Package size={60} className="mx-auto text-gray-400" />
-        <h2 className="text-xl font-semibold text-gray-800 mt-4">
-          No orders yet
-        </h2>
-        <p className="text-gray-600 mt-2">
-          You haven’t placed any orders yet.
+      <div className="w-full max-w-[90%] mx-auto py-16 text-center">
+        <h2 className="text-xl font-semibold">No orders yet</h2>
+        <p className="text-sm text-gray-500 mt-2">
+          When you place an order, it will appear here
         </p>
-
-        <Link
-          to="/shopping"
-          className="inline-block mt-6 px-6 py-3 bg-orange-500 text-white rounded-xl font-semibold hover:bg-orange-600 transition"
-        >
-          Start Shopping
-        </Link>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">My Orders</h1>
+    <div className="w-full max-w-[90%] mx-auto px-3 py-6">
+      {/* HEADER */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">My Orders</h1>
+        <p className="text-sm text-gray-500 mt-1">
+          Track, review and manage your purchases
+        </p>
+      </div>
 
-      <div className="space-y-4">
-        {orders.map((order) => (
-          <div
-            key={order.id}
-            className="bg-white border rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-          >
-            {/* LEFT */}
-            <div className="space-y-1 text-sm">
-              <p>
-                <span className="font-semibold">Order ID:</span>{" "}
-                <span className="text-blue-600">{order.id}</span>
-              </p>
+      {/* TABS */}
+      <div className="flex justify-center mb-8">
+  <div className="flex bg-gray-900 rounded-xl p-1 text-white text-sm w-full max-w-[90%]">
+    {["All", "Ongoing", "Completed"].map((tab) => (
+      <button
+        key={tab}
+        onClick={() => setActiveTab(tab)}
+        className={`flex-1 py-2 rounded-lg font-medium transition ${
+          activeTab === tab
+            ? "bg-yellow-400 text-black"
+            : "opacity-70 hover:opacity-100"
+        }`}
+      >
+        {tab}
+      </button>
+    ))}
+  </div>
+</div>
 
-              <p>
-                <span className="font-semibold">Placed on:</span>{" "}
-                {order.date}
-              </p>
 
-              <p>
-                <span className="font-semibold">Status:</span>{" "}
-                <span className="text-green-600">{order.status}</span>
-              </p>
+      {/* ORDER GRID */}
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {filteredOrders.map((order) => {
+          const discount = Math.round(
+            ((order.mrp - order.price) / order.mrp) * 100
+          );
 
-              <p>
-                <span className="font-semibold">Total:</span>{" "}
-                ₹{order.total}
-              </p>
+          const isCompleted = order.status === "completed";
+
+          return (
+            <div
+              key={order.id}
+              className="bg-white rounded-3xl border shadow-sm hover:shadow-md transition overflow-hidden"
+            >
+              {/* IMAGE + STATUS */}
+              <div className="relative">
+                <img
+                  src={order.image}
+                  alt={order.title}
+                  className="w-full h-44 object-cover"
+                />
+
+                <span
+                  className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold ${
+                    isCompleted
+                      ? "bg-green-100 text-green-700"
+                      : "bg-orange-100 text-orange-700"
+                  }`}
+                >
+                  {isCompleted ? "Completed" : "Ongoing"}
+                </span>
+              </div>
+
+              {/* CONTENT */}
+              <div className="p-4">
+                <h3 className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2">
+                  {order.title}
+                </h3>
+
+                {/* RATING */}
+                <div className="flex items-center gap-2 text-xs mt-2">
+                  <span className="bg-green-600 text-white px-2 py-0.5 rounded">
+                    ★ {order.rating}
+                  </span>
+                  <span className="text-gray-500">
+                    {order.reviews} Reviews
+                  </span>
+                </div>
+
+                {/* PRICE */}
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-lg font-bold text-gray-900">
+                    {formatPrice(order.price)}
+                  </span>
+                  <span className="line-through text-gray-400 text-sm">
+                    {formatPrice(order.mrp)}
+                  </span>
+                  <span className="text-red-500 text-sm font-semibold">
+                    {discount}% OFF
+                  </span>
+                </div>
+
+                <p className="text-xs text-green-600 mt-1">
+                  ✔ 14 days return available
+                </p>
+
+                {/* ACTIONS */}
+                <div className="border-t mt-4 pt-4 flex gap-2">
+                  {!isCompleted && (
+                    <button className="flex-1 rounded-xl border py-2 text-sm font-medium text-orange-600 hover:bg-orange-50">
+                      Track
+                    </button>
+                  )}
+
+                  {isCompleted && (
+                    <button className="flex-1 rounded-xl border py-2 text-sm font-medium text-orange-600 hover:bg-orange-50">
+                      {order.rating ? "Edit Review" : "Write Review"}
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => removeOrder(order.id)}
+                    className="flex-1 rounded-xl border py-2 text-sm font-medium text-red-500 hover:bg-red-50"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
             </div>
-
-            {/* RIGHT */}
-            <div className="flex items-center gap-3">
-              <Link
-                to={`/order-success/${order.id}`}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold border rounded-xl hover:bg-gray-100 transition"
-              >
-                View Details
-                <ArrowRight size={16} />
-              </Link>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

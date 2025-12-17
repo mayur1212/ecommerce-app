@@ -2,26 +2,35 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 
-const formatPrice = (price) => `₹${price.toLocaleString()}`;
+const formatPrice = (price = 0) => `₹${price.toLocaleString()}`;
 
 export default function CartPage() {
   const navigate = useNavigate();
+
+  // ✅ SAFE CONTEXT
+  const cartContext = useCart() || {};
   const {
-    cartItems,
-    removeFromCart,
-    updateQty,
-    clearCart,
-  } = useCart();
+    cartItems = [],
+    savedItems = [],
+    updateQty = () => {},
+    removeFromCart = () => {},
+    saveForLater = () => {},
+    moveToCart = () => {},
+    clearCart = () => {},
+  } = cartContext;
 
   const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.qty,
+    (sum, item) => sum + (item.price || 0) * (item.qty || 1),
     0
   );
 
-  if (cartItems.length === 0) {
+  /* ================= EMPTY CART ================= */
+  if (!cartItems.length && !savedItems.length) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-10 text-center">
-        <h2 className="text-2xl font-bold mb-3">Your cart is empty 🛒</h2>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center">
+        <h2 className="text-2xl font-bold mb-3">
+          Your cart is empty 🛒
+        </h2>
         <Link
           to="/shopping"
           className="text-orange-600 font-semibold hover:underline"
@@ -33,103 +42,170 @@ export default function CartPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold mb-6">My Cart</h1>
+    <div className="min-h-screen bg-gray-50">
+      {/* MAIN CONTAINER */}
+      <div className="mx-auto w-full max-w-[95%] lg:max-w-[90%] px-4 py-8">
+        <h1 className="text-2xl font-bold mb-8">My Cart</h1>
 
-      {/* CART ITEMS */}
-      <div className="space-y-4">
-        {cartItems.map((item) => (
-          <div
-            key={`${item.productId}-${item.variant?.id || ""}`}
-            className="flex gap-4 border rounded-2xl p-4 bg-white"
-          >
-            <img
-              src={item.image}
-              alt={item.name}
-              className="w-24 h-24 object-cover rounded-xl"
-            />
+        {/* GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* LEFT – CART ITEMS */}
+          <div className="lg:col-span-2 space-y-6">
+            {cartItems.map((item) => (
+              <div
+                key={`${item.productId}-${item.variant?.id || ""}`}
+                className="bg-white rounded-2xl shadow-sm border p-5 flex gap-4"
+              >
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-28 h-28 object-cover rounded-xl"
+                />
 
-            <div className="flex-1">
-              <h3 className="font-semibold text-gray-900">{item.name}</h3>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900">
+                    {item.name}
+                  </h3>
 
-              {item.variant && (
-                <p className="text-xs text-gray-500 mt-1">
-                  {item.variant.color && `Color: ${item.variant.color}`}{" "}
-                  {item.variant.size && `• Size: ${item.variant.size}`}
-                </p>
-              )}
+                  {item.variant && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      {item.variant.color && `Color: ${item.variant.color}`}{" "}
+                      {item.variant.size && `• Size: ${item.variant.size}`}
+                    </p>
+                  )}
 
-              <p className="mt-2 font-bold text-red-600">
-                {formatPrice(item.price)}
-              </p>
+                  <p className="mt-2 font-bold text-red-600">
+                    {formatPrice(item.price)}
+                  </p>
 
-              {/* QTY CONTROLS */}
-              <div className="flex items-center gap-3 mt-3">
-                <button
-                  onClick={() =>
-                    updateQty(item.productId, item.qty - 1)
-                  }
-                  className="w-8 h-8 border rounded-full"
-                  disabled={item.qty <= 1}
-                >
-                  −
-                </button>
+                  {/* ACTIONS */}
+                  <div className="flex flex-wrap items-center gap-4 mt-4">
+                    {/* Quantity */}
+                    <div className="flex items-center border rounded-xl overflow-hidden">
+                      <button
+                        onClick={() =>
+                          updateQty(item.productId, item.qty - 1)
+                        }
+                        disabled={item.qty <= 1}
+                        className="px-3 py-1 text-lg disabled:opacity-40"
+                      >
+                        −
+                      </button>
 
-                <span className="font-semibold">{item.qty}</span>
+                      <span className="px-4 font-semibold">
+                        {item.qty}
+                      </span>
 
-                <button
-                  onClick={() =>
-                    updateQty(item.productId, item.qty + 1)
-                  }
-                  className="w-8 h-8 border rounded-full"
-                >
-                  +
-                </button>
+                      <button
+                        onClick={() =>
+                          updateQty(item.productId, item.qty + 1)
+                        }
+                        className="px-3 py-1 text-lg"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <button
+                      onClick={() => saveForLater(item.productId)}
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      Save for later
+                    </button>
+
+                    <button
+                      onClick={() => removeFromCart(item.productId)}
+                      className="text-sm text-red-500 hover:underline"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
 
-            {/* REMOVE */}
-            <button
-              onClick={() => removeFromCart(item.productId)}
-              className="text-sm text-red-500 hover:underline"
-            >
-              Remove
-            </button>
+            {/* SAVED FOR LATER */}
+            {savedItems.length > 0 && (
+              <div className="mt-10">
+                <h2 className="text-xl font-bold mb-4">
+                  Saved for later ({savedItems.length})
+                </h2>
+
+                <div className="space-y-4">
+                  {savedItems.map((item) => (
+                    <div
+                      key={item.productId}
+                      className="bg-white rounded-2xl border p-4 flex gap-4"
+                    >
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-20 h-20 rounded-xl object-cover"
+                      />
+
+                      <div className="flex-1">
+                        <h3 className="font-semibold">
+                          {item.name}
+                        </h3>
+
+                        <p className="mt-1 font-bold text-red-600">
+                          {formatPrice(item.price)}
+                        </p>
+
+                        <button
+                          onClick={() => moveToCart(item.productId)}
+                          className="mt-2 text-sm text-green-600 hover:underline"
+                        >
+                          Move to cart
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        ))}
-      </div>
 
-      {/* PRICE SUMMARY */}
-      <div className="mt-8 border rounded-2xl p-5 bg-gray-50">
-        <div className="flex justify-between text-sm mb-2">
-          <span>Subtotal</span>
-          <span>{formatPrice(subtotal)}</span>
-        </div>
+          {/* RIGHT – PRICE SUMMARY */}
+          <div className="lg:sticky lg:top-24 h-fit">
+            <div className="bg-white rounded-2xl shadow-md border p-6">
+              <h2 className="text-lg font-semibold mb-4">
+                Price Details
+              </h2>
 
-        <div className="flex justify-between text-sm mb-2">
-          <span>Delivery</span>
-          <span className="text-green-600">FREE</span>
-        </div>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span>Subtotal</span>
+                  <span>{formatPrice(subtotal)}</span>
+                </div>
 
-        <div className="flex justify-between text-lg font-bold border-t pt-3">
-          <span>Total</span>
-          <span>{formatPrice(subtotal)}</span>
-        </div>
+                <div className="flex justify-between">
+                  <span>Delivery</span>
+                  <span className="text-green-600">FREE</span>
+                </div>
+              </div>
 
-        <div className="flex gap-4 mt-5">
-          <button
-            onClick={() => navigate("/checkout")}
-            className="flex-1 bg-orange-500 text-white py-3 rounded-xl font-semibold hover:bg-orange-600"
-          >
-            Proceed to Checkout
-          </button>
+              <div className="flex justify-between text-lg font-bold border-t pt-4 mt-4">
+                <span>Total</span>
+                <span>{formatPrice(subtotal)}</span>
+              </div>
 
-          <button
-            onClick={clearCart}
-            className="px-6 py-3 border rounded-xl font-semibold"
-          >
-            Clear Cart
-          </button>
+              <button
+                onClick={() => navigate("/checkout")}
+                className="mt-6 w-full bg-orange-500 text-white py-3 rounded-xl font-semibold hover:bg-orange-600"
+              >
+                Proceed to Checkout
+              </button>
+
+              <button
+                onClick={clearCart}
+                className="mt-3 w-full border py-3 rounded-xl font-semibold"
+              >
+                Clear Cart
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

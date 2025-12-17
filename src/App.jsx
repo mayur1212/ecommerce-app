@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Routes, Route, useNavigate, Outlet } from "react-router-dom";
 
 /* ================= COMPONENTS ================= */
+import { Toaster } from "react-hot-toast";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import BottomBar from "./components/BottomBar";
@@ -173,6 +174,19 @@ export default function App() {
   return (
     <CartProvider>
       <OrderProvider>
+
+         <Toaster
+          position="bottom-center"
+          toastOptions={{
+            duration: 2000,
+            style: {
+              borderRadius: "14px",
+              background: "#111",
+              color: "#fff",
+              fontWeight: "500",
+            },
+          }}
+        />
         <Routes>
           <Route path="/" element={<MainAppLayout />}>
             <Route index element={<Home />} />
