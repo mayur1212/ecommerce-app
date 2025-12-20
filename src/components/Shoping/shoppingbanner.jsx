@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 /* ================= CONFIG ================= */
 
 const IMAGES = [
-  "/src/assets/shoppingbanner.jpg",
-  "/src/assets/shoppingbanner1.jpg",
-  "/src/assets/shoppingbanner.jpg",
+  "/images/shoppingbanner1.jpg",
+  "/images/shoppingbanner.jpg",
+  "/images/shoppingbanner1.jpg",
 ];
 
 const SLIDE_INTERVAL = 5000; // 5 seconds
