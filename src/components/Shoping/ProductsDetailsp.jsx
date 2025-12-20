@@ -287,16 +287,30 @@ export default function ProductsDetails() {
 
   const variants = product.variants || [];
 
-  // variant selection
-  const [selectedColor, setSelectedColor] = useState(variants[0]?.color || null);
-  const [selectedSize, setSelectedSize] = useState(variants[0]?.size || null);
+  // ================= VARIANT STATES =================
+const [selectedColor, setSelectedColor] = useState(variants[0]?.color || null);
+const [selectedSize, setSelectedSize] = useState(variants[0]?.size || null);
+const [selectedWeight, setSelectedWeight] = useState(variants[0]?.weight || null);
+
+const [showColorModal, setShowColorModal] = useState(false);
+const [showWeightModal, setShowWeightModal] = useState(false);
+
+// ================= UNIQUE OPTIONS =================
+const uniqueColors = [...new Set(variants.map(v => v.color).filter(Boolean))];
+const uniqueSizes = [...new Set(variants.map(v => v.size).filter(Boolean))];
+const uniqueWeights = [...new Set(variants.map(v => v.weight).filter(Boolean))];
+
+
+  
 
   const selectedVariant =
-    variants.find(
-      (v) =>
-        (!selectedColor || v.color === selectedColor) &&
-        (!selectedSize || v.size === selectedSize)
-    ) || variants[0] || {};
+  variants.find(
+    (v) =>
+      (!selectedColor || v.color === selectedColor) &&
+      (!selectedSize || v.size === selectedSize) &&
+      (!selectedWeight || v.weight === selectedWeight)
+  ) || variants[0] || {};
+
 
   // image
   const [selectedImage, setSelectedImage] = useState(product?.images?.[0] || product?.thumbnail);
@@ -354,8 +368,6 @@ export default function ProductsDetails() {
 
   const totalPrice = salePrice * quantity + deliveryCharge;
 
-  const uniqueColors = [...new Set(variants.map((v) => v.color).filter(Boolean))];
-  const uniqueSizes = [...new Set(variants.map((v) => v.size).filter(Boolean))];
 
   const [activeTab, setActiveTab] = useState("description");
   const tags = product.tags || [];
@@ -372,6 +384,9 @@ export default function ProductsDetails() {
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const openReviews = () => setReviewsOpen(true);
   const closeReviews = () => setReviewsOpen(false);
+
+  
+
 
   return (
     <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4">
@@ -412,67 +427,28 @@ export default function ProductsDetails() {
             ))}
           </div>
 
-          <div className="mt-4 space-y-4">
-            {uniqueColors.length > 0 && (
-              <div>
-                <p className="font-semibold mb-2 text-xs uppercase tracking-wide">Color</p>
-                <div className="flex flex-wrap gap-3">
-                  {uniqueColors.map((color) => {
-                    const selected = selectedColor === color;
-                    return (
-                      <button
-                        key={color}
-                        onClick={() => setSelectedColor(color)}
-                        className={`w-9 h-9 rounded-full border flex items-center justify-center
-                          ${selected ? "border-black ring-2 ring-black" : "border-gray-300"}`}
-                      >
-                        <span className="w-7 h-7 rounded-full" style={{ background: color }} />
-                      </button>
-                    );
-                  })}
-                </div>
+          <div className="mt-4 space-y-6">
+            <div className="flex items-center gap-4">
+              <span className="font-semibold">Quantity:</span>
+              <div className="flex items-center border rounded-full overflow-hidden">
+                <button onClick={() => handleQtyChange("dec")} className="w-10 h-10 flex items-center justify-center">−</button>
+                <span className="w-12 text-center font-medium">{quantity}</span>
+                <button onClick={() => handleQtyChange("inc")} className="w-10 h-10 flex items-center justify-center">+</button>
               </div>
-            )}
+            </div>
 
-            {uniqueSizes.length > 0 && (
-              <div>
-                <p className="font-semibold mb-2 text-xs uppercase tracking-wide">Size</p>
-                <div className="flex flex-wrap gap-3 items-center">
-                  {uniqueSizes.map((size) => {
-                    const isSelected = selectedSize === size;
-                    const available = variants.some(
-                      (v) =>
-                        v.size === size &&
-                        (!selectedColor || v.color === selectedColor)
-                    );
+  
+  <div className="bg-white border rounded-2xl p-4 text-sm text-gray-700">
+              <p><b>Delivery:</b> {deliveryCharge === 0 ? "Free delivery available" : `Delivery charge: ${formatPrice(deliveryCharge)}`}</p>
+              <p><b>Warranty:</b> {product.warranty ?? "No warranty info"}</p>
+              <p><b>Return Policy:</b> {product.return_policy ?? "7 days return policy"}</p>
+              <p><b>SKU:</b> {product.sku_id || product.sku}</p>
+              {product.weight && <p><b>Weight:</b> {product.weight}</p>}
+            </div>
+            
 
-                    return (
-                      <button
-                        key={size}
-                        disabled={!available}
-                        onClick={() => available && setSelectedSize(size)}
-                        className={`w-10 h-10 rounded-full flex items-center justify-center border
-                          ${isSelected ? "bg-black text-white" : "bg-white text-gray-700 border-gray-300"}
-                          ${!available ? "opacity-40 cursor-not-allowed" : ""}`}
-                      >
-                        {size}
-                      </button>
-                    );
-                  })}
+</div>
 
-                  <button
-                    onClick={() => {
-                      setSelectedColor(variants[0]?.color || null);
-                      setSelectedSize(variants[0]?.size || null);
-                    }}
-                    className="ml-3 text-xs underline text-gray-500"
-                  >
-                    CLEAR
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
         </div>
 
         {/* RIGHT */}
@@ -541,25 +517,108 @@ export default function ProductsDetails() {
               </div>
             </div>
 
-            <div className="bg-white border rounded-2xl p-4 text-sm text-gray-700">
-              <p><b>Delivery:</b> {deliveryCharge === 0 ? "Free delivery available" : `Delivery charge: ${formatPrice(deliveryCharge)}`}</p>
-              <p><b>Warranty:</b> {product.warranty ?? "No warranty info"}</p>
-              <p><b>Return Policy:</b> {product.return_policy ?? "7 days return policy"}</p>
-              <p><b>SKU:</b> {product.sku_id || product.sku}</p>
-              {product.weight && <p><b>Weight:</b> {product.weight}</p>}
-            </div>
+            {/* ================= COLOR ================= */}
+  {uniqueColors.length > 0 && (
+    <div>
+      <div className="flex items-center justify-between mb-2">
+        <p className="font-semibold text-xs uppercase tracking-wide">
+          Color
+        </p>
+        <button
+          onClick={() => setShowColorModal(true)}
+          className="text-xs text-blue-600 font-medium underline"
+        >
+          View All
+        </button>
+      </div>
+
+      <div className="flex flex-wrap gap-3">
+        {uniqueColors.slice(0, 4).map((color) => {
+          const selected = selectedColor === color;
+          return (
+            <button
+              key={color}
+              onClick={() => setSelectedColor(color)}
+              className={`w-9 h-9 rounded-full border flex items-center justify-center
+                ${selected ? "border-black ring-2 ring-black" : "border-gray-300"}`}
+            >
+              <span
+                className="w-7 h-7 rounded-full"
+                style={{ background: color }}
+              />
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  )}
+
+  {/* ================= WEIGHT ================= */}
+  {uniqueWeights.length > 0 && (
+    <div>
+      <div className="flex items-center justify-between mb-2">
+        <p className="font-semibold text-xs uppercase tracking-wide">
+          Weight
+        </p>
+        <button
+          onClick={() => setShowWeightModal(true)}
+          className="text-xs text-blue-600 font-medium underline"
+        >
+          View All
+        </button>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {uniqueWeights.slice(0, 4).map((weight) => {
+          const selected = selectedWeight === weight;
+          return (
+            <button
+              key={weight}
+              onClick={() => setSelectedWeight(weight)}
+              className={`px-4 py-1.5 rounded-full border text-xs font-semibold
+                ${selected
+                  ? "bg-black text-white"
+                  : "bg-white text-gray-700 border-gray-300 hover:border-black"}`}
+            >
+              {weight}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  )}
+
+  {/* ================= SIZE ================= */}
+  {uniqueSizes.length > 0 && (
+    <div>
+      <p className="font-semibold mb-2 text-xs uppercase tracking-wide">
+        Size
+      </p>
+
+      <div className="flex flex-wrap gap-3 items-center">
+        {uniqueSizes.map((size) => {
+          const isSelected = selectedSize === size;
+          return (
+            <button
+              key={size}
+              onClick={() => setSelectedSize(size)}
+              className={`w-10 h-10 rounded-full flex items-center justify-center border
+                ${isSelected
+                  ? "bg-black text-white"
+                  : "bg-white text-gray-700 border-gray-300"}`}
+            >
+              {size}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  )}
           </div>
 
           {/* QUANTITY + ACTIONS */}
           <div className="mt-5 space-y-4">
-            <div className="flex items-center gap-4">
-              <span className="font-semibold">Quantity:</span>
-              <div className="flex items-center border rounded-full overflow-hidden">
-                <button onClick={() => handleQtyChange("dec")} className="w-10 h-10 flex items-center justify-center">−</button>
-                <span className="w-12 text-center font-medium">{quantity}</span>
-                <button onClick={() => handleQtyChange("inc")} className="w-10 h-10 flex items-center justify-center">+</button>
-              </div>
-            </div>
+            
 
             <div className="flex flex-col sm:flex-row gap-4">
               <button
@@ -645,6 +704,67 @@ export default function ProductsDetails() {
 
       {/* REVIEWS DRAWER */}
       <ReviewsDrawer open={reviewsOpen} onClose={closeReviews} reviews={product.reviews || []} />
+
+      {/* ================= COLOR MODAL ================= */}
+{showColorModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div className="bg-white rounded-2xl p-5 w-[90%] max-w-sm">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold">Select Color</h3>
+        <button onClick={() => setShowColorModal(false)}>✕</button>
+      </div>
+
+      <div className="flex flex-wrap gap-3">
+        {uniqueColors.map((color) => (
+          <button
+            key={color}
+            onClick={() => {
+              setSelectedColor(color);
+              setShowColorModal(false);
+            }}
+            className="w-10 h-10 rounded-full border flex items-center justify-center"
+          >
+            <span
+              className="w-8 h-8 rounded-full"
+              style={{ background: color }}
+            />
+          </button>
+        ))}
+      </div>
     </div>
+  </div>
+)}
+
+{/* ================= WEIGHT MODAL ================= */}
+{showWeightModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div className="bg-white rounded-2xl p-5 w-[90%] max-w-sm">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold">Select Weight</h3>
+        <button onClick={() => setShowWeightModal(false)}>✕</button>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {uniqueWeights.map((weight) => (
+          <button
+            key={weight}
+            onClick={() => {
+              setSelectedWeight(weight);
+              setShowWeightModal(false);
+            }}
+            className="px-4 py-2 rounded-full border text-sm font-medium hover:border-black"
+          >
+            {weight}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+    </div>
+
+    
   );
 }
+
+

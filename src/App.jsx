@@ -10,7 +10,7 @@ import BottomBar from "./components/BottomBar";
 import Footer from "./components/Footer";
 import LocationPopup from "./components/LocationPopup";
 import SearchBar from "./components/SearchBar";
-import { MapPin } from "lucide-react";
+import { MapPin, SlidersHorizontal } from "lucide-react";
 
 /* ================= PAGES ================= */
 import Home from "./pages/Home";
@@ -27,12 +27,10 @@ import Storedetails from "./components/Store/Storedetails";
 import Marketp from "./pages/marketp/marketp";
 import MarketProductsdetails from "./components/market/Productsdetails";
 
-/* ====== E-COMMERCE FLOW PAGES (NEW) ====== */
+/* ====== E-COMMERCE FLOW ====== */
 import CartPage from "./pages/CartP/CartPage";
 import CheckoutPage from "./pages/CheckoutP/CheckoutPage";
 import OrderSuccess from "./pages/OrderSuccess/OrderSuccess";
-
-
 import MyOrders from "./pages/MyOrders/MyOrders";
 
 /* ================= CONTEXT ================= */
@@ -113,12 +111,19 @@ function MainAppLayout() {
         </button>
       </div>
 
-      {/* ========== MOBILE SEARCH ========== */}
-      <div className="md:hidden w-full sticky top-0 z-40 bg-white px-4">
-        <div className="flex items-center gap-3">
+      {/* ========== MOBILE SEARCH + FILTER ========== */}
+      <div className="md:hidden w-full sticky top-0 z-40 bg-white px-4 py-2">
+        <div className="flex items-center gap-2">
           <div className="flex-1">
             <SearchBar />
           </div>
+
+          <button
+            onClick={() => console.log("Open filter modal")}
+            className="p-2 rounded-xl bg-gray-100 active:scale-95 transition"
+          >
+            <SlidersHorizontal size={20} className="text-gray-700" />
+          </button>
         </div>
       </div>
 
@@ -146,9 +151,30 @@ function MainAppLayout() {
         </aside>
 
         <div className="flex-1 min-w-0">
-          <div className="hidden lg:flex items-center w-full bg-gray-100 px-4 py-2 border border-gray-200 gap-4">
-            <SearchBar />
-          </div>
+          {/* DESKTOP SEARCH + FILTER */}
+          <div className="hidden lg:flex items-center w-full bg-gray-100 px-4 py-2 border border-gray-200 gap-2">
+  <div className="flex-1">
+    <SearchBar />
+  </div>
+
+  <button
+  onClick={() => console.log("Open filter modal")}
+  className="
+    h-[48px]        /* ⬅️ slightly smaller */
+    px-3
+    flex items-center justify-center
+    rounded-xl
+    bg-white
+    border border-zinc-400
+    hover:bg-gray-50
+    transition
+  "
+>
+  <SlidersHorizontal size={18} className="text-gray-700" />
+</button>
+
+</div>
+
 
           <div className="px-4 pb-10">
             <Outlet />
@@ -174,8 +200,7 @@ export default function App() {
   return (
     <CartProvider>
       <OrderProvider>
-
-         <Toaster
+        <Toaster
           position="bottom-center"
           toastOptions={{
             duration: 2000,
@@ -187,6 +212,7 @@ export default function App() {
             },
           }}
         />
+
         <Routes>
           <Route path="/" element={<MainAppLayout />}>
             <Route index element={<Home />} />
@@ -195,7 +221,6 @@ export default function App() {
             <Route path="shopping/:id" element={<ProductsDetails />} />
             <Route path="seller/:sellerSlug" element={<SellerPage />} />
 
-            {/* ✅ ECOM FLOW */}
             <Route path="cart" element={<CartPage />} />
             <Route path="checkout" element={<CheckoutPage />} />
             <Route path="order-success/:id" element={<OrderSuccess />} />
