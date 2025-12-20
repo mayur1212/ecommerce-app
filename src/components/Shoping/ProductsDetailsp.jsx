@@ -244,13 +244,20 @@ export default function ProductsDetails() {
 
   const handleAddToCart = () => {
   const cartItem = {
-    productId: product.id,
-    name: product.name,
-    price: salePrice,
-    qty: quantity,
-    image: selectedImage,
-    variant: selectedVariant,
-  };
+  productId: product.id,
+  name: product.name,
+  price: salePrice,
+  qty: quantity,
+  image: selectedImage,
+  variant: selectedVariant,
+
+  // ✅ ADD THIS LINE
+  deliveryCharge: product.delivery_charge || 0
+};
+
+
+
+
 
   addToCart(cartItem);
 

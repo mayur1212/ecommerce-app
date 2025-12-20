@@ -19,10 +19,19 @@ export default function CartPage() {
     clearCart = () => {},
   } = cartContext;
 
+  /* ---------------- SUBTOTAL ---------------- */
   const subtotal = cartItems.reduce(
     (sum, item) => sum + (item.price || 0) * (item.qty || 1),
     0
   );
+
+  /* ---------------- DELIVERY CHARGES (🔥 MAIN FIX) ---------------- */
+  const deliveryCharge = cartItems.reduce(
+    (sum, item) => sum + (item.deliveryCharge || 0),
+    0
+  );
+
+  const total = subtotal + deliveryCharge;
 
   /* ================= EMPTY CART ================= */
   if (!cartItems.length && !savedItems.length) {
@@ -43,13 +52,10 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* MAIN CONTAINER */}
       <div className="mx-auto w-full max-w-[95%] lg:max-w-[90%] px-4 py-8">
         <h1 className="text-2xl font-bold mb-8">My Cart</h1>
 
-        {/* GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
           {/* LEFT – CART ITEMS */}
           <div className="lg:col-span-2 space-y-6">
             {cartItems.map((item) => (
@@ -79,9 +85,16 @@ export default function CartPage() {
                     {formatPrice(item.price)}
                   </p>
 
+                  {/* DELIVERY INFO (OPTIONAL, NICE TOUCH) */}
+                  <p className="text-xs text-gray-500 mt-1">
+                    Delivery:{" "}
+                    {item.deliveryCharge === 0
+                      ? "FREE"
+                      : formatPrice(item.deliveryCharge)}
+                  </p>
+
                   {/* ACTIONS */}
                   <div className="flex flex-wrap items-center gap-4 mt-4">
-                    {/* Quantity */}
                     <div className="flex items-center border rounded-xl overflow-hidden">
                       <button
                         onClick={() =>
@@ -182,13 +195,17 @@ export default function CartPage() {
 
                 <div className="flex justify-between">
                   <span>Delivery</span>
-                  <span className="text-green-600">FREE</span>
+                  <span>
+                    {deliveryCharge === 0
+                      ? "FREE"
+                      : formatPrice(deliveryCharge)}
+                  </span>
                 </div>
               </div>
 
               <div className="flex justify-between text-lg font-bold border-t pt-4 mt-4">
                 <span>Total</span>
-                <span>{formatPrice(subtotal)}</span>
+                <span>{formatPrice(total)}</span>
               </div>
 
               <button

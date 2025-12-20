@@ -7,23 +7,10 @@ const formatPrice = (price = 0) => `₹${price.toLocaleString()}`;
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
-  const { cartItems = [], clearCart } = useCart() || {};
+  const { cartItems = [], clearCart } = useCart();
   const { placeOrder } = useOrders();
 
   const [loading, setLoading] = useState(false);
-
-  /* ---------------- PRICE CALCULATION ---------------- */
-  const subtotal = useMemo(
-    () =>
-      cartItems.reduce(
-        (sum, item) => sum + (item.price || 0) * (item.qty || 1),
-        0
-      ),
-    [cartItems]
-  );
-
-  const deliveryCharge = 0;
-  const total = subtotal + deliveryCharge;
 
   /* ---------------- ADDRESS STATE ---------------- */
   const [address, setAddress] = useState({
@@ -41,15 +28,73 @@ export default function CheckoutPage() {
     }));
   };
 
-  /* ---------------- PAY NOW ---------------- */
+  /* ---------------- LIVE LOCATION ---------------- */
+  const useLiveLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation not supported");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+
+        setAddress((prev) => ({
+          ...prev,
+          addressLine: `Lat ${latitude}, Lng ${longitude}`,
+          city: "Auto detected",
+          pincode: "------",
+        }));
+      },
+      () => alert("Unable to fetch live location")
+    );
+  };
+
+  /* ---------------- PRICE CALCULATION ---------------- */
+
+  // Subtotal
+  const subtotal = useMemo(() => {
+    return cartItems.reduce(
+      (sum, item) => sum + item.price * item.qty,
+      0
+    );
+  }, [cartItems]);
+
+  // 🔥 DELIVERY CHARGE = SUM of all products
+  const deliveryCharge = useMemo(() => {
+    return cartItems.reduce(
+      (sum, item) => sum + (item.deliveryCharge || 0),
+      0
+    );
+  }, [cartItems]);
+
+  const gst = Math.round(subtotal * 0.05); // 5% GST
+  const platformFee = 10;
+
+  const [coupon, setCoupon] = useState("");
+  const [discount, setDiscount] = useState(0);
+
+  const applyCoupon = () => {
+    if (coupon === "SAVE10") {
+      setDiscount(Math.round(subtotal * 0.1));
+    } else {
+      setDiscount(0);
+      alert("Invalid coupon");
+    }
+  };
+
+  const total =
+    subtotal +
+    deliveryCharge +
+    gst +
+    platformFee -
+    discount;
+
+  /* ---------------- PLACE ORDER ---------------- */
   const handlePayNow = () => {
-    if (
-      !address.name.trim() ||
-      !address.phone.trim() ||
-      !address.addressLine.trim() ||
-      !address.city.trim() ||
-      !address.pincode.trim()
-    ) {
+    const { name, phone, addressLine, city, pincode } = address;
+
+    if (!name || !phone || !addressLine || !city || !pincode) {
       alert("Please fill all delivery details");
       return;
     }
@@ -70,10 +115,7 @@ export default function CheckoutPage() {
         <h2 className="text-lg font-semibold mb-2">
           Your cart is empty
         </h2>
-        <Link
-          to="/shopping"
-          className="text-orange-600 font-semibold"
-        >
+        <Link to="/shopping" className="text-orange-600 font-semibold">
           Continue Shopping →
         </Link>
       </div>
@@ -82,19 +124,14 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* MAIN CONTAINER */}
       <div className="mx-auto w-full max-w-[95%] lg:max-w-[90%] px-4 py-8">
         <h1 className="text-2xl font-bold mb-8 text-center">
           Checkout
         </h1>
 
-        {/* GRID LAYOUT */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* LEFT SECTION */}
+          {/* LEFT */}
           <div className="lg:col-span-2 space-y-6">
-            
-            {/* DELIVERY ADDRESS */}
             <div className="bg-white rounded-2xl shadow-sm border p-6">
               <h2 className="text-lg font-semibold mb-4">
                 Delivery Address
@@ -117,6 +154,15 @@ export default function CheckoutPage() {
                   className="w-full border rounded-xl px-4 py-3"
                 />
 
+                <textarea
+                  name="addressLine"
+                  placeholder="Full Address"
+                  value={address.addressLine}
+                  onChange={handleChange}
+                  rows={3}
+                  className="w-full border rounded-xl px-4 py-3"
+                />
+
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <input
                     name="city"
@@ -134,40 +180,30 @@ export default function CheckoutPage() {
                   />
                 </div>
 
-                <textarea
-                  name="addressLine"
-                  placeholder="Full Address"
-                  value={address.addressLine}
-                  onChange={handleChange}
-                  rows={4}
-                  className="w-full border rounded-xl px-4 py-3"
-                />
+                <button
+                  onClick={useLiveLocation}
+                  className="w-full border border-blue-500 text-blue-600 py-2 rounded-xl font-semibold hover:bg-blue-50"
+                >
+                  📍 Use Live Location
+                </button>
               </div>
             </div>
 
-            {/* PAYMENT METHOD */}
             <div className="bg-white rounded-2xl shadow-sm border p-6">
               <h2 className="text-lg font-semibold mb-4">
                 Payment Method
               </h2>
 
-              <div className="space-y-3">
-                <label className="flex items-center gap-3">
-                  <input type="radio" checked readOnly />
-                  <span className="font-medium">
-                    Cash on Delivery
-                  </span>
-                </label>
-
-                <label className="flex items-center gap-3 text-gray-400">
-                  <input type="radio" disabled />
-                  UPI / Card (Coming soon)
-                </label>
-              </div>
+              <label className="flex items-center gap-3">
+                <input type="radio" checked readOnly />
+                <span className="font-medium">
+                  Cash on Delivery
+                </span>
+              </label>
             </div>
           </div>
 
-          {/* RIGHT SECTION – ORDER SUMMARY */}
+          {/* RIGHT */}
           <div className="lg:sticky lg:top-24 h-fit">
             <div className="bg-white rounded-2xl shadow-md border p-6">
               <h2 className="text-lg font-semibold mb-4">
@@ -176,16 +212,9 @@ export default function CheckoutPage() {
 
               <div className="space-y-3 text-sm">
                 {cartItems.map((item) => (
-                  <div
-                    key={item.productId}
-                    className="flex justify-between gap-2"
-                  >
-                    <span className="truncate">
-                      {item.name} × {item.qty}
-                    </span>
-                    <span className="font-medium">
-                      {formatPrice(item.price * item.qty)}
-                    </span>
+                  <div key={item.productId} className="flex justify-between">
+                    <span>{item.name} × {item.qty}</span>
+                    <span>{formatPrice(item.price * item.qty)}</span>
                   </div>
                 ))}
               </div>
@@ -197,14 +226,50 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="flex justify-between">
-                  <span>Delivery</span>
-                  <span className="text-green-600">FREE</span>
+                  <span>Delivery charges</span>
+                  <span>
+                    {deliveryCharge === 0
+                      ? "FREE"
+                      : formatPrice(deliveryCharge)}
+                  </span>
                 </div>
+
+                <div className="flex justify-between">
+                  <span>GST (5%)</span>
+                  <span>{formatPrice(gst)}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Platform Fee</span>
+                  <span>{formatPrice(platformFee)}</span>
+                </div>
+
+                {discount > 0 && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Discount</span>
+                    <span>-{formatPrice(discount)}</span>
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-between text-lg font-bold border-t pt-4 mt-4">
                 <span>Total</span>
                 <span>{formatPrice(total)}</span>
+              </div>
+
+              <div className="flex gap-2 mt-4">
+                <input
+                  value={coupon}
+                  onChange={(e) => setCoupon(e.target.value)}
+                  placeholder="Coupon code"
+                  className="flex-1 border rounded-xl px-3 py-2"
+                />
+                <button
+                  onClick={applyCoupon}
+                  className="bg-black text-white px-4 rounded-xl"
+                >
+                  Apply
+                </button>
               </div>
 
               <button
