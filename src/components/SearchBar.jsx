@@ -34,7 +34,7 @@ export default function SearchBar() {
     localStorage.setItem("recentSearch", JSON.stringify(updated));
   };
 
-  /* Close dropdown outside click */
+  /* Close dropdown on outside click */
   useEffect(() => {
     const handler = (e) => {
       if (boxRef.current && !boxRef.current.contains(e.target)) {
@@ -65,7 +65,7 @@ export default function SearchBar() {
           focus-within:ring-1 focus-within:ring-zinc-400
           transition
         "
-        onClick={() => setShowDropdown(true)}
+        onClick={() => setShowDropdown((prev) => !prev)} // ✅ TOGGLE
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -87,8 +87,12 @@ export default function SearchBar() {
           className="w-full bg-transparent outline-none text-gray-700"
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
-          onFocus={() => setShowDropdown(true)}
-          onKeyDown={(e) => e.key === "Enter" && saveSearch()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              saveSearch();
+              setShowDropdown(false); // ✅ CLOSE on Enter
+            }
+          }}
         />
       </div>
 
@@ -103,6 +107,7 @@ export default function SearchBar() {
                 onClickItem={(item) => {
                   setSearchText(item);
                   saveSearch(item);
+                  setShowDropdown(false);
                 }}
               />
             ) : (
@@ -116,7 +121,10 @@ export default function SearchBar() {
                 <Section
                   title="Recent Searches"
                   list={history}
-                  onClickItem={saveSearch}
+                  onClickItem={(item) => {
+                    saveSearch(item);
+                    setShowDropdown(false);
+                  }}
                 />
               )}
 

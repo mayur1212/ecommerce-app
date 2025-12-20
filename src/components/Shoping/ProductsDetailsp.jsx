@@ -428,14 +428,6 @@ const uniqueWeights = [...new Set(variants.map(v => v.weight).filter(Boolean))];
           </div>
 
           <div className="mt-4 space-y-6">
-            <div className="flex items-center gap-4">
-              <span className="font-semibold">Quantity:</span>
-              <div className="flex items-center border rounded-full overflow-hidden">
-                <button onClick={() => handleQtyChange("dec")} className="w-10 h-10 flex items-center justify-center">−</button>
-                <span className="w-12 text-center font-medium">{quantity}</span>
-                <button onClick={() => handleQtyChange("inc")} className="w-10 h-10 flex items-center justify-center">+</button>
-              </div>
-            </div>
 
   
   <div className="bg-white border rounded-2xl p-4 text-sm text-gray-700">
@@ -445,7 +437,6 @@ const uniqueWeights = [...new Set(variants.map(v => v.weight).filter(Boolean))];
               <p><b>SKU:</b> {product.sku_id || product.sku}</p>
               {product.weight && <p><b>Weight:</b> {product.weight}</p>}
             </div>
-            
 
 </div>
 
@@ -618,7 +609,14 @@ const uniqueWeights = [...new Set(variants.map(v => v.weight).filter(Boolean))];
 
           {/* QUANTITY + ACTIONS */}
           <div className="mt-5 space-y-4">
-            
+            <div className="flex items-center gap-4">
+              <span className="font-semibold">Quantity:</span>
+              <div className="flex items-center border rounded-full overflow-hidden">
+                <button onClick={() => handleQtyChange("dec")} className="w-10 h-10 flex items-center justify-center">−</button>
+                <span className="w-12 text-center font-medium">{quantity}</span>
+                <button onClick={() => handleQtyChange("inc")} className="w-10 h-10 flex items-center justify-center">+</button>
+              </div>
+            </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <button
