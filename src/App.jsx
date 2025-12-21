@@ -37,6 +37,8 @@ import MyOrders from "./pages/MyOrders/MyOrders";
 import { CartProvider } from "./context/CartContext";
 import { OrderProvider } from "./context/OrderContext";
 
+import OfferPagee from "./pages/offerpagee/offerpagee";
+
 /* ================= SERVICES PAGE ================= */
 function ServicesPage() {
   return (
@@ -236,6 +238,7 @@ export default function App() {
 
             <Route path="blog" element={<Blog />} />
             <Route path="blog/:slug" element={<BlogDetails />} />
+            <Route path="/offerpage" element={<OfferPagee />} />
           </Route>
         </Routes>
       </OrderProvider>

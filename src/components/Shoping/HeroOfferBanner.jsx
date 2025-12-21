@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 /* ================= CONFIG ================= */
 
@@ -8,6 +9,8 @@ const STORAGE_KEY = "todayHeroOfferEndTime";
 /* ================= COMPONENT ================= */
 
 export default function HeroOfferBanner() {
+  const navigate = useNavigate();
+
   const getEndTime = () => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) return Number(saved);
@@ -24,7 +27,7 @@ export default function HeroOfferBanner() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft((prev) => Math.max(0, endTime - Date.now()));
+      setTimeLeft(Math.max(0, endTime - Date.now()));
     }, 1000);
 
     return () => clearInterval(timer);
@@ -37,7 +40,17 @@ export default function HeroOfferBanner() {
   const isExpired = timeLeft === 0;
 
   return (
-    <div className="mb-10 rounded-2xl bg-gradient-to-r from-red-600 via-pink-600 to-orange-500 text-white p-6 sm:p-8 shadow-xl">
+    <div
+      onClick={() => navigate("/offerpage")}
+      className="
+        mb-10 rounded-2xl
+        bg-gradient-to-r from-red-600 via-pink-600 to-orange-500
+        text-white p-6 sm:p-8 shadow-xl
+        cursor-pointer
+        hover:scale-[1.01]
+        transition-transform
+      "
+    >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
 
         {/* LEFT CONTENT */}

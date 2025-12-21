@@ -11,45 +11,66 @@ export default function Banner({ images = DEFAULT, interval = 3500 }) {
   const [i, setI] = useState(0);
 
   useEffect(() => {
-    const t = setInterval(() => setI((p) => (p + 1) % images.length), interval);
+    const t = setInterval(
+      () => setI((p) => (p + 1) % images.length),
+      interval
+    );
     return () => clearInterval(t);
   }, [images, interval]);
 
   return (
-    <section className="w-full">
+    <section className="w-full flex justify-center">
       <div
         className="
-          relative w-full 
-          h-[30vh] sm:h-[35vh] md:h-[40vh] lg:h-[65vh]
+          relative w-full
+          h-[30vh] sm:h-[35vh] md:h-[40vh] lg:h-[52vh]
           overflow-hidden
 
-          /* Mobile + Tablet → Card */
-          rounded-2xl shadow-xl p-3
+          /* Mobile + Tablet (unchanged) */
+          
+          rounded-2xl shadow-xl p-0 sm:p-3
 
-          /* Desktop → No card styling */
-          lg:rounded-none lg:p-0
+
+          /* Desktop → CARD STYLE */
+          lg:max-w-7xl
+          lg:rounded-3xl
+          lg:shadow-2xl
+          lg:p-0
+          lg:mx-auto
         "
       >
-        {/* Background Image */}
+        {/* Image */}
         <img
           src={images[i]}
           alt={`banner-${i}`}
-          className="w-full h-full object-cover rounded-2xl lg:rounded-none"
+          className="
+            w-full h-full object-cover
+            rounded-2xl lg:rounded-3xl
+            transition-transform duration-700 ease-out
+            lg:scale-[1.03]
+          "
         />
 
+        {/* Gradient overlay (desktop only) */}
+        <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent rounded-3xl" />
+
         {/* TEXT CONTENT */}
-        <div className="absolute top-4 left-4 text-white space-y-1">
-          <p className="bg-white/20 text-xs px-3 py-1 rounded-full backdrop-blur-sm">
+        <div className="absolute top-4 left-4 lg:top-10 lg:left-10 text-white space-y-2">
+          <p className="bg-white/20 text-xs px-3 py-1 rounded-full backdrop-blur-sm inline-block">
             Limited time!
           </p>
 
-          <h2 className="text-lg font-semibold">Get Special Discount</h2>
+          <h2 className="text-lg lg:text-2xl font-semibold">
+            Get Special Discount
+          </h2>
 
-          <p className="text-sm">Up to</p>
+          <p className="text-sm lg:text-base">Up to</p>
 
-          <h1 className="text-4xl font-bold -mt-2">40%</h1>
+          <h1 className="text-4xl lg:text-6xl font-bold -mt-2">
+            40%
+          </h1>
 
-          <p className="text-[10px] mt-1 opacity-80">
+          <p className="text-[10px] lg:text-sm opacity-80">
             All Salons available | T&C Applied
           </p>
         </div>
@@ -57,39 +78,20 @@ export default function Banner({ images = DEFAULT, interval = 3500 }) {
         {/* CLAIM BUTTON */}
         <button
           className="
-            absolute bottom-4 right-4 
-            bg-red-500 text-white text-sm 
-            px-4 py-2 rounded-full shadow-md
+            absolute bottom-4 right-4
+            lg:bottom-8 lg:right-8
+            bg-red-500 hover:bg-red-600
+            text-white text-sm lg:text-base
+            px-4 py-2 lg:px-6 lg:py-3
+            rounded-full shadow-lg
+            transition-transform duration-200
+            hover:scale-105
           "
         >
           Claim
         </button>
 
-        {/* Prev Button */}
-        {/* Prev Button — hide on mobile/tablet */}
-<button
-  onClick={() => setI((p) => (p - 1 + images.length) % images.length)}
-  className="
-    hidden lg:flex
-    absolute left-3 top-1/2 -translate-y-1/2 
-    bg-white/90 p-3 rounded-full shadow
-  "
->
-  ‹
-</button>
-
-{/* Next Button — hide on mobile/tablet */}
-<button
-  onClick={() => setI((p) => (p + 1) % images.length)}
-  className="
-    hidden lg:flex
-    absolute right-3 top-1/2 -translate-y-1/2 
-    bg-white/90 p-3 rounded-full shadow
-  "
->
-  ›
-</button>
-
+        
       </div>
     </section>
   );
