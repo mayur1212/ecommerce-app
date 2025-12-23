@@ -55,41 +55,46 @@ export default function Banner({ images = DEFAULT, interval = 3500 }) {
         <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent rounded-3xl" />
 
         {/* TEXT CONTENT */}
-        <div className="absolute top-4 left-4 lg:top-10 lg:left-10 text-white space-y-2">
-          <p className="bg-white/20 text-xs px-3 py-1 rounded-full backdrop-blur-sm inline-block">
-            Limited time!
-          </p>
+      {/* TEXT CONTENT */}
+  <div className="absolute top-4 left-4 lg:top-10 lg:left-10 text-white space-y-3 w-[90%] sm:w-[70%] lg:w-[420px] xl:w-[480px]">
 
-          <h2 className="text-lg lg:text-2xl font-semibold">
-            Get Special Discount
-          </h2>
+  <p className="bg-white/20 text-xs px-3 py-1 rounded-full backdrop-blur-sm inline-block">
+    Limited time!
+  </p>
 
-          <p className="text-sm lg:text-base">Up to</p>
+  <h2 className="text-lg lg:text-2xl font-semibold">
+    Get Special Discount  Get Special Discount
+  </h2>
 
-          <h1 className="text-4xl lg:text-6xl font-bold -mt-2">
-            40%
-          </h1>
+  <p className="text-sm lg:text-base">Up to</p>
 
-          <p className="text-[10px] lg:text-sm opacity-80">
-            All Salons available | T&C Applied
-          </p>
-        </div>
+  <h1 className="text-4xl lg:text-6xl font-bold -mt-2">
+    40%
+  </h1>
 
-        {/* CLAIM BUTTON */}
-        <button
-          className="
-            absolute bottom-4 right-4
-            lg:bottom-8 lg:right-8
-            bg-red-500 hover:bg-red-600
-            text-white text-sm lg:text-base
-            px-4 py-2 lg:px-6 lg:py-3
-            rounded-full shadow-lg
-            transition-transform duration-200
-            hover:scale-105
-          "
-        >
-          Claim
-        </button>
+  <p className="text-[10px] lg:text-sm opacity-80">
+    All Salons available | T&C Applied
+  </p>
+
+  {/* SHOP NOW BUTTON (Desktop only) */}
+  <button
+    className="
+      hidden lg:inline-block
+      mt-4
+      bg-red-500 hover:bg-red-600
+      text-white
+      px-6 py-3
+      rounded-full
+      font-medium
+      shadow-lg
+      transition-transform duration-200
+      hover:scale-105
+    "
+  >
+    Shop Now
+  </button>
+</div>
+
 
         
       </div>

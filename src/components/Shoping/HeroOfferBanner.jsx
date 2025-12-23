@@ -43,12 +43,7 @@ export default function HeroOfferBanner() {
     <div
       onClick={() => navigate("/offerpage")}
       className="
-        mb-10 rounded-2xl
-        bg-gradient-to-r from-red-600 via-pink-600 to-orange-500
-        text-white p-6 sm:p-8 shadow-xl
-        cursor-pointer
-        hover:scale-[1.01]
-        transition-transform
+mt-4 sm:mt-5 mb-8 rounded-2xl bg-gradient-to-r from-red-600 via-pink-600 to-orange-500 text-white px-4 sm:px-6 py-5 sm:py-6 shadow-xl cursor-pointer hover:scale-[1.01] transition-transform
       "
     >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">

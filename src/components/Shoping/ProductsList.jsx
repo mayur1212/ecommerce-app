@@ -1,17 +1,17 @@
 // src/components/Shoping/ProductsList.jsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast"; // ✅ TOASTER
 import products from "../../data/products.json";
+import { useCart } from "../../context/CartContext";
 
-/* ================= SAFE HELPERS (NO UI CHANGE) ================= */
+/* ================= SAFE HELPERS ================= */
 
-// safe price formatter (prevents toLocaleString crash)
 const formatPrice = (price) => {
   const value = Number(price);
   return `₹${isNaN(value) ? "0" : value.toLocaleString()}`;
 };
 
-// get lowest variant price OR product price
 const getDisplayPrice = (product) => {
   if (Array.isArray(product.variants) && product.variants.length > 0) {
     const prices = product.variants
@@ -22,7 +22,6 @@ const getDisplayPrice = (product) => {
   return product.discount_price ?? product.price ?? 0;
 };
 
-// get highest MRP for strike-through
 const getDisplayMRP = (product) => {
   if (Array.isArray(product.variants) && product.variants.length > 0) {
     const mrps = product.variants
@@ -33,7 +32,6 @@ const getDisplayMRP = (product) => {
   return product.price ?? null;
 };
 
-// Total quantity from variants OR main stock
 const getTotalStock = (product) => {
   if (Array.isArray(product.variants) && product.variants.length > 0) {
     return product.variants.reduce(
@@ -44,7 +42,6 @@ const getTotalStock = (product) => {
   return product.stock ?? 0;
 };
 
-// Delivery label
 const getDeliveryLabel = (product) => {
   const charge = product.delivery_charge;
   if (charge === 0) return "Free Delivery";
@@ -52,7 +49,6 @@ const getDeliveryLabel = (product) => {
   return "Delivery at checkout";
 };
 
-// Check if available in variants / stock
 const isInStock = (product) => {
   if (product.variants?.length > 0) {
     return product.variants.some((v) => (v.stock ?? 0) > 0);
@@ -60,16 +56,36 @@ const isInStock = (product) => {
   return (product.stock ?? 0) > 0;
 };
 
-/* =============================================================== */
+/* ================================================= */
 
 export default function ProductsList() {
   const [wishlisted, setWishlisted] = useState({});
+  const { addToCart } = useCart();
 
   const toggleWishlist = (id) => {
     setWishlisted((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
+  };
+
+  const handleAddToCart = (e, product) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    addToCart({
+      productId: product.id,
+      name: product.name,
+      price: getDisplayPrice(product),
+      image: product.thumbnail,
+      qty: 1,
+    });
+
+    // 🔥 TOASTER
+    toast.success("Added to cart", {
+      icon: "🛒",
+      duration: 2000,
+    });
   };
 
   return (
@@ -116,7 +132,7 @@ export default function ProductsList() {
                   {inStock ? "In Stock" : "Out of Stock"}
                 </span>
 
-                {/* WISHLIST HEART */}
+                {/* WISHLIST */}
                 <button
                   type="button"
                   onClick={(e) => {
@@ -124,10 +140,9 @@ export default function ProductsList() {
                     e.stopPropagation();
                     toggleWishlist(product.id);
                   }}
-                  className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 border border-gray-200 flex items-center justify-center shadow-sm hover:shadow-md transition"
+                  className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 border border-gray-200 flex items-center justify-center shadow-sm"
                 >
                   <svg
-                    xmlns="http://www.w3.org/2000/svg"
                     className="w-4 h-4"
                     viewBox="0 0 24 24"
                     fill={isWish ? "red" : "none"}
@@ -144,16 +159,15 @@ export default function ProductsList() {
                 {product.name}
               </h3>
 
-              {/* CATEGORY */}
               <p className="text-xs text-gray-500 mt-1">
                 {product.category}
               </p>
 
-              {/* PRICE + RATING */}
+              {/* PRICE */}
               <div className="mt-2 flex items-center justify-between">
                 <div>
                   {mrp && mrp > salePrice ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex gap-2 items-center">
                       <span className="text-base font-bold text-red-600">
                         {formatPrice(salePrice)}
                       </span>
@@ -168,19 +182,32 @@ export default function ProductsList() {
                   )}
                 </div>
 
-                <div className="flex items-center text-xs gap-1">
-                  ⭐ <span>{ratingValue}</span>
+                <div className="text-xs flex items-center gap-1">
+                  ⭐ {ratingValue}
                 </div>
               </div>
 
               {/* QTY + DELIVERY */}
-              <div className="mt-1 flex items-center justify-between text-[11px] text-gray-600">
+              <div className="mt-1 flex justify-between text-[11px] text-gray-600">
                 <span>Qty: {totalStock} pc</span>
-
                 <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
                   {deliveryLabel}
                 </span>
               </div>
+
+              {/* ADD TO CART */}
+              <button
+                disabled={!inStock}
+                onClick={(e) => handleAddToCart(e, product)}
+                className={`mt-3 w-full text-sm font-semibold py-2 rounded-lg transition
+                  ${
+                    inStock
+                      ? "bg-red-600 text-white hover:bg-red-700"
+                      : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                  }`}
+              >
+                {inStock ? "Add to Cart" : "Out of Stock"}
+              </button>
             </Link>
           );
         })
