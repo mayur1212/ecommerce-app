@@ -12,6 +12,7 @@ import LocationPopup from "./components/LocationPopup";
 import SearchBar from "./components/SearchBar";
 import { MapPin, SlidersHorizontal } from "lucide-react";
 
+
 /* ================= PAGES ================= */
 import Home from "./pages/Home";
 import Blog from "./pages/blog/Blog";
@@ -36,6 +37,8 @@ import MyOrders from "./pages/MyOrders/MyOrders";
 /* ================= CONTEXT ================= */
 import { CartProvider } from "./context/CartContext";
 import { OrderProvider } from "./context/OrderContext";
+import FilterModal from "./components/FilterModal";
+
 
 import OfferPagee from "./pages/offerpagee/offerpagee";
 
@@ -84,6 +87,18 @@ function MainAppLayout() {
 
   const navKeys = ["shopping", "market", "services", "store", "news"];
 
+  const [filters, setFilters] = useState({
+  name: "",
+  categories: [],
+  brands: [],
+  minPrice: "",
+  maxPrice: "",
+});
+
+const [showFilter, setShowFilter] = useState(false);
+
+
+
   return (
     <main className="min-h-screen flex flex-col bg-gray-50">
       <Header mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
@@ -120,12 +135,14 @@ function MainAppLayout() {
             <SearchBar />
           </div>
 
+          
           <button
-            onClick={() => console.log("Open filter modal")}
-            className="p-2 rounded-xl bg-gray-100 active:scale-95 transition"
-          >
-            <SlidersHorizontal size={20} className="text-gray-700" />
-          </button>
+  onClick={() => setShowFilter(true)}
+  className="p-2 rounded-xl bg-gray-100 active:scale-95 transition"
+>
+  <SlidersHorizontal size={20} className="text-gray-700" />
+</button>
+
         </div>
       </div>
 
@@ -159,27 +176,21 @@ function MainAppLayout() {
     <SearchBar />
   </div>
 
-  <button
-  onClick={() => console.log("Open filter modal")}
-  className="
-    h-[48px]        /* ⬅️ slightly smaller */
-    px-3
-    flex items-center justify-center
-    rounded-xl
-    bg-white
-    border border-zinc-400
-    hover:bg-gray-50
-    transition
-  "
+ <button
+  onClick={() => setShowFilter(true)}
+  className="h-[48px] px-3 flex items-center justify-center rounded-xl bg-white border border-zinc-400 hover:bg-gray-50 transition"
 >
   <SlidersHorizontal size={18} className="text-gray-700" />
 </button>
+
 
 </div>
 
 
           <div className="px-4 pb-10">
-            <Outlet />
+           
+            <Outlet context={{ filters }} />
+
           </div>
         </div>
       </div>
@@ -192,7 +203,16 @@ function MainAppLayout() {
           close={() => setShowLocationPopup(false)}
           setLocation={setUserLocation}
         />
+
+        
       )}
+      
+<FilterModal
+  open={showFilter}
+  onClose={() => setShowFilter(false)}
+  filters={filters}
+  setFilters={setFilters}
+/>
     </main>
   );
 }
@@ -245,3 +265,4 @@ export default function App() {
     </CartProvider>
   );
 }
+

@@ -1,11 +1,22 @@
-// src/components/Shoping/ProductsList.jsx
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import toast from "react-hot-toast"; // ✅ TOASTER
+import { Link, useOutletContext } from "react-router-dom";
+import toast from "react-hot-toast";
 import products from "../../data/products.json";
 import { useCart } from "../../context/CartContext";
 
-/* ================= SAFE HELPERS ================= */
+/* ================= GET FILTERS FROM OUTLET ================= */
+const useFilters = () => {
+  const context = useOutletContext();
+  return context?.filters ?? {
+    name: "",
+    categories: [],
+    brands: [],
+    minPrice: "",
+    maxPrice: "",
+  };
+};
+
+/* ================= HELPERS ================= */
 
 const formatPrice = (price) => {
   const value = Number(price);
@@ -17,7 +28,7 @@ const getDisplayPrice = (product) => {
     const prices = product.variants
       .map((v) => v.price)
       .filter((p) => typeof p === "number");
-    return prices.length > 0 ? Math.min(...prices) : 0;
+    return prices.length ? Math.min(...prices) : 0;
   }
   return product.discount_price ?? product.price ?? 0;
 };
@@ -27,7 +38,7 @@ const getDisplayMRP = (product) => {
     const mrps = product.variants
       .map((v) => v.mrp)
       .filter((m) => typeof m === "number");
-    return mrps.length > 0 ? Math.max(...mrps) : null;
+    return mrps.length ? Math.max(...mrps) : null;
   }
   return product.price ?? null;
 };
@@ -59,8 +70,25 @@ const isInStock = (product) => {
 /* ================================================= */
 
 export default function ProductsList() {
-  const [wishlisted, setWishlisted] = useState({});
+  const filters = useFilters();
   const { addToCart } = useCart();
+  const [wishlisted, setWishlisted] = useState({});
+
+  /* ================= APPLY FILTERS ================= */
+  const filteredProducts = products.filter((p) => {
+    const price = getDisplayPrice(p);
+
+    return (
+      (!filters.name ||
+        p.name?.toLowerCase().includes(filters.name.toLowerCase())) &&
+      (filters.categories.length === 0 ||
+        filters.categories.includes(p.category)) &&
+      (filters.brands.length === 0 ||
+        filters.brands.includes(p.brand)) &&
+      (!filters.minPrice || price >= Number(filters.minPrice)) &&
+      (!filters.maxPrice || price <= Number(filters.maxPrice))
+    );
+  });
 
   const toggleWishlist = (id) => {
     setWishlisted((prev) => ({
@@ -81,17 +109,15 @@ export default function ProductsList() {
       qty: 1,
     });
 
-    // 🔥 TOASTER
-    toast.success("Added to cart", {
-      icon: "🛒",
-      duration: 2000,
-    });
+    toast.success("Added to cart", { icon: "🛒", duration: 2000 });
   };
+
+  /* ================= UI ================= */
 
   return (
     <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-      {products.length > 0 ? (
-        products.map((product) => {
+      {filteredProducts.length ? (
+        filteredProducts.map((product) => {
           const inStock = isInStock(product);
           const isWish = !!wishlisted[product.id];
 
@@ -100,11 +126,10 @@ export default function ProductsList() {
             product.rating?.value ??
             (typeof product.rating === "number" ? product.rating : 4.5);
 
-          const totalStock = getTotalStock(product);
-          const deliveryLabel = getDeliveryLabel(product);
-
           const salePrice = getDisplayPrice(product);
           const mrp = getDisplayMRP(product);
+          const totalStock = getTotalStock(product);
+          const deliveryLabel = getDeliveryLabel(product);
 
           return (
             <Link
@@ -113,7 +138,7 @@ export default function ProductsList() {
               className="bg-white rounded-xl shadow-sm hover:shadow-md transition p-3 flex flex-col"
             >
               {/* IMAGE */}
-              <div className="w-full aspect-[4/5] overflow-hidden rounded-lg mb-3 relative">
+              <div className="relative mb-3 w-full aspect-[4/5] overflow-hidden rounded-lg">
                 <img
                   src={product.thumbnail}
                   alt={product.name}
@@ -122,8 +147,7 @@ export default function ProductsList() {
 
                 {/* STOCK BADGE */}
                 <span
-                  className={`absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-semibold
-                  ${
+                  className={`absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
                     inStock
                       ? "bg-green-100 text-green-700"
                       : "bg-red-100 text-red-700"
@@ -134,13 +158,12 @@ export default function ProductsList() {
 
                 {/* WISHLIST */}
                 <button
-                  type="button"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     toggleWishlist(product.id);
                   }}
-                  className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 border border-gray-200 flex items-center justify-center shadow-sm"
+                  className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 border flex items-center justify-center"
                 >
                   <svg
                     className="w-4 h-4"
@@ -164,30 +187,26 @@ export default function ProductsList() {
               </p>
 
               {/* PRICE */}
-              <div className="mt-2 flex items-center justify-between">
-                <div>
-                  {mrp && mrp > salePrice ? (
-                    <div className="flex gap-2 items-center">
-                      <span className="text-base font-bold text-red-600">
-                        {formatPrice(salePrice)}
-                      </span>
-                      <span className="text-xs line-through text-gray-400">
-                        {formatPrice(mrp)}
-                      </span>
-                    </div>
-                  ) : (
+              <div className="mt-2 flex justify-between items-center">
+                {mrp && mrp > salePrice ? (
+                  <div className="flex gap-2 items-center">
                     <span className="text-base font-bold text-red-600">
                       {formatPrice(salePrice)}
                     </span>
-                  )}
-                </div>
+                    <span className="text-xs line-through text-gray-400">
+                      {formatPrice(mrp)}
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-base font-bold text-red-600">
+                    {formatPrice(salePrice)}
+                  </span>
+                )}
 
-                <div className="text-xs flex items-center gap-1">
-                  ⭐ {ratingValue}
-                </div>
+                <span className="text-xs">⭐ {ratingValue}</span>
               </div>
 
-              {/* QTY + DELIVERY */}
+              {/* META */}
               <div className="mt-1 flex justify-between text-[11px] text-gray-600">
                 <span>Qty: {totalStock} pc</span>
                 <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
@@ -199,12 +218,11 @@ export default function ProductsList() {
               <button
                 disabled={!inStock}
                 onClick={(e) => handleAddToCart(e, product)}
-                className={`mt-3 w-full text-sm font-semibold py-2 rounded-lg transition
-                  ${
-                    inStock
-                      ? "bg-red-600 text-white hover:bg-red-700"
-                      : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                  }`}
+                className={`mt-3 w-full py-2 text-sm font-semibold rounded-lg transition ${
+                  inStock
+                    ? "bg-red-600 text-white hover:bg-red-700"
+                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                }`}
               >
                 {inStock ? "Add to Cart" : "Out of Stock"}
               </button>
@@ -213,7 +231,7 @@ export default function ProductsList() {
         })
       ) : (
         <p className="col-span-full text-center text-gray-600">
-          No products available.
+          No products found.
         </p>
       )}
     </div>
