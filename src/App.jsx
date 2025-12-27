@@ -12,7 +12,6 @@ import LocationPopup from "./components/LocationPopup";
 import SearchBar from "./components/SearchBar";
 import { MapPin, SlidersHorizontal } from "lucide-react";
 
-
 /* ================= PAGES ================= */
 import Home from "./pages/Home";
 import Blog from "./pages/blog/Blog";
@@ -37,10 +36,15 @@ import MyOrders from "./pages/MyOrders/MyOrders";
 /* ================= CONTEXT ================= */
 import { CartProvider } from "./context/CartContext";
 import { OrderProvider } from "./context/OrderContext";
+import { WishlistProvider } from "./context/WishlistContext";
 import FilterModal from "./components/FilterModal";
 
-
 import OfferPagee from "./pages/offerpagee/offerpagee";
+
+/* ================= WISHLIST PAGE ================= */
+import Wishlist from "./pages/wishlist/Wishlist";
+import CartProductDetail from "./pages/cartproductdetail/CartProductDetail";
+
 
 /* ================= SERVICES PAGE ================= */
 function ServicesPage() {
@@ -88,16 +92,14 @@ function MainAppLayout() {
   const navKeys = ["shopping", "market", "services", "store", "news"];
 
   const [filters, setFilters] = useState({
-  name: "",
-  categories: [],
-  brands: [],
-  minPrice: "",
-  maxPrice: "",
-});
+    name: "",
+    categories: [],
+    brands: [],
+    minPrice: "",
+    maxPrice: "",
+  });
 
-const [showFilter, setShowFilter] = useState(false);
-
-
+  const [showFilter, setShowFilter] = useState(false);
 
   return (
     <main className="min-h-screen flex flex-col bg-gray-50">
@@ -135,14 +137,12 @@ const [showFilter, setShowFilter] = useState(false);
             <SearchBar />
           </div>
 
-          
           <button
-  onClick={() => setShowFilter(true)}
-  className="p-2 rounded-xl bg-gray-100 active:scale-95 transition"
->
-  <SlidersHorizontal size={20} className="text-gray-700" />
-</button>
-
+            onClick={() => setShowFilter(true)}
+            className="p-2 rounded-xl bg-gray-100 active:scale-95 transition"
+          >
+            <SlidersHorizontal size={20} className="text-gray-700" />
+          </button>
         </div>
       </div>
 
@@ -172,25 +172,20 @@ const [showFilter, setShowFilter] = useState(false);
         <div className="flex-1 min-w-0">
           {/* DESKTOP SEARCH + FILTER */}
           <div className="hidden lg:flex items-center w-full bg-gray-100 px-4 py-2 border border-gray-200 gap-2">
-  <div className="flex-1">
-    <SearchBar />
-  </div>
+            <div className="flex-1">
+              <SearchBar />
+            </div>
 
- <button
-  onClick={() => setShowFilter(true)}
-  className="h-[48px] px-3 flex items-center justify-center rounded-xl bg-white border border-zinc-400 hover:bg-gray-50 transition"
->
-  <SlidersHorizontal size={18} className="text-gray-700" />
-</button>
-
-
-</div>
-
+            <button
+              onClick={() => setShowFilter(true)}
+              className="h-[48px] px-3 flex items-center justify-center rounded-xl bg-white border border-zinc-400 hover:bg-gray-50 transition"
+            >
+              <SlidersHorizontal size={18} className="text-gray-700" />
+            </button>
+          </div>
 
           <div className="px-4 pb-10">
-           
             <Outlet context={{ filters }} />
-
           </div>
         </div>
       </div>
@@ -203,16 +198,14 @@ const [showFilter, setShowFilter] = useState(false);
           close={() => setShowLocationPopup(false)}
           setLocation={setUserLocation}
         />
-
-        
       )}
-      
-<FilterModal
-  open={showFilter}
-  onClose={() => setShowFilter(false)}
-  filters={filters}
-  setFilters={setFilters}
-/>
+
+      <FilterModal
+        open={showFilter}
+        onClose={() => setShowFilter(false)}
+        filters={filters}
+        setFilters={setFilters}
+      />
     </main>
   );
 }
@@ -222,47 +215,53 @@ export default function App() {
   return (
     <CartProvider>
       <OrderProvider>
-        <Toaster
-          position="bottom-center"
-          toastOptions={{
-            duration: 2000,
-            style: {
-              borderRadius: "14px",
-              background: "#111",
-              color: "#fff",
-              fontWeight: "500",
-            },
-          }}
-        />
+        <WishlistProvider>
+          <Toaster
+            position="bottom-center"
+            toastOptions={{
+              duration: 2000,
+              style: {
+                borderRadius: "14px",
+                background: "#111",
+                color: "#fff",
+                fontWeight: "500",
+              },
+            }}
+          />
 
-        <Routes>
-          <Route path="/" element={<MainAppLayout />}>
-            <Route index element={<Home />} />
+          <Routes>
+            <Route path="/" element={<MainAppLayout />}>
+              <Route index element={<Home />} />
 
-            <Route path="shopping" element={<Shopping />} />
-            <Route path="shopping/:id" element={<ProductsDetails />} />
-            <Route path="seller/:sellerSlug" element={<SellerPage />} />
+              <Route path="shopping" element={<Shopping />} />
+              <Route path="shopping/:id" element={<ProductsDetails />} />
+              <Route path="seller/:sellerSlug" element={<SellerPage />} />
 
-            <Route path="cart" element={<CartPage />} />
-            <Route path="checkout" element={<CheckoutPage />} />
-            <Route path="order-success/:id" element={<OrderSuccess />} />
-            <Route path="my-orders" element={<MyOrders />} />
+              <Route path="cart" element={<CartPage />} />
+              <Route path="checkout" element={<CheckoutPage />} />
+              <Route path="order-success/:id" element={<OrderSuccess />} />
+              <Route path="my-orders" element={<MyOrders />} />
 
-            <Route path="store" element={<Storep />} />
-            <Route path="store/:id" element={<Storedetails />} />
+              <Route path="wishlist" element={<Wishlist />} />
 
-            <Route path="market" element={<Marketp />} />
-            <Route path="market/:id" element={<MarketProductsdetails />} />
+              <Route path="store" element={<Storep />} />
+              <Route path="store/:id" element={<Storedetails />} />
 
-            <Route path="services" element={<ServicesPage />} />
+              <Route path="market" element={<Marketp />} />
+              <Route path="market/:id" element={<MarketProductsdetails />} />
 
-            <Route path="blog" element={<Blog />} />
-            <Route path="blog/:slug" element={<BlogDetails />} />
-            <Route path="/offerpage" element={<OfferPagee />} />
-          </Route>
-        </Routes>
+              <Route path="services" element={<ServicesPage />} />
+
+              <Route path="blog" element={<Blog />} />
+              <Route path="blog/:slug" element={<BlogDetails />} />
+
+              <Route path="/offerpage" element={<OfferPagee />} />
+              <Route path="cart-product/:id" element={<CartProductDetail />} />
+
+            </Route>
+          </Routes>
+        </WishlistProvider>
       </OrderProvider>
     </CartProvider>
   );
 }
-

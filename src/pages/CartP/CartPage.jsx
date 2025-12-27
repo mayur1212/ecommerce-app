@@ -7,8 +7,6 @@ const formatPrice = (price = 0) => `₹${price.toLocaleString()}`;
 export default function CartPage() {
   const navigate = useNavigate();
 
-  // ✅ SAFE CONTEXT
-  const cartContext = useCart() || {};
   const {
     cartItems = [],
     savedItems = [],
@@ -17,15 +15,13 @@ export default function CartPage() {
     saveForLater = () => {},
     moveToCart = () => {},
     clearCart = () => {},
-  } = cartContext;
+  } = useCart() || {};
 
-  /* ---------------- SUBTOTAL ---------------- */
   const subtotal = cartItems.reduce(
     (sum, item) => sum + (item.price || 0) * (item.qty || 1),
     0
   );
 
-  /* ---------------- DELIVERY CHARGES (🔥 MAIN FIX) ---------------- */
   const deliveryCharge = cartItems.reduce(
     (sum, item) => sum + (item.deliveryCharge || 0),
     0
@@ -33,17 +29,11 @@ export default function CartPage() {
 
   const total = subtotal + deliveryCharge;
 
-  /* ================= EMPTY CART ================= */
   if (!cartItems.length && !savedItems.length) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center">
-        <h2 className="text-2xl font-bold mb-3">
-          Your cart is empty 🛒
-        </h2>
-        <Link
-          to="/shopping"
-          className="text-orange-600 font-semibold hover:underline"
-        >
+      <div className="min-h-[60vh] flex flex-col items-center justify-center">
+        <h2 className="text-2xl font-bold mb-3">Your cart is empty 🛒</h2>
+        <Link to="/shopping" className="text-orange-600 font-semibold">
           Continue Shopping →
         </Link>
       </div>
@@ -52,32 +42,42 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto w-full max-w-[95%] lg:max-w-[90%] px-4 py-8">
+      <div className="mx-auto max-w-[90%] px-4 py-8">
         <h1 className="text-2xl font-bold mb-8">My Cart</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* LEFT – CART ITEMS */}
+          {/* LEFT */}
           <div className="lg:col-span-2 space-y-6">
             {cartItems.map((item) => (
               <div
                 key={`${item.productId}-${item.variant?.id || ""}`}
-                className="bg-white rounded-2xl shadow-sm border p-5 flex gap-4"
+                className="bg-white rounded-2xl border p-5 flex gap-4"
               >
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-28 h-28 object-cover rounded-xl"
-                />
+                {/* 🔥 LINK WITH PARAMS */}
+                <Link
+                  to={`/cart-product/${item.productId}?color=${item.variant?.color || ""}&size=${item.variant?.size || ""}&weight=${item.variant?.weight || ""}&qty=${item.qty}`}
+                  className="flex gap-4"
+                >
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-28 h-28 object-cover rounded-xl"
+                  />
+                </Link>
 
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900">
-                    {item.name}
-                  </h3>
+                  <Link
+                    to={`/cart-product/${item.productId}?color=${item.variant?.color || ""}&size=${item.variant?.size || ""}&weight=${item.variant?.weight || ""}&qty=${item.qty}`}
+                    className="hover:underline"
+                  >
+                    <h3 className="font-semibold">{item.name}</h3>
+                  </Link>
 
                   {item.variant && (
                     <p className="text-xs text-gray-500 mt-1">
                       {item.variant.color && `Color: ${item.variant.color}`}{" "}
-                      {item.variant.size && `• Size: ${item.variant.size}`}
+                      {item.variant.size && `• Size: ${item.variant.size}`}{" "}
+                      {item.variant.weight && `• Weight: ${item.variant.weight}`}
                     </p>
                   )}
 
@@ -85,7 +85,6 @@ export default function CartPage() {
                     {formatPrice(item.price)}
                   </p>
 
-                  {/* DELIVERY INFO (OPTIONAL, NICE TOUCH) */}
                   <p className="text-xs text-gray-500 mt-1">
                     Delivery:{" "}
                     {item.deliveryCharge === 0
@@ -93,15 +92,15 @@ export default function CartPage() {
                       : formatPrice(item.deliveryCharge)}
                   </p>
 
-                  {/* ACTIONS */}
-                  <div className="flex flex-wrap items-center gap-4 mt-4">
-                    <div className="flex items-center border rounded-xl overflow-hidden">
+                  {/* QTY */}
+                  <div className="flex items-center gap-4 mt-4">
+                    <div className="flex items-center border rounded-xl">
                       <button
                         onClick={() =>
                           updateQty(item.productId, item.qty - 1)
                         }
                         disabled={item.qty <= 1}
-                        className="px-3 py-1 text-lg disabled:opacity-40"
+                        className="px-3 py-1 text-lg"
                       >
                         −
                       </button>
@@ -122,14 +121,14 @@ export default function CartPage() {
 
                     <button
                       onClick={() => saveForLater(item.productId)}
-                      className="text-sm text-blue-600 hover:underline"
+                      className="text-sm text-blue-600"
                     >
                       Save for later
                     </button>
 
                     <button
                       onClick={() => removeFromCart(item.productId)}
-                      className="text-sm text-red-500 hover:underline"
+                      className="text-sm text-red-500"
                     >
                       Remove
                     </button>
@@ -137,80 +136,35 @@ export default function CartPage() {
                 </div>
               </div>
             ))}
-
-            {/* SAVED FOR LATER */}
-            {savedItems.length > 0 && (
-              <div className="mt-10">
-                <h2 className="text-xl font-bold mb-4">
-                  Saved for later ({savedItems.length})
-                </h2>
-
-                <div className="space-y-4">
-                  {savedItems.map((item) => (
-                    <div
-                      key={item.productId}
-                      className="bg-white rounded-2xl border p-4 flex gap-4"
-                    >
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-20 h-20 rounded-xl object-cover"
-                      />
-
-                      <div className="flex-1">
-                        <h3 className="font-semibold">
-                          {item.name}
-                        </h3>
-
-                        <p className="mt-1 font-bold text-red-600">
-                          {formatPrice(item.price)}
-                        </p>
-
-                        <button
-                          onClick={() => moveToCart(item.productId)}
-                          className="mt-2 text-sm text-green-600 hover:underline"
-                        >
-                          Move to cart
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
-          {/* RIGHT – PRICE SUMMARY */}
-          <div className="lg:sticky lg:top-24 h-fit">
-            <div className="bg-white rounded-2xl shadow-md border p-6">
-              <h2 className="text-lg font-semibold mb-4">
-                Price Details
-              </h2>
+          {/* RIGHT */}
+          <div className="lg:sticky lg:top-24">
+            <div className="bg-white rounded-2xl border p-6">
+              <h2 className="font-semibold mb-4">Price Details</h2>
 
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span>Subtotal</span>
-                  <span>{formatPrice(subtotal)}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Delivery</span>
-                  <span>
-                    {deliveryCharge === 0
-                      ? "FREE"
-                      : formatPrice(deliveryCharge)}
-                  </span>
-                </div>
+              <div className="flex justify-between text-sm">
+                <span>Subtotal</span>
+                <span>{formatPrice(subtotal)}</span>
               </div>
 
-              <div className="flex justify-between text-lg font-bold border-t pt-4 mt-4">
+              <div className="flex justify-between text-sm mt-2">
+                <span>Delivery</span>
+                <span>
+                  {deliveryCharge === 0
+                    ? "FREE"
+                    : formatPrice(deliveryCharge)}
+                </span>
+              </div>
+
+              <div className="flex justify-between font-bold text-lg border-t mt-4 pt-4">
                 <span>Total</span>
                 <span>{formatPrice(total)}</span>
               </div>
 
               <button
                 onClick={() => navigate("/checkout")}
-                className="mt-6 w-full bg-orange-500 text-white py-3 rounded-xl font-semibold hover:bg-orange-600"
+                className="mt-6 w-full bg-orange-500 text-white py-3 rounded-xl font-semibold"
               >
                 Proceed to Checkout
               </button>

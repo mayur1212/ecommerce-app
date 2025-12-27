@@ -1,6 +1,7 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+
 
 import { useParams, Link } from "react-router-dom";
 import products from "../../data/products.json";
@@ -241,6 +242,10 @@ export default function ProductsDetails() {
 
   const navigate = useNavigate();
   const { addToCart } = useCart();
+   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+  
 
   const handleAddToCart = () => {
   const cartItem = {
@@ -513,6 +518,7 @@ const uniqueWeights = [...new Set(variants.map(v => v.weight).filter(Boolean))];
                 <span className="font-medium">Total for {quantity} item{quantity > 1 ? "s" : ""}: </span>
                 <span className="font-bold text-blue-700">{formatPrice(totalPrice)}</span>
               </div>
+              
             </div>
 
             {/* ================= COLOR ================= */}

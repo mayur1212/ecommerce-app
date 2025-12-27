@@ -71,7 +71,13 @@ export default function Header({ mobileOpen, setMobileOpen }) {
             <div className="flex items-center gap-3">
               <User size={18} className="cursor-pointer" />
               <CalendarCheck size={18} className="cursor-pointer" />
-              <Heart size={18} className="cursor-pointer" />
+
+              {/* ✅ WISHLIST */}
+              <Heart
+                size={18}
+                className="cursor-pointer"
+                onClick={() => navigate("/wishlist")}
+              />
 
               {/* ✅ CART */}
               <ShoppingBag
@@ -130,7 +136,11 @@ export default function Header({ mobileOpen, setMobileOpen }) {
                   <span>Booking</span>
                 </div>
 
-                <div className="flex flex-col items-center text-[11px] cursor-pointer">
+                {/* ✅ WISHLIST */}
+                <div
+                  className="flex flex-col items-center text-[11px] cursor-pointer"
+                  onClick={() => navigate("/wishlist")}
+                >
                   <Heart size={22} />
                   <span>Wishlist</span>
                 </div>

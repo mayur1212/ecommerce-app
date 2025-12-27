@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import toast from "react-hot-toast";
 import products from "../../data/products.json";
 import { useCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
 
 /* ================= GET FILTERS FROM OUTLET ================= */
 const useFilters = () => {
@@ -72,7 +73,9 @@ const isInStock = (product) => {
 export default function ProductsList() {
   const filters = useFilters();
   const { addToCart } = useCart();
-  const [wishlisted, setWishlisted] = useState({});
+
+  /* ✅ WISHLIST CONTEXT */
+  const { toggleWishlist, isWishlisted } = useWishlist();
 
   /* ================= APPLY FILTERS ================= */
   const filteredProducts = products.filter((p) => {
@@ -89,13 +92,6 @@ export default function ProductsList() {
       (!filters.maxPrice || price <= Number(filters.maxPrice))
     );
   });
-
-  const toggleWishlist = (id) => {
-    setWishlisted((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
 
   const handleAddToCart = (e, product) => {
     e.preventDefault();
@@ -119,7 +115,7 @@ export default function ProductsList() {
       {filteredProducts.length ? (
         filteredProducts.map((product) => {
           const inStock = isInStock(product);
-          const isWish = !!wishlisted[product.id];
+          const isWish = isWishlisted(product.id);
 
           const ratingValue =
             product.rating?.stars ??
@@ -156,12 +152,12 @@ export default function ProductsList() {
                   {inStock ? "In Stock" : "Out of Stock"}
                 </span>
 
-                {/* WISHLIST */}
+                {/* ❤️ WISHLIST */}
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    toggleWishlist(product.id);
+                    toggleWishlist(product);
                   }}
                   className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 border flex items-center justify-center"
                 >

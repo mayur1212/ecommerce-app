@@ -12,14 +12,23 @@ export default function CheckoutPage() {
 
   const [loading, setLoading] = useState(false);
 
-  /* ---------------- ADDRESS STATE ---------------- */
+  /* ================= ADDRESS STATE ================= */
   const [address, setAddress] = useState({
-    name: "",
-    phone: "",
-    addressLine: "",
+    firstName: "",
+    lastName: "",
+    mobile: "",
+    alternateMobile: "",
+    email: "",
+    addressLine2: "",
+    addressLine1: "",
     city: "",
+    state: "",
+    country: "",
     pincode: "",
   });
+
+  /* ================= PAYMENT STATE ================= */
+  const [paymentMethod, setPaymentMethod] = useState(""); // "" | "cod" | "upi"
 
   const handleChange = (e) => {
     setAddress((prev) => ({
@@ -28,87 +37,79 @@ export default function CheckoutPage() {
     }));
   };
 
-  /* ---------------- LIVE LOCATION ---------------- */
-  const useLiveLocation = () => {
-    if (!navigator.geolocation) {
-      alert("Geolocation not supported");
+  /* ================= PRICE ================= */
+  const subtotal = useMemo(
+    () =>
+      cartItems.reduce(
+        (sum, item) => sum + item.price * item.qty,
+        0
+      ),
+    [cartItems]
+  );
+
+  const deliveryCharge = useMemo(
+    () =>
+      cartItems.reduce(
+        (sum, item) => sum + (item.deliveryCharge || 0),
+        0
+      ),
+    [cartItems]
+  );
+
+  const gst = Math.round(subtotal * 0.05);
+  const platformFee = 10;
+
+  const total = subtotal + deliveryCharge + gst + platformFee;
+
+  /* ================= PLACE ORDER ================= */
+  const handlePayNow = () => {
+    const {
+      firstName,
+      lastName,
+      mobile,
+      email,
+      addressLine1,
+      addressLine2,
+      city,
+      state,
+      country,
+      pincode,
+    } = address;
+
+    if (
+      !firstName ||
+      !lastName ||
+      !mobile ||
+      !email ||
+      !addressLine1 ||
+      !addressLine2 ||
+      !city ||
+      !state ||
+      !country ||
+      !pincode
+    ) {
+      alert("Please fill all required delivery address fields");
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-
-        setAddress((prev) => ({
-          ...prev,
-          addressLine: `Lat ${latitude}, Lng ${longitude}`,
-          city: "Auto detected",
-          pincode: "------",
-        }));
-      },
-      () => alert("Unable to fetch live location")
-    );
-  };
-
-  /* ---------------- PRICE CALCULATION ---------------- */
-
-  // Subtotal
-  const subtotal = useMemo(() => {
-    return cartItems.reduce(
-      (sum, item) => sum + item.price * item.qty,
-      0
-    );
-  }, [cartItems]);
-
-  // 🔥 DELIVERY CHARGE = SUM of all products
-  const deliveryCharge = useMemo(() => {
-    return cartItems.reduce(
-      (sum, item) => sum + (item.deliveryCharge || 0),
-      0
-    );
-  }, [cartItems]);
-
-  const gst = Math.round(subtotal * 0.05); // 5% GST
-  const platformFee = 10;
-
-  const [coupon, setCoupon] = useState("");
-  const [discount, setDiscount] = useState(0);
-
-  const applyCoupon = () => {
-    if (coupon === "SAVE10") {
-      setDiscount(Math.round(subtotal * 0.1));
-    } else {
-      setDiscount(0);
-      alert("Invalid coupon");
-    }
-  };
-
-  const total =
-    subtotal +
-    deliveryCharge +
-    gst +
-    platformFee -
-    discount;
-
-  /* ---------------- PLACE ORDER ---------------- */
-  const handlePayNow = () => {
-    const { name, phone, addressLine, city, pincode } = address;
-
-    if (!name || !phone || !addressLine || !city || !pincode) {
-      alert("Please fill all delivery details");
+    if (!paymentMethod) {
+      alert("Please select a payment method");
       return;
     }
 
     setLoading(true);
 
     setTimeout(() => {
-      const orderId = placeOrder(cartItems, total, address);
+      const orderId = placeOrder(cartItems, total, {
+        ...address,
+        paymentMethod,
+      });
       clearCart();
       navigate(`/order-success/${orderId}`);
     }, 1200);
   };
 
-  /* ---------------- EMPTY CART ---------------- */
+  /* ================= EMPTY CART ================= */
   if (!cartItems.length) {
     return (
       <div className="max-w-md mx-auto px-4 py-10 text-center">
@@ -132,85 +133,73 @@ export default function CheckoutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* LEFT */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-2xl shadow-sm border p-6">
+            {/* DELIVERY ADDRESS */}
+            <div className="bg-white rounded-2xl border p-6">
               <h2 className="text-lg font-semibold mb-4">
                 Delivery Address
               </h2>
 
-              <div className="space-y-4">
-                <input
-                  name="name"
-                  placeholder="Full Name"
-                  value={address.name}
-                  onChange={handleChange}
-                  className="w-full border rounded-xl px-4 py-3"
-                />
+              <div className="grid sm:grid-cols-2 gap-4">
+                <input name="firstName" placeholder="First Name *" value={address.firstName} onChange={handleChange} className="border rounded-xl px-4 py-3" />
+                <input name="lastName" placeholder="Last Name *" value={address.lastName} onChange={handleChange} className="border rounded-xl px-4 py-3" />
+                <input name="mobile" placeholder="Mobile Number *" value={address.mobile} onChange={handleChange} className="border rounded-xl px-4 py-3" />
+                <input name="alternateMobile" placeholder="Alternate Mobile (Optional)" value={address.alternateMobile} onChange={handleChange} className="border rounded-xl px-4 py-3" />
+                <input name="email" placeholder="Email Address *" value={address.email} onChange={handleChange} className="border rounded-xl px-4 py-3 sm:col-span-2" />
+              </div>
 
-                <input
-                  name="phone"
-                  placeholder="Phone Number"
-                  value={address.phone}
-                  onChange={handleChange}
-                  className="w-full border rounded-xl px-4 py-3"
-                />
+              <div className="mt-4 space-y-4">
+                <input name="addressLine2" placeholder="Address Line 2 (House / Building) *" value={address.addressLine2} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
+                <textarea name="addressLine1" placeholder="Address Line 1 (Street / Area) *" value={address.addressLine1} onChange={handleChange} rows={3} className="w-full border rounded-xl px-4 py-3" />
 
-                <textarea
-                  name="addressLine"
-                  placeholder="Full Address"
-                  value={address.addressLine}
-                  onChange={handleChange}
-                  rows={3}
-                  className="w-full border rounded-xl px-4 py-3"
-                />
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <input
-                    name="city"
-                    placeholder="City"
-                    value={address.city}
-                    onChange={handleChange}
-                    className="sm:col-span-2 border rounded-xl px-4 py-3"
-                  />
-                  <input
-                    name="pincode"
-                    placeholder="Pincode"
-                    value={address.pincode}
-                    onChange={handleChange}
-                    className="border rounded-xl px-4 py-3"
-                  />
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <input name="city" placeholder="Town / City *" value={address.city} onChange={handleChange} className="border rounded-xl px-4 py-3" />
+                  <input name="state" placeholder="State *" value={address.state} onChange={handleChange} className="border rounded-xl px-4 py-3" />
+                  <input name="country" placeholder="Country *" value={address.country} onChange={handleChange} className="border rounded-xl px-4 py-3" />
+                  <input name="pincode" placeholder="Pin Code *" value={address.pincode} onChange={handleChange} className="border rounded-xl px-4 py-3" />
                 </div>
-
-                <button
-                  onClick={useLiveLocation}
-                  className="w-full border border-blue-500 text-blue-600 py-2 rounded-xl font-semibold hover:bg-blue-50"
-                >
-                  📍 Use Live Location
-                </button>
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border p-6">
+            {/* PAYMENT METHOD */}
+            <div className="bg-white rounded-2xl border p-6">
               <h2 className="text-lg font-semibold mb-4">
                 Payment Method
               </h2>
 
-              <label className="flex items-center gap-3">
-                <input type="radio" checked readOnly />
-                <span className="font-medium">
-                  Cash on Delivery
-                </span>
-              </label>
+              <div className="space-y-3">
+                <label className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer ${paymentMethod === "cod" ? "border-orange-500 bg-orange-50" : ""}`}>
+                  <input
+                    type="radio"
+                    name="payment"
+                    value="cod"
+                    checked={paymentMethod === "cod"}
+                    onChange={() => setPaymentMethod("cod")}
+                  />
+                  <span className="font-medium">Cash on Delivery</span>
+                </label>
+
+                <label className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer ${paymentMethod === "upi" ? "border-orange-500 bg-orange-50" : ""}`}>
+                  <input
+                    type="radio"
+                    name="payment"
+                    value="upi"
+                    checked={paymentMethod === "upi"}
+                    onChange={() => setPaymentMethod("upi")}
+                  />
+                  <span className="font-medium">UPI / Online Payment</span>
+                </label>
+              </div>
             </div>
           </div>
 
           {/* RIGHT */}
           <div className="lg:sticky lg:top-24 h-fit">
-            <div className="bg-white rounded-2xl shadow-md border p-6">
+            <div className="bg-white rounded-2xl border p-6">
               <h2 className="text-lg font-semibold mb-4">
                 Order Summary
               </h2>
 
-              <div className="space-y-3 text-sm">
+              <div className="space-y-2 text-sm">
                 {cartItems.map((item) => (
                   <div key={item.productId} className="flex justify-between">
                     <span>{item.name} × {item.qty}</span>
@@ -220,56 +209,15 @@ export default function CheckoutPage() {
               </div>
 
               <div className="border-t mt-4 pt-4 space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span>Subtotal</span>
-                  <span>{formatPrice(subtotal)}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Delivery charges</span>
-                  <span>
-                    {deliveryCharge === 0
-                      ? "FREE"
-                      : formatPrice(deliveryCharge)}
-                  </span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>GST (5%)</span>
-                  <span>{formatPrice(gst)}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Platform Fee</span>
-                  <span>{formatPrice(platformFee)}</span>
-                </div>
-
-                {discount > 0 && (
-                  <div className="flex justify-between text-green-600">
-                    <span>Discount</span>
-                    <span>-{formatPrice(discount)}</span>
-                  </div>
-                )}
+                <div className="flex justify-between"><span>Subtotal</span><span>{formatPrice(subtotal)}</span></div>
+                <div className="flex justify-between"><span>Delivery</span><span>{deliveryCharge === 0 ? "FREE" : formatPrice(deliveryCharge)}</span></div>
+                <div className="flex justify-between"><span>GST (5%)</span><span>{formatPrice(gst)}</span></div>
+                <div className="flex justify-between"><span>Platform Fee</span><span>{formatPrice(platformFee)}</span></div>
               </div>
 
               <div className="flex justify-between text-lg font-bold border-t pt-4 mt-4">
                 <span>Total</span>
                 <span>{formatPrice(total)}</span>
-              </div>
-
-              <div className="flex gap-2 mt-4">
-                <input
-                  value={coupon}
-                  onChange={(e) => setCoupon(e.target.value)}
-                  placeholder="Coupon code"
-                  className="flex-1 border rounded-xl px-3 py-2"
-                />
-                <button
-                  onClick={applyCoupon}
-                  className="bg-black text-white px-4 rounded-xl"
-                >
-                  Apply
-                </button>
               </div>
 
               <button
