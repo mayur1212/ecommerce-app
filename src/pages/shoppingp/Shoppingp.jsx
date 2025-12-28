@@ -9,18 +9,21 @@ import HeroOfferBanner from "../../components/Shoping/HeroOfferBanner";
 
 export default function Shoppingp() {
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      
-
+    <div className="w-full px-2 sm:px-4 lg:px-6 py-4">
       <ShoppingBanner />
       <HeroOfferBanner />
       <TrendingProducts />
-      <h1 className="text-xl sm:text-2xl font-bold">Shopping</h1>
 
-      <p className="text-sm text-gray-600 mt-1 mb-6">
+      <h1 className="text-lg sm:text-xl font-bold mt-4">
+        Shopping
+      </h1>
+
+      <p className="text-sm text-gray-600 mt-1 mb-4">
         Explore trending products across beauty, electronics, fashion, home & fitness.
       </p>
+
       <ProductsList />
     </div>
   );
 }
+

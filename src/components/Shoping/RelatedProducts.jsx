@@ -130,36 +130,48 @@ export default function RelatedProducts({
 
             return (
               <Link
-                key={p.id}
-                to={`/shopping/${p.id}`}
-                className="block bg-white rounded-2xl border border-gray-100 hover:shadow-md transition overflow-hidden"
-              >
-                <div className="w-full h-32 bg-gray-50 overflow-hidden">
-                  <img
-                    src={image}
-                    alt={name}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform"
-                  />
-                </div>
+  key={p.id}
+  to={`/shopping/${p.id}`}
+  className="
+    group block bg-white
+    rounded-xl border border-gray-100
+    hover:shadow-lg transition
+    overflow-hidden
+  "
+>
+  {/* IMAGE */}
+  <div className="relative w-full aspect-square bg-gray-50 overflow-hidden">
+    <img
+      src={image}
+      alt={name}
+      className="
+        w-full h-full object-cover
+        transition-transform duration-300
+        group-hover:scale-110
+      "
+    />
+  </div>
 
-                <div className="p-3 flex flex-col gap-1">
-                  <h3 className="text-sm font-semibold line-clamp-2">
-                    {name}
-                  </h3>
+  {/* CONTENT */}
+  <div className="p-3 flex flex-col gap-1">
+    <h3 className="text-sm font-semibold line-clamp-2 leading-snug">
+      {name}
+    </h3>
 
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-red-600">
-                      {formatPrice(salePrice)}
-                    </span>
+    <div className="flex items-center gap-2 mt-1">
+      <span className="text-sm font-bold text-red-600">
+        {formatPrice(salePrice)}
+      </span>
 
-                    {mrp && mrp > salePrice && (
-                      <span className="text-[10px] line-through text-gray-400">
-                        {formatPrice(mrp)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </Link>
+      {mrp && mrp > salePrice && (
+        <span className="text-[11px] line-through text-gray-400">
+          {formatPrice(mrp)}
+        </span>
+      )}
+    </div>
+  </div>
+</Link>
+
             );
           })}
         </div>

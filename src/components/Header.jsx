@@ -1,5 +1,6 @@
 // src/components/Header.jsx
 import React, { useState } from "react";
+import Badge from "./ui/Badge";
 import {
   MapPin,
   Heart,
@@ -12,12 +13,24 @@ import {
 import LOGO from "../assets/ecommerce-logo12.png";
 import LocationPopup from "./LocationPopup";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
 
 export default function Header({ mobileOpen, setMobileOpen }) {
   const [location, setLocation] = useState("Select Location");
   const [openPopup, setOpenPopup] = useState(false);
 
   const navigate = useNavigate();
+
+  // ✅ CART COUNT (already correct)
+  const { cartItems = [] } = useCart() || {};
+
+  // ✅ WISHLIST COUNT (SAFE FIX)
+  const wishlistContext = useWishlist() || {};
+  const wishlistItems =
+    wishlistContext.wishlistItems ||
+    wishlistContext.wishlist ||
+    [];
 
   // ✅ only route navigation
   const handleNavClick = (key) => {
@@ -72,19 +85,25 @@ export default function Header({ mobileOpen, setMobileOpen }) {
               <User size={18} className="cursor-pointer" />
               <CalendarCheck size={18} className="cursor-pointer" />
 
-              {/* ✅ WISHLIST */}
-              <Heart
-                size={18}
-                className="cursor-pointer"
-                onClick={() => navigate("/wishlist")}
-              />
+              {/* ❤️ WISHLIST */}
+              <div className="relative">
+                <Heart
+                  size={18}
+                  className="cursor-pointer"
+                  onClick={() => navigate("/wishlist")}
+                />
+                <Badge count={wishlistItems.length} />
+              </div>
 
-              {/* ✅ CART */}
-              <ShoppingBag
-                size={18}
-                className="cursor-pointer"
-                onClick={() => navigate("/cart")}
-              />
+              {/* 🛒 CART */}
+              <div className="relative">
+                <ShoppingBag
+                  size={18}
+                  className="cursor-pointer"
+                  onClick={() => navigate("/cart")}
+                />
+                <Badge count={cartItems.length} />
+              </div>
 
               <button onClick={() => setMobileOpen((s) => !s)}>
                 {mobileOpen ? <X size={20} /> : <Menu size={20} />}
@@ -136,21 +155,23 @@ export default function Header({ mobileOpen, setMobileOpen }) {
                   <span>Booking</span>
                 </div>
 
-                {/* ✅ WISHLIST */}
+                {/* ❤️ WISHLIST */}
                 <div
-                  className="flex flex-col items-center text-[11px] cursor-pointer"
+                  className="relative flex flex-col items-center text-[11px] cursor-pointer"
                   onClick={() => navigate("/wishlist")}
                 >
                   <Heart size={22} />
+                  <Badge count={wishlistItems.length} />
                   <span>Wishlist</span>
                 </div>
 
-                {/* ✅ CART */}
+                {/* 🛒 CART */}
                 <div
-                  className="flex flex-col items-center text-[11px] cursor-pointer"
+                  className="relative flex flex-col items-center text-[11px] cursor-pointer"
                   onClick={() => navigate("/cart")}
                 >
                   <ShoppingBag size={22} />
+                  <Badge count={cartItems.length} />
                   <span>Cart</span>
                 </div>
               </div>

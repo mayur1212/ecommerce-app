@@ -12,6 +12,7 @@ export const WishlistProvider = ({ children }) => {
     localStorage.setItem("wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
 
+  // ✅ Toggle wishlist (object based, safe)
   const toggleWishlist = (product) => {
     setWishlist((prev) => {
       const updated = { ...prev };
@@ -24,11 +25,22 @@ export const WishlistProvider = ({ children }) => {
     });
   };
 
+  // ✅ Check if wishlisted
   const isWishlisted = (id) => !!wishlist[id];
+
+  // ✅ DERIVED DATA (THIS FIXES HEADER COUNT)
+  const wishlistItems = Object.values(wishlist); // array
+  const wishlistCount = wishlistItems.length;
 
   return (
     <WishlistContext.Provider
-      value={{ wishlist, toggleWishlist, isWishlisted }}
+      value={{
+        wishlist,          // original object (no breaking change)
+        wishlistItems,     // ✅ array for UI
+        wishlistCount,     // ✅ direct count (best for badge)
+        toggleWishlist,
+        isWishlisted,
+      }}
     >
       {children}
     </WishlistContext.Provider>

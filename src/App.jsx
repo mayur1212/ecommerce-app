@@ -1,6 +1,7 @@
 // src/App.jsx
 import React, { useState } from "react";
 import { Routes, Route, useNavigate, Outlet } from "react-router-dom";
+import ScrollToTop from "./components/ScrollToTop";
 
 /* ================= COMPONENTS ================= */
 import { Toaster } from "react-hot-toast";
@@ -216,6 +217,7 @@ export default function App() {
     <CartProvider>
       <OrderProvider>
         <WishlistProvider>
+          <ScrollToTop />
           <Toaster
             position="bottom-center"
             toastOptions={{

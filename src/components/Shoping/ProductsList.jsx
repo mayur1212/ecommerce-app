@@ -108,6 +108,21 @@ export default function ProductsList() {
     toast.success("Added to cart", { icon: "🛒", duration: 2000 });
   };
 
+  const handleWishlist = (e, product, isWish) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    toggleWishlist(product);
+
+    toast(
+      isWish ? "Removed from wishlist" : "Added to wishlist",
+      {
+        icon: isWish ? "💔" : "❤️",
+        duration: 1800,
+      }
+    );
+  };
+
   /* ================= UI ================= */
 
   return (
@@ -154,11 +169,9 @@ export default function ProductsList() {
 
                 {/* ❤️ WISHLIST */}
                 <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggleWishlist(product);
-                  }}
+                  onClick={(e) =>
+                    handleWishlist(e, product, isWish)
+                  }
                   className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 border flex items-center justify-center"
                 >
                   <svg
