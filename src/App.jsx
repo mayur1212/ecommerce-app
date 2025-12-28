@@ -147,22 +147,7 @@ function MainAppLayout() {
         </div>
       </div>
 
-      {/* ========== MOBILE DRAWER ========== */}
-      {mobileOpen && (
-        <div className="md:hidden w-full bg-white border-b border-gray-200 shadow-sm">
-          <nav className="flex flex-col py-2">
-            {navKeys.map((key) => (
-              <button
-                key={key}
-                onClick={() => handleNavClick(key)}
-                className="px-4 py-2 text-left text-sm text-gray-800 hover:bg-gray-100"
-              >
-                {key.charAt(0).toUpperCase() + key.slice(1)}
-              </button>
-            ))}
-          </nav>
-        </div>
-      )}
+      
 
       {/* ========== DESKTOP LAYOUT ========== */}
       <div className="flex w-full">
