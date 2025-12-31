@@ -33,6 +33,7 @@ import CartPage from "./pages/CartP/CartPage";
 import CheckoutPage from "./pages/CheckoutP/CheckoutPage";
 import OrderSuccess from "./pages/OrderSuccess/OrderSuccess";
 import MyOrders from "./pages/MyOrders/MyOrders";
+import OrderProductDetailPage from "./pages/OrderProductDetailPage/OrderProductDetailPage";
 
 /* ================= CONTEXT ================= */
 import { CartProvider } from "./context/CartContext";
@@ -45,6 +46,7 @@ import OfferPagee from "./pages/offerpagee/offerpagee";
 /* ================= WISHLIST PAGE ================= */
 import Wishlist from "./pages/wishlist/Wishlist";
 import CartProductDetail from "./pages/cartproductdetail/CartProductDetail";
+import Profile from "./pages/profile/Profile";
 
 
 /* ================= SERVICES PAGE ================= */
@@ -219,6 +221,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<MainAppLayout />}>
               <Route index element={<Home />} />
+              <Route path="profile" element={<Profile />} /> 
 
               <Route path="shopping" element={<Shopping />} />
               <Route path="shopping/:id" element={<ProductsDetails />} />
@@ -228,6 +231,10 @@ export default function App() {
               <Route path="checkout" element={<CheckoutPage />} />
               <Route path="order-success/:id" element={<OrderSuccess />} />
               <Route path="my-orders" element={<MyOrders />} />
+              <Route
+  path="/order-details/:id"
+  element={<OrderProductDetailPage />}
+/>
 
               <Route path="wishlist" element={<Wishlist />} />
 

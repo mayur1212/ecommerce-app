@@ -1,69 +1,73 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import products from "../data/products.json";
 
 const OrderContext = createContext(null);
 
+/* ===== CREATE INITIAL ORDERS FROM PRODUCTS ===== */
+const mapProductsToOrders = () =>
+  products.map((p, index) => ({
+    id: `ORD-${p.id}`,          // order id
+    productId: p.id,            // ✅ ONLY THIS IS USED FOR DETAILS
+    title: p.name,
+    image: p.thumbnail || p.images?.[0] || "",
+    price: Number(p.discount_price ?? p.price),
+    mrp: Number(p.price),
+    qty: 1,
+    rating: Number(p.rating),
+    reviews: Number(p.rating_count),
+    status: index % 2 === 0 ? "ongoing" : "completed",
+    paymentMethod: "COD",
+    deliveryCharge: Number(p.delivery_charge ?? 0),
+    seller_name: p.seller_name,
+    createdAt: new Date().toLocaleString(),
+  }));
+
 export const OrderProvider = ({ children }) => {
-  // Load orders from localStorage (persist after refresh)
   const [orders, setOrders] = useState(() => {
-    try {
-      const saved = localStorage.getItem("orders");
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
+    const saved = localStorage.getItem("orders");
+    return saved ? JSON.parse(saved) : mapProductsToOrders();
   });
 
-  // Save orders to localStorage
   useEffect(() => {
     localStorage.setItem("orders", JSON.stringify(orders));
   }, [orders]);
 
-  /**
-   * PLACE ORDER
-   * @param {Array} items - cart items
-   * @param {number} total - order total
-   * @returns {string} orderId
-   */
-  const placeOrder = (items, total) => {
-    const orderId = `ORD-${Date.now()}`;
+  /* ===== PLACE ORDER ===== */
+  const placeOrder = (cartItems = [], total = 0, meta = {}) => {
+    if (!cartItems.length) return null;
 
-    const order = {
-      id: orderId,
-      items,
-      total,
-      date: new Date().toLocaleString(),
-      status: "Confirmed",
+    const item = cartItems[0];
+
+    const newOrder = {
+      id: `ORD-${Date.now()}`,
+      productId: item.productId,     // ✅ MUST EXIST
+      title: item.name,
+      image: item.image,
+      price: Number(item.price),
+      mrp: Number(meta.mrp ?? item.price),
+      qty: Number(item.qty ?? 1),
+      rating: 0,
+      reviews: 0,
+      status: "ongoing",
+      paymentMethod: meta.paymentMethod || "COD",
+      deliveryCharge: Number(item.deliveryCharge ?? 0),
+      seller_name: meta.seller_name || "",
+      createdAt: new Date().toLocaleString(),
     };
 
-    setOrders((prev) => [order, ...prev]);
-
-    return orderId;
-  };
-
-  /**
-   * GET SINGLE ORDER
-   */
-  const getOrderById = (orderId) => {
-    return orders.find((o) => o.id === orderId);
+    setOrders((prev) => [newOrder, ...prev]);
+    return newOrder.id;
   };
 
   return (
-    <OrderContext.Provider
-      value={{
-        orders,
-        placeOrder,
-        getOrderById,
-      }}
-    >
+    <OrderContext.Provider value={{ orders, placeOrder }}>
       {children}
     </OrderContext.Provider>
   );
 };
 
 export const useOrders = () => {
-  const context = useContext(OrderContext);
-  if (!context) {
-    throw new Error("useOrders must be used inside OrderProvider");
-  }
-  return context;
+  const ctx = useContext(OrderContext);
+  if (!ctx) throw new Error("useOrders must be used inside OrderProvider");
+  return ctx;
 };

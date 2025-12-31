@@ -11,8 +11,9 @@ export default function CheckoutPage() {
   const { placeOrder } = useOrders();
 
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("");
 
-  /* ================= ADDRESS STATE ================= */
+  /* ================= ADDRESS ================= */
   const [address, setAddress] = useState({
     firstName: "",
     lastName: "",
@@ -26,9 +27,6 @@ export default function CheckoutPage() {
     country: "",
     pincode: "",
   });
-
-  /* ================= PAYMENT STATE ================= */
-  const [paymentMethod, setPaymentMethod] = useState(""); // "" | "cod" | "upi"
 
   const handleChange = (e) => {
     setAddress((prev) => ({
@@ -58,38 +56,28 @@ export default function CheckoutPage() {
 
   const gst = Math.round(subtotal * 0.05);
   const platformFee = 10;
-
   const total = subtotal + deliveryCharge + gst + platformFee;
 
   /* ================= PLACE ORDER ================= */
   const handlePayNow = () => {
-    const {
-      firstName,
-      lastName,
-      mobile,
-      email,
-      addressLine1,
-      addressLine2,
-      city,
-      state,
-      country,
-      pincode,
-    } = address;
+    const required = [
+      "firstName",
+      "lastName",
+      "mobile",
+      "email",
+      "addressLine1",
+      "addressLine2",
+      "city",
+      "state",
+      "country",
+      "pincode",
+    ];
 
-    if (
-      !firstName ||
-      !lastName ||
-      !mobile ||
-      !email ||
-      !addressLine1 ||
-      !addressLine2 ||
-      !city ||
-      !state ||
-      !country ||
-      !pincode
-    ) {
-      alert("Please fill all required delivery address fields");
-      return;
+    for (let key of required) {
+      if (!address[key]) {
+        alert("Please fill all required delivery address fields");
+        return;
+      }
     }
 
     if (!paymentMethod) {
@@ -104,9 +92,10 @@ export default function CheckoutPage() {
         ...address,
         paymentMethod,
       });
+
       clearCart();
       navigate(`/order-success/${orderId}`);
-    }, 1200);
+    }, 1000);
   };
 
   /* ================= EMPTY CART ================= */
@@ -140,55 +129,124 @@ export default function CheckoutPage() {
               </h2>
 
               <div className="grid sm:grid-cols-2 gap-4">
-                <input name="firstName" placeholder="First Name *" value={address.firstName} onChange={handleChange} className="border rounded-xl px-4 py-3" />
-                <input name="lastName" placeholder="Last Name *" value={address.lastName} onChange={handleChange} className="border rounded-xl px-4 py-3" />
-                <input name="mobile" placeholder="Mobile Number *" value={address.mobile} onChange={handleChange} className="border rounded-xl px-4 py-3" />
-                <input name="alternateMobile" placeholder="Alternate Mobile (Optional)" value={address.alternateMobile} onChange={handleChange} className="border rounded-xl px-4 py-3" />
-                <input name="email" placeholder="Email Address *" value={address.email} onChange={handleChange} className="border rounded-xl px-4 py-3 sm:col-span-2" />
+                {[
+                  ["firstName", "First Name *"],
+                  ["lastName", "Last Name *"],
+                  ["mobile", "Mobile Number *"],
+                  ["alternateMobile", "Alternate Mobile"],
+                ].map(([name, label]) => (
+                  <input
+                    key={name}
+                    name={name}
+                    placeholder={label}
+                    value={address[name]}
+                    onChange={handleChange}
+                    className="border rounded-xl px-4 py-3"
+                  />
+                ))}
+
+                <input
+                  name="email"
+                  placeholder="Email Address *"
+                  value={address.email}
+                  onChange={handleChange}
+                  className="border rounded-xl px-4 py-3 sm:col-span-2"
+                />
               </div>
 
               <div className="mt-4 space-y-4">
-                <input name="addressLine2" placeholder="Address Line 2 (House / Building) *" value={address.addressLine2} onChange={handleChange} className="w-full border rounded-xl px-4 py-3" />
-                <textarea name="addressLine1" placeholder="Address Line 1 (Street / Area) *" value={address.addressLine1} onChange={handleChange} rows={3} className="w-full border rounded-xl px-4 py-3" />
+                <input
+                  name="addressLine2"
+                  placeholder="House / Building *"
+                  value={address.addressLine2}
+                  onChange={handleChange}
+                  className="w-full border rounded-xl px-4 py-3"
+                />
+
+                <textarea
+                  name="addressLine1"
+                  placeholder="Street / Area *"
+                  value={address.addressLine1}
+                  onChange={handleChange}
+                  rows={3}
+                  className="w-full border rounded-xl px-4 py-3"
+                />
 
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <input name="city" placeholder="Town / City *" value={address.city} onChange={handleChange} className="border rounded-xl px-4 py-3" />
-                  <input name="state" placeholder="State *" value={address.state} onChange={handleChange} className="border rounded-xl px-4 py-3" />
-                  <input name="country" placeholder="Country *" value={address.country} onChange={handleChange} className="border rounded-xl px-4 py-3" />
-                  <input name="pincode" placeholder="Pin Code *" value={address.pincode} onChange={handleChange} className="border rounded-xl px-4 py-3" />
+                  {["city", "state", "country", "pincode"].map((field) => (
+                    <input
+                      key={field}
+                      name={field}
+                      placeholder={`${field} *`}
+                      value={address[field]}
+                      onChange={handleChange}
+                      className="border rounded-xl px-4 py-3"
+                    />
+                  ))}
                 </div>
               </div>
             </div>
 
-            {/* PAYMENT METHOD */}
+            {/* PAYMENT */}
             <div className="bg-white rounded-2xl border p-6">
               <h2 className="text-lg font-semibold mb-4">
                 Payment Method
               </h2>
 
-              <div className="space-y-3">
-                <label className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer ${paymentMethod === "cod" ? "border-orange-500 bg-orange-50" : ""}`}>
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="cod"
-                    checked={paymentMethod === "cod"}
-                    onChange={() => setPaymentMethod("cod")}
-                  />
-                  <span className="font-medium">Cash on Delivery</span>
-                </label>
+              {/* COD */}
+              <label
+                className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer ${
+                  paymentMethod === "cod"
+                    ? "border-orange-500 bg-orange-50"
+                    : ""
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment"
+                  checked={paymentMethod === "cod"}
+                  onChange={() => setPaymentMethod("cod")}
+                />
+                <span className="font-medium">Cash on Delivery</span>
+              </label>
 
-                <label className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer ${paymentMethod === "upi" ? "border-orange-500 bg-orange-50" : ""}`}>
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="upi"
-                    checked={paymentMethod === "upi"}
-                    onChange={() => setPaymentMethod("upi")}
-                  />
-                  <span className="font-medium">UPI / Online Payment</span>
-                </label>
-              </div>
+              {/* UPI */}
+              <label
+                className={`mt-3 flex items-center gap-3 p-3 border rounded-xl cursor-pointer ${
+                  paymentMethod === "upi"
+                    ? "border-orange-500 bg-orange-50"
+                    : ""
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment"
+                  checked={paymentMethod === "upi"}
+                  onChange={() => setPaymentMethod("upi")}
+                />
+                <span className="font-medium">
+                  UPI / Online Payment
+                </span>
+              </label>
+
+              {/* WALLET (NEW) */}
+              <label
+                className={`mt-3 flex items-center gap-3 p-3 border rounded-xl cursor-pointer ${
+                  paymentMethod === "wallet"
+                    ? "border-orange-500 bg-orange-50"
+                    : ""
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment"
+                  checked={paymentMethod === "wallet"}
+                  onChange={() => setPaymentMethod("wallet")}
+                />
+                <span className="font-medium">
+                  Wallet Payment
+                </span>
+              </label>
             </div>
           </div>
 
@@ -199,20 +257,41 @@ export default function CheckoutPage() {
                 Order Summary
               </h2>
 
-              <div className="space-y-2 text-sm">
-                {cartItems.map((item) => (
-                  <div key={item.productId} className="flex justify-between">
-                    <span>{item.name} × {item.qty}</span>
-                    <span>{formatPrice(item.price * item.qty)}</span>
-                  </div>
-                ))}
-              </div>
+              {cartItems.map((item) => (
+                <div
+                  key={item.productId}
+                  className="flex justify-between text-sm"
+                >
+                  <span>
+                    {item.name} × {item.qty}
+                  </span>
+                  <span>
+                    {formatPrice(item.price * item.qty)}
+                  </span>
+                </div>
+              ))}
 
               <div className="border-t mt-4 pt-4 space-y-2 text-sm">
-                <div className="flex justify-between"><span>Subtotal</span><span>{formatPrice(subtotal)}</span></div>
-                <div className="flex justify-between"><span>Delivery</span><span>{deliveryCharge === 0 ? "FREE" : formatPrice(deliveryCharge)}</span></div>
-                <div className="flex justify-between"><span>GST (5%)</span><span>{formatPrice(gst)}</span></div>
-                <div className="flex justify-between"><span>Platform Fee</span><span>{formatPrice(platformFee)}</span></div>
+                <div className="flex justify-between">
+                  <span>Subtotal</span>
+                  <span>{formatPrice(subtotal)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Delivery</span>
+                  <span>
+                    {deliveryCharge === 0
+                      ? "FREE"
+                      : formatPrice(deliveryCharge)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>GST (5%)</span>
+                  <span>{formatPrice(gst)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Platform Fee</span>
+                  <span>{formatPrice(platformFee)}</span>
+                </div>
               </div>
 
               <div className="flex justify-between text-lg font-bold border-t pt-4 mt-4">

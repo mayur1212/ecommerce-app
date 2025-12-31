@@ -74,7 +74,6 @@ export default function ProductsList() {
   const filters = useFilters();
   const { addToCart } = useCart();
 
-  /* ✅ WISHLIST CONTEXT */
   const { toggleWishlist, isWishlisted } = useWishlist();
 
   /* ================= APPLY FILTERS ================= */
@@ -93,6 +92,7 @@ export default function ProductsList() {
     );
   });
 
+  /* ================= ADD TO CART (✅ FIXED) ================= */
   const handleAddToCart = (e, product) => {
     e.preventDefault();
     e.stopPropagation();
@@ -103,9 +103,15 @@ export default function ProductsList() {
       price: getDisplayPrice(product),
       image: product.thumbnail,
       qty: 1,
+
+      // ✅ VERY IMPORTANT (FIX)
+      deliveryCharge: product.delivery_charge || 0,
     });
 
-    toast.success("Added to cart", { icon: "🛒", duration: 2000 });
+    toast.success("Added to cart", {
+      icon: "🛒",
+      duration: 2000,
+    });
   };
 
   const handleWishlist = (e, product, isWish) => {
@@ -114,13 +120,10 @@ export default function ProductsList() {
 
     toggleWishlist(product);
 
-    toast(
-      isWish ? "Removed from wishlist" : "Added to wishlist",
-      {
-        icon: isWish ? "💔" : "❤️",
-        duration: 1800,
-      }
-    );
+    toast(isWish ? "Removed from wishlist" : "Added to wishlist", {
+      icon: isWish ? "💔" : "❤️",
+      duration: 1800,
+    });
   };
 
   /* ================= UI ================= */
@@ -167,11 +170,9 @@ export default function ProductsList() {
                   {inStock ? "In Stock" : "Out of Stock"}
                 </span>
 
-                {/* ❤️ WISHLIST */}
+                {/* WISHLIST */}
                 <button
-                  onClick={(e) =>
-                    handleWishlist(e, product, isWish)
-                  }
+                  onClick={(e) => handleWishlist(e, product, isWish)}
                   className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 border flex items-center justify-center"
                 >
                   <svg

@@ -114,33 +114,46 @@ export default function Header({ mobileOpen, setMobileOpen }) {
             </div>
 
             <div className="flex items-center gap-3">
-              <User size={18} className="cursor-pointer" />
-              <CalendarCheck size={18} className="cursor-pointer" />
+  {/* 👤 PROFILE */}
+  <User
+    size={18}
+    className="cursor-pointer"
+    onClick={() => navigate("/profile")}
+  />
 
-              {/* ❤️ WISHLIST */}
-              <div className="relative">
-                <Heart
-                  size={18}
-                  className="cursor-pointer"
-                  onClick={() => navigate("/wishlist")}
-                />
-                <Badge count={wishlistItems.length} />
-              </div>
+  {/* 📅 BOOKINGS */}
+  <CalendarCheck
+    size={18}
+    className="cursor-pointer"
+    onClick={() => navigate("/booking")}
+  />
 
-              {/* 🛒 CART */}
-              <div className="relative">
-                <ShoppingBag
-                  size={18}
-                  className="cursor-pointer"
-                  onClick={() => navigate("/cart")}
-                />
-                <Badge count={cartItems.length} />
-              </div>
+  {/* ❤️ WISHLIST */}
+  <div className="relative">
+    <Heart
+      size={18}
+      className="cursor-pointer"
+      onClick={() => navigate("/wishlist")}
+    />
+    <Badge count={wishlistItems.length} />
+  </div>
 
-              <button onClick={() => setMobileOpen((s) => !s)}>
-                {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-              </button>
-            </div>
+  {/* 🛒 CART */}
+  <div className="relative">
+    <ShoppingBag
+      size={18}
+      className="cursor-pointer"
+      onClick={() => navigate("/cart")}
+    />
+    <Badge count={cartItems.length} />
+  </div>
+
+  {/* ☰ MOBILE MENU */}
+  <button onClick={() => setMobileOpen((s) => !s)}>
+    {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+  </button>
+</div>
+
           </div>
 
           {/* ================= DESKTOP HEADER (UNCHANGED) ================= */}
@@ -164,44 +177,57 @@ export default function Header({ mobileOpen, setMobileOpen }) {
             </nav>
 
             <div className="hidden md:flex items-center gap-10 ml-6">
-              <div
-                onClick={() => setOpenPopup(true)}
-                className="hidden lg:flex items-center gap-2 text-sm font-semibold cursor-pointer hover:text-red-600"
-              >
-                <MapPin size={18} className="text-red-600" />
-                <span>{location}</span>
-              </div>
+  {/* 📍 LOCATION */}
+  <div
+    onClick={() => setOpenPopup(true)}
+    className="hidden lg:flex items-center gap-2 text-sm font-semibold cursor-pointer hover:text-red-600"
+  >
+    <MapPin size={18} className="text-red-600" />
+    <span>{location}</span>
+  </div>
 
-              <div className="flex items-center gap-8 text-gray-700">
-                <div className="flex flex-col items-center text-[11px] cursor-pointer">
-                  <User size={22} />
-                  <span>Profile</span>
-                </div>
+  {/* 🔔 ICON ACTIONS */}
+  <div className="flex items-center gap-8 text-gray-700">
+    {/* 👤 PROFILE */}
+    <div
+      className="flex flex-col items-center text-[11px] cursor-pointer hover:text-red-500 transition"
+      onClick={() => navigate("/profile")}
+    >
+      <User size={22} />
+      <span>Profile</span>
+    </div>
 
-                <div className="flex flex-col items-center text-[11px] cursor-pointer">
-                  <CalendarCheck size={22} />
-                  <span>Booking</span>
-                </div>
+    {/* 📅 BOOKINGS */}
+    <div
+      className="flex flex-col items-center text-[11px] cursor-pointer hover:text-red-500 transition"
+      onClick={() => navigate("/my-orders")}
+    >
+      <CalendarCheck size={22} />
+      <span>Orders</span>
+    </div>
 
-                <div
-                  className="relative flex flex-col items-center text-[11px] cursor-pointer"
-                  onClick={() => navigate("/wishlist")}
-                >
-                  <Heart size={22} />
-                  <Badge count={wishlistItems.length} />
-                  <span>Wishlist</span>
-                </div>
+    {/* ❤️ WISHLIST */}
+    <div
+      className="relative flex flex-col items-center text-[11px] cursor-pointer hover:text-red-500 transition"
+      onClick={() => navigate("/wishlist")}
+    >
+      <Heart size={22} />
+      <Badge count={wishlistItems.length} />
+      <span>Wishlist</span>
+    </div>
 
-                <div
-                  className="relative flex flex-col items-center text-[11px] cursor-pointer"
-                  onClick={() => navigate("/cart")}
-                >
-                  <ShoppingBag size={22} />
-                  <Badge count={cartItems.length} />
-                  <span>Cart</span>
-                </div>
-              </div>
-            </div>
+    {/* 🛒 CART */}
+    <div
+      className="relative flex flex-col items-center text-[11px] cursor-pointer hover:text-red-500 transition"
+      onClick={() => navigate("/cart")}
+    >
+      <ShoppingBag size={22} />
+      <Badge count={cartItems.length} />
+      <span>Cart</span>
+    </div>
+  </div>
+</div>
+
           </div>
 
         </div>

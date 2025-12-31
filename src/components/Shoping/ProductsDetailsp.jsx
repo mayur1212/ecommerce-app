@@ -9,6 +9,8 @@ import RelatedProducts from "./RelatedProducts";
 import ReviewsDrawer from "./ReviewsDrawer"; // <-- corrected
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
+
 
 
 
@@ -242,6 +244,8 @@ export default function ProductsDetails() {
 
   const navigate = useNavigate();
   const { addToCart } = useCart();
+
+  const { toggleWishlist, isWishlisted } = useWishlist();
    useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
@@ -327,9 +331,7 @@ const uniqueWeights = [...new Set(variants.map(v => v.weight).filter(Boolean))];
   // image
   const [selectedImage, setSelectedImage] = useState(product?.images?.[0] || product?.thumbnail);
 
-  // wishlist
-  const [isWishlisted, setIsWishlisted] = useState(false);
-  const handleWishlistToggle = () => setIsWishlisted((p) => !p);
+
 
   // share
   const handleShare = async () => {
@@ -467,11 +469,32 @@ const uniqueWeights = [...new Set(variants.map(v => v.weight).filter(Boolean))];
             </div>
 
             <div className="flex gap-2 mt-1">
-              <button onClick={handleWishlistToggle} className="w-10 h-10 rounded-full bg-white border flex items-center justify-center">
-                <svg className="w-5 h-5" fill={isWishlisted ? "red" : "none"} stroke={isWishlisted ? "red" : "currentColor"} strokeWidth="2" viewBox="0 0 24 24">
-                  <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
-                </svg>
-              </button>
+              <button
+  onClick={() => {
+    toggleWishlist(product);
+    toast(
+      isWishlisted(product.id)
+        ? "Removed from wishlist"
+        : "Added to wishlist ❤️",
+      {
+        icon: isWishlisted(product.id) ? "💔" : "❤️",
+        duration: 1500,
+      }
+    );
+  }}
+  className="w-10 h-10 rounded-full bg-white border flex items-center justify-center"
+>
+  <svg
+    className="w-5 h-5"
+    fill={isWishlisted(product.id) ? "red" : "none"}
+    stroke={isWishlisted(product.id) ? "red" : "currentColor"}
+    strokeWidth="2"
+    viewBox="0 0 24 24"
+  >
+    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
+  </svg>
+</button>
+
 
               <button onClick={handleShare} className="w-10 h-10 rounded-full bg-white border flex items-center justify-center">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
