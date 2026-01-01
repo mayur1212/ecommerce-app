@@ -12,6 +12,7 @@ export default function CheckoutPage() {
 
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("");
+  const [errors, setErrors] = useState({});
 
   /* ================= ADDRESS ================= */
   const [address, setAddress] = useState({
@@ -33,6 +34,32 @@ export default function CheckoutPage() {
       ...prev,
       [e.target.name]: e.target.value,
     }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [e.target.name]: "",
+    }));
+  };
+
+  /* ================= VALIDATION ================= */
+  const validateAddress = () => {
+    const newErrors = {};
+
+    if (!address.firstName) newErrors.firstName = "First name is required";
+    if (!address.lastName) newErrors.lastName = "Last name is required";
+    if (!address.mobile) newErrors.mobile = "Mobile number is required";
+    if (!address.email) newErrors.email = "Email is required";
+    if (!address.addressLine2)
+      newErrors.addressLine2 = "House / Building is required";
+    if (!address.addressLine1)
+      newErrors.addressLine1 = "Street / Area is required";
+    if (!address.city) newErrors.city = "City is required";
+    if (!address.state) newErrors.state = "State is required";
+    if (!address.country) newErrors.country = "Country is required";
+    if (!address.pincode) newErrors.pincode = "Pincode is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   /* ================= PRICE ================= */
@@ -60,25 +87,7 @@ export default function CheckoutPage() {
 
   /* ================= PLACE ORDER ================= */
   const handlePayNow = () => {
-    const required = [
-      "firstName",
-      "lastName",
-      "mobile",
-      "email",
-      "addressLine1",
-      "addressLine2",
-      "city",
-      "state",
-      "country",
-      "pincode",
-    ];
-
-    for (let key of required) {
-      if (!address[key]) {
-        alert("Please fill all required delivery address fields");
-        return;
-      }
-    }
+    if (!validateAddress()) return;
 
     if (!paymentMethod) {
       alert("Please select a payment method");
@@ -122,66 +131,146 @@ export default function CheckoutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* LEFT */}
           <div className="lg:col-span-2 space-y-6">
+
             {/* DELIVERY ADDRESS */}
             <div className="bg-white rounded-2xl border p-6">
-              <h2 className="text-lg font-semibold mb-4">
+              <h2 className="text-lg font-semibold mb-6">
                 Delivery Address
               </h2>
 
               <div className="grid sm:grid-cols-2 gap-4">
                 {[
-                  ["firstName", "First Name *"],
-                  ["lastName", "Last Name *"],
-                  ["mobile", "Mobile Number *"],
-                  ["alternateMobile", "Alternate Mobile"],
-                ].map(([name, label]) => (
-                  <input
-                    key={name}
-                    name={name}
-                    placeholder={label}
-                    value={address[name]}
-                    onChange={handleChange}
-                    className="border rounded-xl px-4 py-3"
-                  />
+                  {
+                    name: "firstName",
+                    label: "First Name *",
+                    placeholder: "Enter first name",
+                  },
+                  {
+                    name: "lastName",
+                    label: "Last Name *",
+                    placeholder: "Enter last name",
+                  },
+                  {
+                    name: "mobile",
+                    label: "Mobile Number *",
+                    placeholder: "Enter mobile number",
+                  },
+                  {
+                    name: "alternateMobile",
+                    label: "Alternate Mobile",
+                    placeholder: "Enter alternate mobile",
+                  },
+                ].map(({ name, label, placeholder }) => (
+                  <div key={name}>
+                    <label className="block text-sm font-medium mb-1">
+                      {label}
+                    </label>
+                    <input
+                      name={name}
+                      value={address[name]}
+                      onChange={handleChange}
+                      placeholder={placeholder}
+                      className={`w-full border rounded-xl px-4 py-3 ${
+                        errors[name] ? "border-red-500" : ""
+                      }`}
+                    />
+                    {errors[name] && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors[name]}
+                      </p>
+                    )}
+                  </div>
                 ))}
 
-                <input
-                  name="email"
-                  placeholder="Email Address *"
-                  value={address.email}
-                  onChange={handleChange}
-                  className="border rounded-xl px-4 py-3 sm:col-span-2"
-                />
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-medium mb-1">
+                    Email Address *
+                  </label>
+                  <input
+                    name="email"
+                    value={address.email}
+                    onChange={handleChange}
+                    placeholder="Enter email address"
+                    className={`w-full border rounded-xl px-4 py-3 ${
+                      errors.email ? "border-red-500" : ""
+                    }`}
+                  />
+                  {errors.email && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.email}
+                    </p>
+                  )}
+                </div>
               </div>
 
-              <div className="mt-4 space-y-4">
-                <input
-                  name="addressLine2"
-                  placeholder="House / Building *"
-                  value={address.addressLine2}
-                  onChange={handleChange}
-                  className="w-full border rounded-xl px-4 py-3"
-                />
+              <div className="mt-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    House / Building *
+                  </label>
+                  <input
+                    name="addressLine2"
+                    value={address.addressLine2}
+                    onChange={handleChange}
+                    placeholder="Enter house / building name"
+                    className={`w-full border rounded-xl px-4 py-3 ${
+                      errors.addressLine2 ? "border-red-500" : ""
+                    }`}
+                  />
+                  {errors.addressLine2 && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.addressLine2}
+                    </p>
+                  )}
+                </div>
 
-                <textarea
-                  name="addressLine1"
-                  placeholder="Street / Area *"
-                  value={address.addressLine1}
-                  onChange={handleChange}
-                  rows={3}
-                  className="w-full border rounded-xl px-4 py-3"
-                />
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Street / Area *
+                  </label>
+                  <textarea
+                    name="addressLine1"
+                    rows={3}
+                    value={address.addressLine1}
+                    onChange={handleChange}
+                    placeholder="Enter street / area details"
+                    className={`w-full border rounded-xl px-4 py-3 ${
+                      errors.addressLine1 ? "border-red-500" : ""
+                    }`}
+                  />
+                  {errors.addressLine1 && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.addressLine1}
+                    </p>
+                  )}
+                </div>
 
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {["city", "state", "country", "pincode"].map((field) => (
-                    <input
-                      key={field}
-                      name={field}
-                      placeholder={`${field} *`}
-                      value={address[field]}
-                      onChange={handleChange}
-                      className="border rounded-xl px-4 py-3"
-                    />
+                  {[
+                    { field: "city", placeholder: "Enter city" },
+                    { field: "state", placeholder: "Enter state" },
+                    { field: "country", placeholder: "Enter country" },
+                    { field: "pincode", placeholder: "Enter pincode" },
+                  ].map(({ field, placeholder }) => (
+                    <div key={field}>
+                      <label className="block text-sm font-medium mb-1 capitalize">
+                        {field} *
+                      </label>
+                      <input
+                        name={field}
+                        value={address[field]}
+                        onChange={handleChange}
+                        placeholder={placeholder}
+                        className={`w-full border rounded-xl px-4 py-3 ${
+                          errors[field] ? "border-red-500" : ""
+                        }`}
+                      />
+                      {errors[field] && (
+                        <p className="text-xs text-red-500 mt-1">
+                          {errors[field]}
+                        </p>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>
@@ -193,60 +282,29 @@ export default function CheckoutPage() {
                 Payment Method
               </h2>
 
-              {/* COD */}
-              <label
-                className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer ${
-                  paymentMethod === "cod"
-                    ? "border-orange-500 bg-orange-50"
-                    : ""
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="payment"
-                  checked={paymentMethod === "cod"}
-                  onChange={() => setPaymentMethod("cod")}
-                />
-                <span className="font-medium">Cash on Delivery</span>
-              </label>
-
-              {/* UPI */}
-              <label
-                className={`mt-3 flex items-center gap-3 p-3 border rounded-xl cursor-pointer ${
-                  paymentMethod === "upi"
-                    ? "border-orange-500 bg-orange-50"
-                    : ""
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="payment"
-                  checked={paymentMethod === "upi"}
-                  onChange={() => setPaymentMethod("upi")}
-                />
-                <span className="font-medium">
-                  UPI / Online Payment
-                </span>
-              </label>
-
-              {/* WALLET (NEW) */}
-              <label
-                className={`mt-3 flex items-center gap-3 p-3 border rounded-xl cursor-pointer ${
-                  paymentMethod === "wallet"
-                    ? "border-orange-500 bg-orange-50"
-                    : ""
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="payment"
-                  checked={paymentMethod === "wallet"}
-                  onChange={() => setPaymentMethod("wallet")}
-                />
-                <span className="font-medium">
-                  Wallet Payment
-                </span>
-              </label>
+              {[
+                { id: "cod", label: "Cash on Delivery" },
+                { id: "upi", label: "UPI / Online Payment" },
+                { id: "wallet", label: "Wallet Payment" },
+              ].map((method) => (
+                <label
+                  key={method.id}
+                  className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer mt-3 ${
+                    paymentMethod === method.id
+                      ? "border-orange-500 bg-orange-50"
+                      : ""
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    checked={paymentMethod === method.id}
+                    onChange={() => setPaymentMethod(method.id)}
+                  />
+                  <span className="font-medium">
+                    {method.label}
+                  </span>
+                </label>
+              ))}
             </div>
           </div>
 

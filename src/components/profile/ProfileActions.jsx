@@ -4,10 +4,10 @@ export default function ProfileActions() {
   const { isFollowing, toggleFollow } = useProfile();
 
   return (
-    <div className="flex gap-4 mt-4">
+    <div className="flex gap-4 mt-6">
       <button
         onClick={toggleFollow}
-        className={`flex-1 py-2 rounded-full font-semibold transition ${
+        className={`flex-1 py-2 rounded-full font-semibold ${
           isFollowing
             ? "bg-gray-200 text-black"
             : "bg-red-500 text-white"

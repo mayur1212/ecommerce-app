@@ -1,35 +1,24 @@
-import { useState } from "react";
-import ProfileProducts from "./ProfileProducts";
-import ProfileLikes from "./ProfileLikes";
-import ProfileWishlist from "./ProfileWishlist";
-import ProfileActivity from "./ProfileActivity";
+import ProfileTabBar from "./ProfileTabBar";
+import ProfileServices from "./tabs/ProfileServices";
+import ProfileStories from "./tabs/ProfileStories";
+import ProfileReels from "./tabs/ProfileReels";
+import ProfilePosts from "./tabs/ProfilePosts";
+import ProfileBlogs from "./tabs/ProfileBlogs";
+import { useProfile } from "../../context/ProfileContext";
 
 export default function ProfileTabs() {
-  const [activeTab, setActiveTab] = useState("products");
+  const { activeTab } = useProfile();
 
   return (
     <>
-      <div className="flex justify-around mt-6 bg-white rounded-xl shadow-sm border-b">
-        {["products", "likes", "wishlist", "activity"].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`py-3 font-medium capitalize ${
-              activeTab === tab
-                ? "border-b-2 border-red-500 text-red-500"
-                : "text-gray-500"
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+      <ProfileTabBar />
 
       <div className="mt-6">
-        {activeTab === "products" && <ProfileProducts />}
-        {activeTab === "likes" && <ProfileLikes />}
-        {activeTab === "wishlist" && <ProfileWishlist />}
-        {activeTab === "activity" && <ProfileActivity />}
+        {activeTab === "services" && <ProfileServices />}
+        {activeTab === "stories" && <ProfileStories />}
+        {activeTab === "reels" && <ProfileReels />}
+        {activeTab === "posts" && <ProfilePosts />}
+        {activeTab === "blogs" && <ProfileBlogs />}
       </div>
     </>
   );
