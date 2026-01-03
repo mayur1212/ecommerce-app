@@ -2,6 +2,8 @@
 import React from "react";
 import { useParams, Link } from "react-router-dom";
 import products from "../../data/products.json";
+import shopIcon from "../../assets/3209711.png";
+
 
 // "HILL TOP FASHION" -> "hill-top-fashion"
 const getSellerSlug = (name = "") =>
@@ -61,9 +63,15 @@ export default function SellerPage() {
         {/* LEFT */}
         <div className="flex items-center gap-4">
           {/* AVATAR */}
-          <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-white border-4 border-red-600 shadow flex items-center justify-center text-xl font-bold text-red-600">
-            SHOP
-          </div>
+          <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-white border-4 border-red-600 shadow overflow-hidden flex items-center justify-center">
+  <img
+    src={shopIcon}
+    alt="Seller Store"
+    className="h-full w-full object-cover"
+  />
+</div>
+
+
 
           {/* INFO */}
           <div>
@@ -113,20 +121,109 @@ export default function SellerPage() {
         </div>
 
         {/* RIGHT ACTIONS */}
-        <div className="flex items-center gap-3">
-          <button className="rounded-full bg-red-600 hover:bg-red-700 text-white px-6 py-2 text-xs sm:text-sm font-semibold shadow">
-            Follow
-          </button>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
 
-          {["📞", "🔗", "👤"].map((i, idx) => (
-            <button
-              key={idx}
-              className="h-10 w-10 rounded-full border bg-white shadow hover:bg-red-50 flex items-center justify-center"
-            >
-              {i}
-            </button>
-          ))}
-        </div>
+  {/* FOLLOW / FOLLOWING */}
+ {/* FOLLOW */}
+<button
+  className="
+    flex items-center justify-center
+    rounded-full
+    bg-red-600 hover:bg-red-700
+    text-white
+    px-4 sm:px-5
+    py-2
+    min-h-[40px]
+    text-xs sm:text-sm
+    font-semibold
+    shadow
+    transition
+  "
+>
+  Follow
+</button>
+
+{/* ADD FRIEND */}
+<button
+  className="
+    flex items-center justify-center gap-2
+    rounded-full
+    border
+    bg-slate-100 hover:bg-slate-200
+    text-slate-700
+    px-4 sm:px-5
+    py-2
+    min-h-[40px]
+    text-xs sm:text-sm
+    font-semibold
+    shadow-sm
+    transition
+  "
+>
+  <span className="text-sm sm:text-base">➕</span>
+  <span>Add Friend</span>
+</button>
+
+
+
+  {/* MESSAGE (Primary like Instagram) */}
+  <button className="
+    flex items-center gap-1
+    rounded-full
+    border
+    bg-white hover:bg-slate-100
+    px-4 py-2
+    text-xs sm:text-sm
+    font-semibold
+    text-slate-800
+    shadow-sm
+  ">
+    💬
+    <span className="hidden sm:inline">Message</span>
+  </button>
+
+  {/* CALL */}
+  <button className="
+    h-10 w-10
+    rounded-full
+    border
+    bg-white
+    shadow
+    hover:bg-red-50
+    flex items-center justify-center
+  ">
+    📞
+  </button>
+
+  {/* SHARE */}
+  <button className="
+    h-10 w-10
+    rounded-full
+    border
+    bg-white
+    shadow
+    hover:bg-red-50
+    flex items-center justify-center
+  ">
+    🔗
+  </button>
+
+  {/* PROFILE */}
+  <button className="
+    h-10 w-10
+    rounded-full
+    border
+    bg-white
+    shadow
+    hover:bg-red-50
+    flex items-center justify-center
+  ">
+    👤
+  </button>
+
+</div>
+
+
       </div>
 
       {/* ================= BODY ================= */}
