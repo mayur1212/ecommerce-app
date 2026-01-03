@@ -251,26 +251,24 @@ export default function ProductsDetails() {
   }, []);
   
 
-  const handleAddToCart = () => {
+ const handleAddToCart = () => {
+  const perItemDelivery = product.delivery_charge || 0;
+
   const cartItem = {
-  productId: product.id,
-  name: product.name,
-  price: salePrice,
-  qty: quantity,
-  image: selectedImage,
-  variant: selectedVariant,
+    productId: product.id,
+    name: product.name,
+    price: salePrice,
+    qty: quantity,
+    image: selectedImage,
+    variant: selectedVariant,
 
-  // ✅ ADD THIS LINE
-  deliveryCharge: product.delivery_charge || 0
-};
-
-
-
-
+    // ✅ FIX: quantity-wise delivery
+    deliveryCharge: perItemDelivery * quantity,
+    perItemDelivery, // (optional but useful)
+  };
 
   addToCart(cartItem);
 
-  // 🔥 Professional toast (Flipkart style)
   toast.success("Added to cart", {
     icon: "🛒",
     duration: 2000,
@@ -278,19 +276,27 @@ export default function ProductsDetails() {
 };
 
 
-  const handleBuyNow = () => {
-    const cartItem = {
-      productId: product.id,
-      name: product.name,
-      price: salePrice,
-      qty: quantity,
-      image: selectedImage,
-      variant: selectedVariant,
-    };
 
-    addToCart(cartItem);
-    navigate("/checkout");
+  const handleBuyNow = () => {
+  const perItemDelivery = product.delivery_charge || 0;
+
+  const cartItem = {
+    productId: product.id,
+    name: product.name,
+    price: salePrice,
+    qty: quantity,
+    image: selectedImage,
+    variant: selectedVariant,
+
+    // ✅ IMPORTANT (same as Add to Cart)
+    perItemDelivery,
+    deliveryCharge: perItemDelivery * quantity,
   };
+
+  addToCart(cartItem);
+  navigate("/checkout");
+};
+
 
 
 
@@ -373,12 +379,8 @@ const uniqueWeights = [...new Set(variants.map(v => v.weight).filter(Boolean))];
     });
   };
 
-  const deliveryCharge =
-    product.delivery_charge === 0
-      ? 0
-      : product.delivery_charge === 100
-      ? 100
-      : 0;
+  const deliveryCharge = (product.delivery_charge || 0) * quantity;
+
 
   const totalPrice = salePrice * quantity + deliveryCharge;
 

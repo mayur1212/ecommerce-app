@@ -5,8 +5,20 @@ import products from "../../data/products.json";
 
 const formatPrice = (p = 0) => `₹${Number(p).toLocaleString()}`;
 
+const getSellerSlug = (name = "") =>
+  name.toLowerCase().replace(/[^a-z0-9]+/gi, "-");
+
+/* ================= RATING BREAKDOWN ================= */
+const ratingBreakdown = [
+  { label: "Excellent", value: 3228, width: "70%" },
+  { label: "Very Good", value: 1069, width: "25%" },
+  { label: "Good", value: 533, width: "15%" },
+  { label: "Average", value: 0, width: "4%" },
+  { label: "Poor", value: 304, width: "6%" },
+];
+
 export default function OrderProductDetailPage() {
-  const { id } = useParams(); // productId
+  const { id } = useParams();
   const { orders = [] } = useOrders();
 
   /* ================= FIND PRODUCT ================= */
@@ -43,16 +55,28 @@ export default function OrderProductDetailPage() {
   const price = Number(order.price) || 0;
   const qty = Number(order.qty) || 1;
   const deliveryCharge = Number(product.delivery_charge ?? 0);
-
   const discount =
     mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
-
   const total = price * qty + deliveryCharge;
 
   /* ================= RATINGS ================= */
   const ratingValue = Number(product.rating) || 0;
   const ratingCount = Number(product.rating_count) || 0;
   const reviews = product.reviews || [];
+
+  /* ================= SELLER DATA ================= */
+  const sellerName =
+    product.seller_name || product.brand || "HILL TOP FASHION";
+  const sellerSlug = getSellerSlug(sellerName);
+
+  const sellerRating =
+    product.seller_stats?.sellerRating || ratingValue || 4.5;
+  const sellerRatingCount =
+    product.seller_stats?.sellerRatingCount || ratingCount || 7890;
+  const followers =
+    product.seller_stats?.followers || 3059;
+  const productsCount =
+    product.seller_stats?.productsCount || 74;
 
   /* ================= SPECS ================= */
   const specs = {
@@ -62,6 +86,10 @@ export default function OrderProductDetailPage() {
     Seller: product.seller_name,
     Quantity: qty,
     "Payment Method": order.paymentMethod,
+  };
+
+  const onViewAllReviews = () => {
+    alert("Open reviews drawer here");
   };
 
   return (
@@ -150,23 +178,6 @@ export default function OrderProductDetailPage() {
               </span>
             </div>
           </div>
-
-          {/* EXTRA INFO */}
-          <div className="bg-white border rounded-2xl p-4 text-sm">
-            <p>
-              <b>Delivery:</b> Delivery charge:{" "}
-              {formatPrice(deliveryCharge)}
-            </p>
-            <p>
-              <b>Warranty:</b> No warranty info
-            </p>
-            <p>
-              <b>Return Policy:</b> 7 days return policy
-            </p>
-            <p>
-              <b>SKU:</b> {product.sku_id}
-            </p>
-          </div>
         </div>
       </div>
 
@@ -194,9 +205,7 @@ export default function OrderProductDetailPage() {
 
         <div className="p-6 text-gray-700 text-sm">
           {activeTab === "description" && (
-            <p className="leading-relaxed">
-              {product.description || "No description available."}
-            </p>
+            <p>{product.description || "No description available."}</p>
           )}
 
           {activeTab === "specs" && (
@@ -231,6 +240,99 @@ export default function OrderProductDetailPage() {
           )}
         </div>
       </div>
+
+      {/* ================= ADDED SECTION (SAME AS OTHER PAGES) ================= */}
+      <section className="mt-8 space-y-4">
+        {/* SOLD BY */}
+        <div className="rounded-2xl border bg-white p-4 sm:p-5 shadow-sm">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold">
+                🏬
+              </div>
+
+              <div>
+                <p className="text-[11px] font-medium text-slate-500">Sold By</p>
+                <p className="text-sm sm:text-base font-semibold text-slate-900">
+                  {sellerName}
+                </p>
+
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] sm:text-xs text-slate-500">
+                  <span className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 font-semibold text-green-700">
+                    {Number(sellerRating).toFixed(1)} ★
+                  </span>
+                  <span>{sellerRatingCount.toLocaleString()} Ratings</span>
+                  <span className="hidden h-1 w-1 rounded-full bg-slate-400 sm:inline-block" />
+                  <span>{followers.toLocaleString()} Followers</span>
+                  <span className="hidden h-1 w-1 rounded-full bg-slate-400 sm:inline-block" />
+                  <span>{productsCount} Products</span>
+                </div>
+              </div>
+            </div>
+
+            <Link
+              to={`/seller/${sellerSlug}`}
+              className="self-start rounded-lg border px-4 py-2 text-xs sm:text-sm font-medium text-violet-600 hover:bg-violet-50"
+            >
+              View Shop
+            </Link>
+          </div>
+        </div>
+
+        {/* PRODUCT RATINGS */}
+        <div className="rounded-2xl border bg-white p-4 sm:p-5 shadow-sm">
+          <p className="mb-4 text-sm sm:text-base font-semibold text-slate-900">
+            Product Ratings & Reviews
+          </p>
+
+          <div className="flex flex-col gap-6 md:flex-row">
+            <div className="flex flex-1 items-center gap-3">
+              <div>
+                <p className="text-4xl sm:text-5xl font-semibold text-green-600">
+                  {Number(sellerRating).toFixed(1)}★
+                </p>
+                <p className="text-[11px] sm:text-xs text-slate-500">
+                  {sellerRatingCount.toLocaleString()} Ratings
+                </p>
+              </div>
+            </div>
+
+            <div className="flex-1 space-y-2">
+              {ratingBreakdown.map((item) => (
+                <div
+                  key={item.label}
+                  className="flex items-center gap-2 text-xs text-slate-600"
+                >
+                  <span className="w-20">{item.label}</span>
+                  <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100">
+                    <div
+                      className="h-full rounded-full bg-green-500"
+                      style={{ width: item.width }}
+                    />
+                  </div>
+                  <span className="w-10 text-right text-[11px] text-slate-500">
+                    {item.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <button
+            onClick={onViewAllReviews}
+            className="mt-4 w-full rounded-lg border border-violet-500 py-2 text-xs sm:text-sm font-semibold text-violet-600 hover:bg-violet-50"
+          >
+            VIEW ALL REVIEWS →
+          </button>
+        </div>
+
+        {/* FEATURES */}
+        <div className="grid gap-2 rounded-2xl border bg-[#f5f7ff] p-3 text-center text-xs sm:text-sm text-slate-700 sm:grid-cols-3">
+          <div>🏷️ Lowest Price</div>
+          <div>📦 Cash on Delivery</div>
+          <div>🔄 7-day Returns</div>
+        </div>
+      </section>
     </div>
   );
 }

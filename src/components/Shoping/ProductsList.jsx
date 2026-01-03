@@ -93,26 +93,30 @@ export default function ProductsList() {
   });
 
   /* ================= ADD TO CART (✅ FIXED) ================= */
-  const handleAddToCart = (e, product) => {
-    e.preventDefault();
-    e.stopPropagation();
+  /* ================= ADD TO CART (✅ UPDATED) ================= */
+const handleAddToCart = (e, product) => {
+  e.preventDefault();
+  e.stopPropagation();
 
-    addToCart({
-      productId: product.id,
-      name: product.name,
-      price: getDisplayPrice(product),
-      image: product.thumbnail,
-      qty: 1,
+  const perItemDelivery = product.delivery_charge || 0;
 
-      // ✅ VERY IMPORTANT (FIX)
-      deliveryCharge: product.delivery_charge || 0,
-    });
+  addToCart({
+    productId: product.id,
+    name: product.name,
+    price: getDisplayPrice(product),
+    image: product.thumbnail,
+    qty: 1,
 
-    toast.success("Added to cart", {
-      icon: "🛒",
-      duration: 2000,
-    });
-  };
+    // ✅ FIXED (quantity-wise delivery support)
+    perItemDelivery,
+  });
+
+  toast.success("Added to cart", {
+    icon: "🛒",
+    duration: 2000,
+  });
+};
+
 
   const handleWishlist = (e, product, isWish) => {
     e.preventDefault();

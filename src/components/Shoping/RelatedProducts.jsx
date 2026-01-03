@@ -150,6 +150,9 @@ export default function RelatedProducts({
         group-hover:scale-110
       "
     />
+    <span className="absolute bottom-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  20% OFF · Today
+                </span>
   </div>
 
   {/* CONTENT */}

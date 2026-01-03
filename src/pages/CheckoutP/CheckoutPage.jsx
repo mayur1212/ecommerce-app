@@ -73,13 +73,15 @@ export default function CheckoutPage() {
   );
 
   const deliveryCharge = useMemo(
-    () =>
-      cartItems.reduce(
-        (sum, item) => sum + (item.deliveryCharge || 0),
-        0
-      ),
-    [cartItems]
-  );
+  () =>
+    cartItems.reduce(
+      (sum, item) =>
+        sum + (item.perItemDelivery || 0) * item.qty,
+      0
+    ),
+  [cartItems]
+);
+
 
   const gst = Math.round(subtotal * 0.05);
   const platformFee = 10;

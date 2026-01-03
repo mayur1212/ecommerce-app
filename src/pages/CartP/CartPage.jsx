@@ -22,9 +22,11 @@ export default function CartPage() {
   );
 
   const deliveryCharge = cartItems.reduce(
-    (sum, item) => sum + (item.deliveryCharge || 0),
-    0
-  );
+  (sum, item) =>
+    sum + (item.perItemDelivery || 0) * (item.qty || 1),
+  0
+);
+
 
   const total = subtotal + deliveryCharge;
 
@@ -98,11 +100,12 @@ export default function CartPage() {
                     </p>
 
                     <p className="text-xs text-gray-500 mt-1">
-                      Delivery:{" "}
-                      {item.deliveryCharge === 0
-                        ? "FREE"
-                        : formatPrice(item.deliveryCharge)}
-                    </p>
+  Delivery:{" "}
+  {item.perItemDelivery === 0
+    ? "FREE"
+    : formatPrice(item.perItemDelivery * item.qty)}
+</p>
+
                   </div>
 
                   {/* ACTIONS */}
