@@ -227,6 +227,7 @@ export default function SellerPage() {
       </div>
 
       {/* ================= BODY ================= */}
+      
       <div className="flex flex-col md:flex-row gap-5">
         {/* FILTERS */}
         <aside className="md:w-64 w-full rounded-2xl border bg-white p-4 text-xs sm:text-sm text-slate-700">
@@ -234,19 +235,36 @@ export default function SellerPage() {
 
           <div className="mb-4">
             <p className="font-medium mb-1">Category</p>
-            {categories.map((cat) => (
-              <label key={cat} className="flex items-center gap-2">
-                <input type="checkbox" className="h-3 w-3" />
-                <span>{cat}</span>
-              </label>
-            ))}
+            <div className="space-y-1 max-h-32 overflow-y-auto">
+              {categories.map((cat) => (
+                <label key={cat} className="flex items-center gap-2">
+                  <input type="checkbox" className="h-3 w-3" />
+                  <span className="truncate">{cat}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <p className="font-medium mb-1">Price</p>
+            <p className="text-[11px] text-slate-500 mb-1">
+              ₹{minPrice.toLocaleString()} – ₹{maxPrice.toLocaleString()}
+            </p>
+            <div className="h-1.5 rounded-full bg-slate-100" />
           </div>
 
           <div>
-            <p className="font-medium mb-1">Price</p>
-            <p className="text-[11px] text-slate-500">
-              ₹{minPrice.toLocaleString()} – ₹{maxPrice.toLocaleString()}
-            </p>
+            <p className="font-medium mb-1">Rating</p>
+            <div className="space-y-1 text-[11px]">
+              <label className="flex items-center gap-2">
+                <input type="checkbox" className="h-3 w-3" />
+                <span>4★ & above</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" className="h-3 w-3" />
+                <span>3★ & above</span>
+              </label>
+            </div>
           </div>
         </aside>
 

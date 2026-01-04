@@ -19,27 +19,18 @@ export default function Banner({ images = DEFAULT, interval = 3500 }) {
   }, [images, interval]);
 
   return (
-    <section className="w-full flex justify-center">
+    <section className="w-full">
       <div
         className="
-          relative w-full
+          relative
+          w-full
           h-[30vh] sm:h-[35vh] md:h-[40vh] lg:h-[52vh]
           overflow-hidden
-
-          /* Mobile + Tablet (unchanged) */
-          
-          rounded-2xl shadow-xl p-0 sm:p-3
-
-
-          /* Desktop → CARD STYLE */
-          lg:max-w-7xl
-          lg:rounded-3xl
-          lg:shadow-2xl
-          lg:p-0
-          lg:mx-auto
+          rounded-2xl lg:rounded-3xl
+          shadow-xl lg:shadow-2xl
         "
       >
-        {/* Image */}
+        {/* IMAGE */}
         <img
           src={images[i]}
           alt={`banner-${i}`}
@@ -47,56 +38,50 @@ export default function Banner({ images = DEFAULT, interval = 3500 }) {
             w-full h-full object-cover
             rounded-2xl lg:rounded-3xl
             transition-transform duration-700 ease-out
-            lg:scale-[1.03]
           "
         />
 
-        {/* Gradient overlay (desktop only) */}
+        {/* GRADIENT OVERLAY (DESKTOP ONLY) */}
         <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent rounded-3xl" />
 
         {/* TEXT CONTENT */}
-      {/* TEXT CONTENT */}
-  <div className="absolute top-4 left-4 lg:top-10 lg:left-10 text-white space-y-3 w-[90%] sm:w-[70%] lg:w-[420px] xl:w-[480px]">
+        <div className="absolute top-4 left-4 lg:top-10 lg:left-10 text-white space-y-3 w-[90%] sm:w-[70%] lg:w-[420px] xl:w-[480px]">
+          <p className="bg-white/20 text-xs px-3 py-1 rounded-full backdrop-blur-sm inline-block">
+            Limited time!
+          </p>
 
-  <p className="bg-white/20 text-xs px-3 py-1 rounded-full backdrop-blur-sm inline-block">
-    Limited time!
-  </p>
+          <h2 className="text-lg lg:text-2xl font-semibold">
+            Get Special Discount Get Special Discount
+          </h2>
 
-  <h2 className="text-lg lg:text-2xl font-semibold">
-    Get Special Discount  Get Special Discount
-  </h2>
+          <p className="text-sm lg:text-base">Up to</p>
 
-  <p className="text-sm lg:text-base">Up to</p>
+          <h1 className="text-4xl lg:text-6xl font-bold -mt-2">
+            40%
+          </h1>
 
-  <h1 className="text-4xl lg:text-6xl font-bold -mt-2">
-    40%
-  </h1>
+          <p className="text-[10px] lg:text-sm opacity-80">
+            All Salons available | T&C Applied
+          </p>
 
-  <p className="text-[10px] lg:text-sm opacity-80">
-    All Salons available | T&C Applied
-  </p>
-
-  {/* SHOP NOW BUTTON (Desktop only) */}
-  <button
-    className="
-      hidden lg:inline-block
-      mt-4
-      bg-red-500 hover:bg-red-600
-      text-white
-      px-6 py-3
-      rounded-full
-      font-medium
-      shadow-lg
-      transition-transform duration-200
-      hover:scale-105
-    "
-  >
-    Shop Now
-  </button>
-</div>
-
-
-        
+          {/* SHOP NOW BUTTON (DESKTOP ONLY) */}
+          <button
+            className="
+              hidden lg:inline-block
+              mt-4
+              bg-red-500 hover:bg-red-600
+              text-white
+              px-6 py-3
+              rounded-full
+              font-medium
+              shadow-lg
+              transition-transform duration-200
+              hover:scale-105
+            "
+          >
+            Shop Now
+          </button>
+        </div>
       </div>
     </section>
   );

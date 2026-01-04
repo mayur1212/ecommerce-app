@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-/* ================= SAFE HELPERS (NO UI CHANGE) ================= */
+/* ================= SAFE HELPERS ================= */
 
 const formatPrice = (price) => {
   const value = Number(price);
@@ -29,7 +29,7 @@ const getDisplayMRP = (product) => {
   return product?.price ?? null;
 };
 
-/* =============================================================== */
+/* ================================================= */
 
 export default function RelatedProducts({
   products = [],
@@ -69,6 +69,7 @@ export default function RelatedProducts({
 
   let related = [];
 
+  /* Priority 1: explicit related_ids */
   if (Array.isArray(currentProduct.related_ids)) {
     related = currentProduct.related_ids
       .map((rid) => all.find((p) => idOf(p) === Number(rid)))
@@ -78,6 +79,7 @@ export default function RelatedProducts({
 
   const norm = (s) => String(s ?? "").trim().toLowerCase();
 
+  /* Priority 2: same category */
   if (!related.length) {
     const cat = norm(currentProduct.category);
     related = all.filter(
@@ -85,6 +87,7 @@ export default function RelatedProducts({
     );
   }
 
+  /* Priority 3: same brand */
   if (!related.length) {
     const brand = norm(currentProduct.brand);
     related = all.filter(
@@ -92,6 +95,7 @@ export default function RelatedProducts({
     );
   }
 
+  /* Priority 4: similar price range */
   if (!related.length) {
     const curPrice = getDisplayPrice(currentProduct);
     const lo = curPrice * 0.5;
@@ -102,12 +106,19 @@ export default function RelatedProducts({
     });
   }
 
+  /* Priority 5: top rated */
   if (!related.length) {
     related = [...all]
       .filter(excludeCurrent)
       .sort((a, b) => {
-        const ra = typeof a.rating === "number" ? a.rating : a.rating?.value ?? 0;
-        const rb = typeof b.rating === "number" ? b.rating : b.rating?.value ?? 0;
+        const ra =
+          typeof a.rating === "number"
+            ? a.rating
+            : a.rating?.value ?? 0;
+        const rb =
+          typeof b.rating === "number"
+            ? b.rating
+            : b.rating?.value ?? 0;
         return rb - ra;
       });
   }
@@ -130,51 +141,55 @@ export default function RelatedProducts({
 
             return (
               <Link
-  key={p.id}
-  to={`/shopping/${p.id}`}
-  className="
-    group block bg-white
-    rounded-xl border border-gray-100
-    hover:shadow-lg transition
-    overflow-hidden
-  "
->
-  {/* IMAGE */}
-  <div className="relative w-full aspect-square bg-gray-50 overflow-hidden">
-    <img
-      src={image}
-      alt={name}
-      className="
-        w-full h-full object-cover
-        transition-transform duration-300
-        group-hover:scale-110
-      "
-    />
-    <span className="absolute bottom-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                  20% OFF · Today
-                </span>
-  </div>
+                key={p.id}
+                to={`/shopping/${p.id}`}
+                className="
+                  group block bg-white
+                  rounded-xl border border-gray-100
+                  hover:shadow-lg transition
+                  overflow-hidden
+                "
+              >
+                {/* IMAGE */}
+                <div className="relative w-full aspect-square bg-gray-50 overflow-hidden">
+                  <img
+                    src={image}
+                    alt={name}
+                    className="
+                      w-full h-full object-cover
+                      transition-transform duration-300
+                      group-hover:scale-110
+                    "
+                  />
+                  <span className="absolute bottom-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    20% OFF · Today
+                  </span>
+                </div>
 
-  {/* CONTENT */}
-  <div className="p-3 flex flex-col gap-1">
-    <h3 className="text-sm font-semibold line-clamp-2 leading-snug">
-      {name}
-    </h3>
+                {/* CONTENT */}
+                <div className="p-3 flex flex-col gap-1">
+                  <h3 className="text-sm font-semibold line-clamp-2 leading-snug">
+                    {name}
+                  </h3>
 
-    <div className="flex items-center gap-2 mt-1">
-      <span className="text-sm font-bold text-red-600">
-        {formatPrice(salePrice)}
-      </span>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-sm font-bold text-red-600">
+                      {formatPrice(salePrice)}
+                    </span>
 
-      {mrp && mrp > salePrice && (
-        <span className="text-[11px] line-through text-gray-400">
-          {formatPrice(mrp)}
-        </span>
-      )}
-    </div>
-  </div>
-</Link>
-
+                    {mrp && mrp > salePrice && (
+                      <>
+                        <span className="text-[11px] line-through text-gray-400">
+                          {formatPrice(mrp)}
+                        </span>
+                        <span className="text-green-600 text-xs font-semibold">
+                          (20% OFF)
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </Link>
             );
           })}
         </div>

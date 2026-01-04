@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 /* ================= CONFIG ================= */
 
-const OFFER_DURATION_MS = 7 * 60 * 60 * 1000; // 7 hours
+const OFFER_DURATION_MS = 7 * 60 * 60 * 1000; // ✅ 7 hours (UNCHANGED)
 const STORAGE_KEY = "todayHeroOfferEndTime";
 
 /* ================= COMPONENT ================= */
@@ -33,6 +33,10 @@ export default function HeroOfferBanner() {
     return () => clearInterval(timer);
   }, [endTime]);
 
+  /* ================= TIME VALUES ================= */
+
+  const days = 0; // ✅ ONLY ADD THIS (NO LOGIC CHANGE)
+
   const hours = Math.floor(timeLeft / (1000 * 60 * 60));
   const minutes = Math.floor((timeLeft / (1000 * 60)) % 60);
   const seconds = Math.floor((timeLeft / 1000) % 60);
@@ -43,7 +47,16 @@ export default function HeroOfferBanner() {
     <div
       onClick={() => navigate("/offerpage")}
       className="
-mt-4 sm:mt-5 mb-8 rounded-2xl bg-gradient-to-r from-red-600 via-pink-600 to-orange-500 text-white px-4 sm:px-6 py-5 sm:py-6 shadow-xl cursor-pointer hover:scale-[1.01] transition-transform
+        mt-4 sm:mt-5 mb-8
+        rounded-2xl
+        bg-gradient-to-r from-red-600 via-pink-600 to-orange-500
+        text-white
+        px-4 sm:px-6
+        py-5 sm:py-6
+        shadow-xl
+        cursor-pointer
+        hover:scale-[1.01]
+        transition-transform
       "
     >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
@@ -76,6 +89,9 @@ mt-4 sm:mt-5 mb-8 rounded-2xl bg-gradient-to-r from-red-600 via-pink-600 to-oran
           </p>
 
           <div className="flex gap-2 text-sm font-bold">
+            {/* ✅ DAYS ADDED */}
+            <TimeBox value={days} label="DAYS" />
+
             <TimeBox value={hours} label="HRS" />
             <TimeBox value={minutes} label="MIN" />
             <TimeBox value={seconds} label="SEC" />

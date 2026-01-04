@@ -30,7 +30,7 @@ const SLIDE_INTERVAL = 5000;
 
 /* ================= COMPONENT ================= */
 
-const ShoppingBanner = () => {
+export default function ShoppingBanner() {
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
@@ -44,45 +44,65 @@ const ShoppingBanner = () => {
   const slide = SLIDES[current];
 
   return (
-    <section className="w-full py-4 px-1">
-      <div className="max-w-7xl mx-auto">
-        <div className="relative w-full h-[180px] sm:h-[220px] lg:h-[260px] rounded-2xl overflow-hidden shadow-xl">
+    <section className="w-full">
+      <div
+        className="
+          relative
+          w-full
+          h-[30vh] sm:h-[35vh] md:h-[40vh] lg:h-[52vh]
+          overflow-hidden
+          rounded-2xl lg:rounded-3xl
+          shadow-xl lg:shadow-2xl
+        "
+      >
+        {/* IMAGE */}
+        <img
+          src={slide.image}
+          alt={slide.title}
+          className="
+            w-full h-full object-cover
+            rounded-2xl lg:rounded-3xl
+            transition-opacity duration-700
+          "
+        />
 
-          {/* IMAGE */}
-          <img
-            src={slide.image}
-            alt={slide.title}
-            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
-          />
+        {/* GRADIENT OVERLAY (DESKTOP ONLY) */}
+        <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent rounded-3xl" />
 
-          {/* OVERLAY */}
-          <div className="absolute inset-0 bg-black/40" />
+        {/* TEXT CONTENT */}
+        <div className="absolute top-4 left-4 lg:top-10 lg:left-10 text-white space-y-3 w-[90%] sm:w-[70%] lg:w-[420px] xl:w-[480px]">
 
-          {/* TEXT */}
-          <div className="absolute inset-0 flex items-center">
-            <div className="ml-6 sm:ml-10 text-white space-y-2 max-w-md">
-              <p className="text-xs sm:text-sm bg-white/20 inline-block px-3 py-1 rounded-full backdrop-blur">
-                {slide.badge}
-              </p>
+          <p className="bg-white/20 text-xs px-3 py-1 rounded-full backdrop-blur-sm inline-block">
+            {slide.badge}
+          </p>
 
-              <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold">
-                {slide.title}
-              </h2>
+          <h2 className="text-lg lg:text-2xl font-semibold">
+            {slide.title}
+          </h2>
 
-              <p className="text-sm sm:text-base opacity-90">
-                {slide.subtitle}
-              </p>
+          <p className="text-sm lg:text-base opacity-90">
+            {slide.subtitle}
+          </p>
 
-              <button className="mt-3 bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 rounded-full font-medium shadow-lg transition-transform duration-200 hover:scale-105">
-                {slide.button}
-              </button>
-            </div>
-          </div>
-
+          {/* BUTTON (DESKTOP ONLY – SAME AS Banner.jsx) */}
+          <button
+            className="
+              hidden lg:inline-block
+              mt-4
+              bg-red-500 hover:bg-red-600
+              text-white
+              px-6 py-3
+              rounded-full
+              font-medium
+              shadow-lg
+              transition-transform duration-200
+              hover:scale-105
+            "
+          >
+            {slide.button}
+          </button>
         </div>
       </div>
     </section>
   );
-};
-
-export default ShoppingBanner;
+}
