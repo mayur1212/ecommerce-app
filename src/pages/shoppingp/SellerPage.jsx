@@ -63,7 +63,7 @@ export default function SellerPage() {
         {/* LEFT */}
         <div className="flex items-center gap-4">
           {/* AVATAR */}
-          <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-white border-4 border-red-600 shadow overflow-hidden flex items-center justify-center">
+          <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-white border-1 border-red-100 shadow overflow-hidden flex items-center justify-center">
   <img
     src={shopIcon}
     alt="Seller Store"
@@ -92,9 +92,7 @@ export default function SellerPage() {
 
             {/* LOCATION + MAP ICON */}
             <div className="mt-1 flex items-center gap-2 text-[11px] sm:text-xs text-slate-500">
-  {sellerAddress}
-
-  <a
+              <a
     href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
       sellerAddress
     )}`}
@@ -115,6 +113,9 @@ export default function SellerPage() {
       <circle cx="32" cy="23" r="7" fill="#ffffff" />
     </svg>
   </a>
+  {sellerAddress}
+
+  
 </div>
 
           </div>
@@ -123,105 +124,164 @@ export default function SellerPage() {
         {/* RIGHT ACTIONS */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
 
-  {/* FOLLOW / FOLLOWING */}
- {/* FOLLOW */}
-<button
-  className="
-    flex items-center justify-center
-    rounded-full
-    bg-red-600 hover:bg-red-700
-    text-white
-    px-4 sm:px-5
-    py-2
-    min-h-[40px]
-    text-xs sm:text-sm
-    font-semibold
-    shadow
-    transition
-  "
->
-  Follow
-</button>
-
-{/* ADD FRIEND */}
-<button
-  className="
-    flex items-center justify-center gap-2
-    rounded-full
-    border
-    bg-slate-100 hover:bg-slate-200
-    text-slate-700
-    px-4 sm:px-5
-    py-2
-    min-h-[40px]
-    text-xs sm:text-sm
-    font-semibold
-    shadow-sm
-    transition
-  "
->
-  <span className="text-sm sm:text-base">➕</span>
-  <span>Add Friend</span>
-</button>
-
-
-
-  {/* MESSAGE (Primary like Instagram) */}
-  <button className="
-    flex items-center gap-1
-    rounded-full
-    border
-    bg-white hover:bg-slate-100
-    px-4 py-2
-    text-xs sm:text-sm
-    font-semibold
-    text-slate-800
-    shadow-sm
-  ">
-    💬
-    <span className="hidden sm:inline">Message</span>
+  {/* FOLLOW */}
+  <button
+    className="
+      flex items-center justify-center
+      rounded-full
+      bg-red-600 hover:bg-red-700
+      text-white
+      px-4 sm:px-5
+      py-2
+      min-h-[40px]
+      text-xs sm:text-sm
+      font-semibold
+      shadow
+      transition
+    "
+  >
+    Follow
   </button>
 
-  {/* CALL */}
-  <button className="
+  {/* ADD FRIEND */}
+  <button
+    className="
+      flex items-center justify-center gap-2
+      rounded-full
+      border
+      bg-slate-100 hover:bg-slate-200
+      text-slate-700
+      px-4 sm:px-5
+      py-2
+      min-h-[40px]
+      text-xs sm:text-sm
+      font-semibold
+      shadow-sm
+      transition
+    "
+  >
+    ➕ <span>Add Friend</span>
+  </button>
+
+  {/* MESSAGE */}
+  <button
+    className="
+      flex items-center gap-2
+      rounded-full
+      border
+      bg-white hover:bg-slate-100
+      px-4 sm:px-5
+      py-2
+      min-h-[40px]
+      text-xs sm:text-sm
+      font-semibold
+      text-slate-800
+      shadow-sm
+      transition
+    "
+  >
+    💬 <span>Message</span>
+  </button>
+
+  {/* ENQUIRY (Clean CTA) */}
+  <button
+    className="
+      flex items-center gap-2
+      rounded-full
+      border
+      bg-blue-50 hover:bg-blue-100
+      text-blue-700
+      px-4 sm:px-5
+      py-2
+      min-h-[40px]
+      text-xs sm:text-sm
+      font-semibold
+      shadow-sm
+      transition
+    "
+  >
+    ✉️ <span>Enquiry</span>
+  </button>
+
+  {/* WHATSAPP – DIRECT CHAT */}
+  {/* WHATSAPP – DIRECT CHAT */}
+<a
+  href="https://wa.me/919999999999"
+  target="_blank"
+  rel="noreferrer"
+  title="Chat on WhatsApp"
+  className="
     h-10 w-10
     rounded-full
-    border
-    bg-white
+    bg-green-500 hover:bg-green-600
+    text-white
     shadow
-    hover:bg-red-50
     flex items-center justify-center
-  ">
+    transition
+  "
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 32 32"
+    className="h-5 w-5 fill-white"
+  >
+    <path d="M16.04 2.003c-7.72 0-14 6.28-14 14 0 2.47.65 4.87 1.89 6.99L2 30l7.18-1.87A13.92 13.92 0 0 0 16.04 30c7.72 0 14-6.28 14-14s-6.28-13.997-14-13.997zm0 25.66c-2.21 0-4.37-.59-6.26-1.71l-.45-.27-4.26 1.11 1.14-4.15-.29-.43a11.63 11.63 0 0 1-1.77-6.21c0-6.42 5.23-11.65 11.65-11.65 6.42 0 11.65 5.23 11.65 11.65 0 6.42-5.23 11.66-11.65 11.66zm6.39-8.75c-.35-.18-2.08-1.02-2.4-1.14-.32-.12-.56-.18-.8.18-.24.35-.92 1.14-1.13 1.38-.21.24-.41.27-.76.09-.35-.18-1.48-.54-2.82-1.73-1.04-.93-1.74-2.08-1.95-2.43-.21-.35-.02-.54.16-.72.16-.16.35-.41.53-.62.18-.21.24-.35.35-.59.12-.24.06-.45-.03-.62-.09-.18-.8-1.93-1.1-2.64-.29-.7-.59-.61-.8-.62h-.68c-.24 0-.62.09-.95.45-.32.35-1.25 1.22-1.25 2.97s1.28 3.44 1.46 3.68c.18.24 2.52 3.86 6.11 5.42.85.37 1.51.59 2.02.75.85.27 1.62.23 2.23.14.68-.1 2.08-.85 2.38-1.67.29-.83.29-1.54.21-1.67-.09-.14-.32-.21-.68-.38z" />
+  </svg>
+</a>
+
+
+  {/* CALL */}
+  <button
+    className="
+      h-10 w-10
+      rounded-full
+      border
+      bg-white
+      shadow
+      hover:bg-red-50
+      flex items-center justify-center
+    "
+  >
     📞
   </button>
 
   {/* SHARE */}
-  <button className="
-    h-10 w-10
-    rounded-full
-    border
-    bg-white
-    shadow
-    hover:bg-red-50
-    flex items-center justify-center
-  ">
-    🔗
+  <button className="h-10 w-10 rounded-full bg-red-600 hover:bg-red-700 text-white shadow flex items-center justify-center transition">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="white"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-5 w-5"
+    >
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <path d="M8.6 13.5l6.8 3.9" />
+      <path d="M15.4 6.6l-6.8 3.9" />
+    </svg>
   </button>
 
   {/* PROFILE */}
-  <button className="
-    h-10 w-10
-    rounded-full
-    border
-    bg-white
-    shadow
-    hover:bg-red-50
-    flex items-center justify-center
-  ">
+  <button
+    className="
+      h-10 w-10
+      rounded-full
+      border
+      bg-white
+      shadow
+      hover:bg-red-50
+      flex items-center justify-center
+    "
+  >
     👤
   </button>
 
 </div>
+
 
 
       </div>
