@@ -1,6 +1,6 @@
 // src/pages/orders/MyOrders.jsx
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useOrders } from "../../context/OrderContext";
 
 const formatPrice = (p) =>
@@ -9,6 +9,7 @@ const formatPrice = (p) =>
 export default function MyOrders() {
   const { orders = [] } = useOrders();
   const [activeTab, setActiveTab] = React.useState("All");
+  const navigate = useNavigate();
 
   const filteredOrders = React.useMemo(() => {
     if (activeTab === "All") return orders;
@@ -39,7 +40,7 @@ export default function MyOrders() {
       {/* LIST */}
       <div className="space-y-5">
         {filteredOrders.map((order) => {
-          if (!order.productId) return null; // 🔥 HARD SAFETY
+          if (!order.productId) return null; // safety
 
           const price = Number(order.price) || 0;
           const mrp = Number(order.mrp) || 0;
@@ -49,10 +50,19 @@ export default function MyOrders() {
           return (
             <div
               key={order.id}
-              className="bg-white rounded-2xl border shadow-sm p-4 flex gap-4"
+              onClick={() =>
+                navigate(`/order-details/${order.productId}`)
+              }
+              className="
+                bg-white rounded-2xl border shadow-sm p-4 flex gap-4
+                cursor-pointer hover:shadow-md transition
+              "
             >
               {/* IMAGE */}
-              <Link to={`/order-details/${order.productId}`}>
+              <Link
+                to={`/order-details/${order.productId}`}
+                onClick={(e) => e.stopPropagation()}
+              >
                 <img
                   src={order.image}
                   alt={order.title}
@@ -62,7 +72,10 @@ export default function MyOrders() {
 
               {/* CONTENT */}
               <div className="flex-1">
-                <Link to={`/order-details/${order.productId}`}>
+                <Link
+                  to={`/order-details/${order.productId}`}
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <h3 className="text-sm font-semibold hover:text-orange-600">
                     {order.title}
                   </h3>
@@ -97,8 +110,11 @@ export default function MyOrders() {
                   ✔ 14 Days return available
                 </p>
 
-                {/* 🔥 BUTTONS BACK */}
-                <div className="flex gap-3 mt-4 max-w-[520px]">
+                {/* ACTION BUTTONS */}
+                <div
+                  className="flex gap-3 mt-4 max-w-[520px]"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <button className="flex-1 border rounded-xl py-2 text-xs text-orange-600 font-semibold">
                     Track Order
                   </button>

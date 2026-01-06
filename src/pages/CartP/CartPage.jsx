@@ -22,11 +22,10 @@ export default function CartPage() {
   );
 
   const deliveryCharge = cartItems.reduce(
-  (sum, item) =>
-    sum + (item.perItemDelivery || 0) * (item.qty || 1),
-  0
-);
-
+    (sum, item) =>
+      sum + (item.perItemDelivery || 0) * (item.qty || 1),
+    0
+  );
 
   const total = subtotal + deliveryCharge;
 
@@ -54,11 +53,20 @@ export default function CartPage() {
             {cartItems.map((item) => (
               <div
                 key={`${item.productId}-${item.variant?.id || ""}`}
-                className="bg-white rounded-2xl border p-4 sm:p-5 flex gap-4"
+                onClick={() =>
+                  navigate(
+                    `/cart-product/${item.productId}?color=${item.variant?.color || ""}&size=${item.variant?.size || ""}&weight=${item.variant?.weight || ""}&qty=${item.qty}`
+                  )
+                }
+                className="
+                  bg-white rounded-2xl border p-4 sm:p-5 flex gap-4
+                  cursor-pointer hover:shadow-md transition
+                "
               >
                 {/* IMAGE */}
                 <Link
-                  to={`/cart-product/${item.productId}?color=${item.variant?.color || ""}&size=${item.variant?.size || ""}&weight=${item.variant?.weight || ""}&qty=${item.qty}`}
+                  to={`/cart-product/${item.productId}`}
+                  onClick={(e) => e.stopPropagation()}
                   className="shrink-0"
                 >
                   <img
@@ -79,6 +87,7 @@ export default function CartPage() {
                   <div>
                     <Link
                       to={`/cart-product/${item.productId}`}
+                      onClick={(e) => e.stopPropagation()}
                       className="hover:underline"
                     >
                       <h3 className="text-sm sm:text-base font-semibold leading-snug">
@@ -100,22 +109,25 @@ export default function CartPage() {
                     </p>
 
                     <p className="text-xs text-gray-500 mt-1">
-  Delivery:{" "}
-  {item.perItemDelivery === 0
-    ? "FREE"
-    : formatPrice(item.perItemDelivery * item.qty)}
-</p>
-
+                      Delivery:{" "}
+                      {item.perItemDelivery === 0
+                        ? "FREE"
+                        : formatPrice(item.perItemDelivery * item.qty)}
+                    </p>
                   </div>
 
                   {/* ACTIONS */}
                   <div className="flex flex-wrap items-center gap-3 mt-4">
                     {/* QTY */}
-                    <div className="flex items-center border rounded-xl overflow-hidden">
+                    <div
+                      className="flex items-center border rounded-xl overflow-hidden"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <button
-                        onClick={() =>
-                          updateQty(item.productId, item.qty - 1)
-                        }
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateQty(item.productId, item.qty - 1);
+                        }}
                         disabled={item.qty <= 1}
                         className="px-3 py-1.5 text-lg disabled:opacity-40"
                       >
@@ -127,9 +139,10 @@ export default function CartPage() {
                       </span>
 
                       <button
-                        onClick={() =>
-                          updateQty(item.productId, item.qty + 1)
-                        }
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateQty(item.productId, item.qty + 1);
+                        }}
                         className="px-3 py-1.5 text-lg"
                       >
                         +
@@ -137,14 +150,20 @@ export default function CartPage() {
                     </div>
 
                     <button
-                      onClick={() => saveForLater(item.productId)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        saveForLater(item.productId);
+                      }}
                       className="text-xs sm:text-sm text-blue-600"
                     >
                       Save for later
                     </button>
 
                     <button
-                      onClick={() => removeFromCart(item.productId)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFromCart(item.productId);
+                      }}
                       className="text-xs sm:text-sm text-red-500"
                     >
                       Remove

@@ -134,7 +134,9 @@ function MainAppLayout() {
       </div>
 
       {/* ========== MOBILE SEARCH + FILTER ========== */}
-      <div className="md:hidden w-full sticky top-0 z-40 bg-white px-4 py-2">
+      
+        <div className="lg:hidden w-full sticky top-0 z-40 bg-white px-4 py-2">
+
         <div className="flex items-center gap-2">
           <div className="flex-1">
             <SearchBar />
@@ -153,9 +155,25 @@ function MainAppLayout() {
 
       {/* ========== DESKTOP LAYOUT ========== */}
       <div className="flex w-full">
-        <aside className="hidden md:block w-64 sticky top-16 h-[calc(100vh-4rem)] bg-white shadow-lg p-4 border-r">
-          <Sidebar />
-        </aside>
+        
+          
+           
+        <aside
+  className="
+    hidden lg:block
+    w-64
+    sticky top-14
+    h-[calc(100vh-3.5rem)]
+    bg-white shadow-lg
+    border-r
+    overflow-y-auto
+  "
+>
+  <div className="p-4 pb-24">
+    <Sidebar />
+  </div>
+</aside>
+
 
         <div className="flex-1 min-w-0">
           {/* DESKTOP SEARCH + FILTER */}
@@ -172,9 +190,11 @@ function MainAppLayout() {
             </button>
           </div>
 
-          <div className="px-4 pb-10">
-            <Outlet context={{ filters }} />
-          </div>
+          <div className="px-4 pb-24 lg:pb-10">
+  <Outlet context={{ filters }} />
+</div>
+
+        
         </div>
       </div>
 

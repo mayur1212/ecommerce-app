@@ -5,7 +5,20 @@ const WishlistContext = createContext();
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState(() => {
     const saved = localStorage.getItem("wishlist");
-    return saved ? JSON.parse(saved) : {};
+
+if (!saved) return {};
+
+const parsed = JSON.parse(saved);
+
+// 🔥 ENSURE perItemDelivery EXISTS
+Object.keys(parsed).forEach((id) => {
+  if (parsed[id].perItemDelivery === undefined) {
+    parsed[id].perItemDelivery = 0; // FREE fallback
+  }
+});
+
+return parsed;
+
   });
 
   useEffect(() => {
@@ -14,16 +27,22 @@ export const WishlistProvider = ({ children }) => {
 
   // ✅ Toggle wishlist (object based, safe)
   const toggleWishlist = (product) => {
-    setWishlist((prev) => {
-      const updated = { ...prev };
-      if (updated[product.id]) {
-        delete updated[product.id];
-      } else {
-        updated[product.id] = product;
-      }
-      return updated;
-    });
-  };
+  setWishlist((prev) => {
+    const updated = { ...prev };
+
+    if (updated[product.id]) {
+      delete updated[product.id];
+    } else {
+      updated[product.id] = {
+        ...product,
+        perItemDelivery: product.perItemDelivery, // ✅ IMPORTANT
+      };
+    }
+
+    return updated;
+  });
+};
+
 
   // ✅ Check if wishlisted
   const isWishlisted = (id) => !!wishlist[id];

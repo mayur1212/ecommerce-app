@@ -50,12 +50,17 @@ export default function Wishlist() {
             <button
               onClick={() => {
                 addToCart({
-                  productId: product.id,
-                  name: product.name,
-                  price: product.price,
-                  image: product.thumbnail,
-                  qty: 1,
-                });
+  productId: product.id,
+  name: product.name,
+  price: product.price,
+  image: product.thumbnail,
+  qty: 1,
+ 
+  perItemDelivery: product.delivery_charge,
+
+});
+
+
                 toast.success("Added to cart 🛒");
               }}
               className="flex-1 bg-red-600 text-white py-2 rounded-lg text-sm"

@@ -52,23 +52,23 @@ export default function Header({ mobileOpen, setMobileOpen }) {
       {mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
-          className="
-            fixed inset-0 z-[60] md:hidden
-            bg-black/40 backdrop-blur-sm
-          "
+          className="fixed inset-0 z-[60] lg:hidden bg-black/40 backdrop-blur-sm"
+
         />
       )}
 
       {/* ================= RIGHT DRAWER (NO BLUR HERE) ================= */}
       <div
-        className={`
-          fixed top-0 right-0 z-[70] h-full
-          w-[90%] max-w-[380px]
-          bg-white shadow-2xl md:hidden
-          transform transition-transform duration-300 ease-in-out
-          ${mobileOpen ? "translate-x-0" : "translate-x-full"}
-        `}
-      >
+  className={`
+    fixed top-0 right-0 z-[70] h-full
+    w-[90%] max-w-[380px]
+    bg-white shadow-2xl lg:hidden
+    transform transition-transform duration-300 ease-in-out
+    ${mobileOpen ? "translate-x-0" : "translate-x-full"}
+  `}
+>
+
+
         {/* DRAWER HEADER */}
         <div className="flex items-center justify-between px-4 py-4 border-b">
           <div className="flex items-center gap-3">
@@ -104,7 +104,9 @@ export default function Header({ mobileOpen, setMobileOpen }) {
         <div className="w-full px-1 py-1 flex flex-col">
 
           {/* ================= MOBILE HEADER ================= */}
-          <div className="flex md:hidden w-full items-center justify-between h-14 px-2">
+          
+            <div className="flex lg:hidden w-full items-center justify-between">
+
             <div
               className="flex items-center gap-1 cursor-pointer"
               onClick={() => navigate("/")}
@@ -157,7 +159,9 @@ export default function Header({ mobileOpen, setMobileOpen }) {
           </div>
 
           {/* ================= DESKTOP HEADER (UNCHANGED) ================= */}
-          <div className="hidden md:flex w-full items-center justify-between">
+          
+            <div className="hidden lg:flex w-full items-center justify-between">
+
             <div
               className="flex items-center gap-2 cursor-pointer"
               onClick={() => navigate("/")}

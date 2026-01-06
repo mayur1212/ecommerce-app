@@ -7,22 +7,27 @@ export function CartProvider({ children }) {
 
   // ADD TO CART
   const addToCart = (item) => {
-    setCartItems((prev) => {
-      const existing = prev.find(
-        (p) => p.productId === item.productId
+  setCartItems((prev) => {
+    const existing = prev.find(
+      (p) => p.productId === item.productId
+    );
+
+    if (existing) {
+      return prev.map((p) =>
+        p.productId === item.productId
+          ? {
+              ...p,
+              qty: p.qty + item.qty,
+              perItemDelivery: item.perItemDelivery, // keep original
+            }
+          : p
       );
+    }
 
-      if (existing) {
-        return prev.map((p) =>
-          p.productId === item.productId
-            ? { ...p, qty: p.qty + item.qty }
-            : p
-        );
-      }
+    return [...prev, item];
+  });
+};
 
-      return [...prev, item];
-    });
-  };
 
   // REMOVE ITEM
   const removeFromCart = (productId) => {

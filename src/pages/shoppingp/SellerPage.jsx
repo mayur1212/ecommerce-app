@@ -3,7 +3,7 @@ import React from "react";
 import { useParams, Link } from "react-router-dom";
 import products from "../../data/products.json";
 import shopIcon from "../../assets/3209711.png";
-
+import { Star } from "lucide-react";
 
 // "HILL TOP FASHION" -> "hill-top-fashion"
 const getSellerSlug = (name = "") =>
@@ -91,15 +91,17 @@ export default function SellerPage() {
             </div>
 
             {/* LOCATION + MAP ICON */}
-            <div className="mt-1 flex items-center gap-2 text-[11px] sm:text-xs text-slate-500">
-              <a
+            <div className="mt-1 flex items-center gap-2 text-[11px] sm:text-xs text-slate-500 overflow-hidden">
+  
+  {/* MAP ICON */}
+  <a
     href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
       sellerAddress
     )}`}
     target="_blank"
     rel="noreferrer"
     title="Get Directions"
-    className="h-8 w-8 rounded-full border bg-white shadow flex items-center justify-center hover:bg-red-50 transition"
+    className="h-8 w-8 shrink-0 rounded-full border bg-white shadow flex items-center justify-center hover:bg-red-50 transition"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -113,10 +115,31 @@ export default function SellerPage() {
       <circle cx="32" cy="23" r="7" fill="#ffffff" />
     </svg>
   </a>
-  {sellerAddress}
 
-  
+  {/* LOCATION TEXT */}
+  <span className="truncate">
+    {sellerAddress}
+  </span>
+
+  {/* SUBSCRIBE BUTTON */}
+  <button
+    className="
+      shrink-0
+      px-3 py-1.5
+      rounded-full
+      bg-purple-600 hover:bg-purple-700
+      text-white
+      text-[11px] sm:text-xs
+      font-semibold
+      shadow-sm
+      transition
+      whitespace-nowrap
+    "
+  >
+    Subscribe
+  </button>
 </div>
+
 
           </div>
         </div>
@@ -267,18 +290,18 @@ export default function SellerPage() {
 
   {/* PROFILE */}
   <button
-    className="
-      h-10 w-10
-      rounded-full
-      border
-      bg-white
-      shadow
-      hover:bg-red-50
-      flex items-center justify-center
-    "
-  >
-    👤
-  </button>
+  className="
+    h-10 w-10
+    rounded-full
+    border
+    bg-white
+    shadow
+    hover:bg-yellow-50
+    flex items-center justify-center
+  "
+>
+  <Star className="h-5 w-5 text-yellow-500" />
+</button>
 
 </div>
 
