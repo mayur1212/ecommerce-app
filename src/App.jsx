@@ -28,6 +28,13 @@ import Storedetails from "./components/Store/Storedetails";
 import Marketp from "./pages/marketp/marketp";
 import MarketProductsdetails from "./components/market/Productsdetails";
 
+import Account from "./pages/Account/Account";
+import Chat from "./pages/Chat/Chat";
+import Reels from "./pages/Reels/Reels";
+import Videos from "./pages/Videos/Videos";
+import Live from "./pages/Live/Live";
+
+
 /* ====== E-COMMERCE FLOW ====== */
 import CartPage from "./pages/CartP/CartPage";
 import CheckoutPage from "./pages/CheckoutP/CheckoutPage";
@@ -271,6 +278,12 @@ export default function App() {
 
               <Route path="/offerpage" element={<OfferPagee />} />
               <Route path="cart-product/:id" element={<CartProductDetail />} />
+              <Route path="account" element={<Account />} />
+<Route path="chat" element={<Chat />} />
+<Route path="reels" element={<Reels />} />
+<Route path="videos" element={<Videos />} />
+<Route path="live" element={<Live />} />
+
 
             </Route>
           </Routes>
