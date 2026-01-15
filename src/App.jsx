@@ -30,9 +30,13 @@ import MarketProductsdetails from "./components/market/Productsdetails";
 
 import Account from "./pages/Account/Account";
 import Chat from "./pages/Chat/Chat";
-import Reels from "./pages/Reels/Reels";
 import Videos from "./pages/Videos/Videos";
 import Live from "./pages/Live/Live";
+import Reels from "./pages/Reels/ReelsList";
+import ReelDetails from "./pages/Reels/ReelDetails";
+
+
+
 
 
 /* ====== E-COMMERCE FLOW ====== */
@@ -246,6 +250,8 @@ export default function App() {
           />
 
           <Routes>
+
+            
             <Route path="/" element={<MainAppLayout />}>
               <Route index element={<Home />} />
               <Route path="profile" element={<Profile />} /> 
@@ -280,9 +286,12 @@ export default function App() {
               <Route path="cart-product/:id" element={<CartProductDetail />} />
               <Route path="account" element={<Account />} />
 <Route path="chat" element={<Chat />} />
-<Route path="reels" element={<Reels />} />
+
 <Route path="videos" element={<Videos />} />
 <Route path="live" element={<Live />} />
+
+<Route path="/reels" element={<Reels />} />
+  <Route path="/reels/:id" element={<ReelDetails />} />
 
 
             </Route>
