@@ -34,6 +34,13 @@ import Videos from "./pages/Videos/Videos";
 import Live from "./pages/Live/Live";
 import Reels from "./pages/Reels/ReelsList";
 import ReelDetails from "./pages/Reels/ReelDetails";
+import CategoryPage from "./pages/Category/CategoryPage";
+
+import { AuthProvider } from "./context/AuthContext";
+import PrivateRoute from "./components/PrivateRoute";
+import Login from "./pages/login/Login";
+import Register from "./pages/Register/Register";
+
 
 
 
@@ -232,72 +239,117 @@ function MainAppLayout() {
 /* ================= MAIN APP ================= */
 export default function App() {
   return (
-    <CartProvider>
-      <OrderProvider>
-        <WishlistProvider>
-          <ScrollToTop />
-          <Toaster
-            position="bottom-center"
-            toastOptions={{
-              duration: 2000,
-              style: {
-                borderRadius: "14px",
-                background: "#111",
-                color: "#fff",
-                fontWeight: "500",
-              },
-            }}
-          />
+    <AuthProvider>
+      <CartProvider>
+        <OrderProvider>
+          <WishlistProvider>
 
-          <Routes>
+            <ScrollToTop />
+            <Toaster
+              position="bottom-center"
+              toastOptions={{
+                duration: 2000,
+                style: {
+                  borderRadius: "14px",
+                  background: "#111",
+                  color: "#fff",
+                  fontWeight: "500",
+                },
+              }}
+            />
 
-            
-            <Route path="/" element={<MainAppLayout />}>
-              <Route index element={<Home />} />
-              <Route path="profile" element={<Profile />} /> 
+            <Routes>
 
-              <Route path="shopping" element={<Shopping />} />
-              <Route path="shopping/:id" element={<ProductsDetails />} />
-              <Route path="seller/:sellerSlug" element={<SellerPage />} />
+              
 
-              <Route path="cart" element={<CartPage />} />
-              <Route path="checkout" element={<CheckoutPage />} />
-              <Route path="order-success/:id" element={<OrderSuccess />} />
-              <Route path="my-orders" element={<MyOrders />} />
-              <Route
-  path="/order-details/:id"
-  element={<OrderProductDetailPage />}
-/>
+              {/* ===== MAIN APP ===== */}
+              <Route path="/" element={<MainAppLayout />}>
+                <Route index element={<Home />} />
 
-              <Route path="wishlist" element={<Wishlist />} />
+                {/* PROTECTED */}
+                <Route
+                  path="profile"
+                  element={
+                    <PrivateRoute>
+                      <Profile />
+                    </PrivateRoute>
+                  }
+                />
+                {/* ===== AUTH ROUTES ===== */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
 
-              <Route path="store" element={<Storep />} />
-              <Route path="store/:id" element={<Storedetails />} />
+                <Route path="shopping" element={<Shopping />} />
+                <Route path="shopping/:id" element={<ProductsDetails />} />
+                <Route path="seller/:sellerSlug" element={<SellerPage />} />
 
-              <Route path="market" element={<Marketp />} />
-              <Route path="market/:id" element={<MarketProductsdetails />} />
+                <Route path="categories" element={<CategoryPage />} />
+                <Route path="category/:id" element={<CategoryPage />} />
 
-              <Route path="services" element={<ServicesPage />} />
+                <Route path="cart" element={<CartPage />} />
 
-              <Route path="blog" element={<Blog />} />
-              <Route path="blog/:slug" element={<BlogDetails />} />
+                {/* PROTECTED */}
+                <Route
+                  path="checkout"
+                  element={
+                    <PrivateRoute>
+                      <CheckoutPage />
+                    </PrivateRoute>
+                  }
+                />
 
-              <Route path="/offerpage" element={<OfferPagee />} />
-              <Route path="cart-product/:id" element={<CartProductDetail />} />
-              <Route path="account" element={<Account />} />
-<Route path="chat" element={<Chat />} />
+                <Route path="order-success/:id" element={<OrderSuccess />} />
 
-<Route path="videos" element={<Videos />} />
-<Route path="live" element={<Live />} />
+                {/* PROTECTED */}
+                <Route
+                  path="my-orders"
+                  element={
+                    <PrivateRoute>
+                      <MyOrders />
+                    </PrivateRoute>
+                  }
+                />
 
-<Route path="/reels" element={<Reels />} />
-  <Route path="/reels/:id" element={<ReelDetails />} />
+                {/* PROTECTED */}
+                <Route
+                  path="order-details/:id"
+                  element={
+                    <PrivateRoute>
+                      <OrderProductDetailPage />
+                    </PrivateRoute>
+                  }
+                />
 
+                <Route path="wishlist" element={<Wishlist />} />
 
-            </Route>
-          </Routes>
-        </WishlistProvider>
-      </OrderProvider>
-    </CartProvider>
+                <Route path="store" element={<Storep />} />
+                <Route path="store/:id" element={<Storedetails />} />
+
+                <Route path="market" element={<Marketp />} />
+                <Route path="market/:id" element={<MarketProductsdetails />} />
+
+                <Route path="services" element={<ServicesPage />} />
+
+                <Route path="blog" element={<Blog />} />
+                <Route path="blog/:slug" element={<BlogDetails />} />
+
+                <Route path="offerpage" element={<OfferPagee />} />
+                <Route path="cart-product/:id" element={<CartProductDetail />} />
+                <Route path="account" element={<Account />} />
+                <Route path="chat" element={<Chat />} />
+
+                <Route path="videos" element={<Videos />} />
+                <Route path="live" element={<Live />} />
+
+                <Route path="reels" element={<Reels />} />
+                <Route path="reels/:id" element={<ReelDetails />} />
+              </Route>
+
+            </Routes>
+
+          </WishlistProvider>
+        </OrderProvider>
+      </CartProvider>
+    </AuthProvider>
   );
 }
