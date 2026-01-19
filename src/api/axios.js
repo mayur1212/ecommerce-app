@@ -1,13 +1,16 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000/api/v1",
+  baseURL: import.meta.env.VITE_API_BASE_URL_PROD,
   headers: {
     Accept: "application/json",
   },
 });
 
-// Automatically attach token
+/* ===============================
+   REQUEST INTERCEPTOR
+   Attach token automatically
+================================ */
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -17,6 +20,25 @@ api.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+/* ===============================
+   RESPONSE INTERCEPTOR
+   Handle unauthorized access
+================================ */
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      if (!window.location.pathname.includes("login")) {
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error);
+  }
 );
 
 export default api;

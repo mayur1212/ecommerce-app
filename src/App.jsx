@@ -40,6 +40,9 @@ import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
 import Login from "./pages/login/Login";
 import Register from "./pages/Register/Register";
+import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword/ResetPassword";
+
 
 
 
@@ -278,6 +281,8 @@ export default function App() {
                 {/* ===== AUTH ROUTES ===== */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+  <Route path="/reset-password" element={<ResetPassword />} />
 
                 <Route path="shopping" element={<Shopping />} />
                 <Route path="shopping/:id" element={<ProductsDetails />} />

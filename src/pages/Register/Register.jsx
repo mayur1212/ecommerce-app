@@ -7,14 +7,14 @@ export default function Register() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    username: "",
     name: "",
     email: "",
-    country_code: "+91",
+    country_code: "91",
     phone: "",
     gender: "",
     dob: "",
     password: "",
+    password_confirmation: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -25,46 +25,25 @@ export default function Register() {
   const validate = () => {
     const e = {};
 
-    if (!form.username.trim()) {
-      e.username = "Username is required";
-    } else if (!/^[a-zA-Z0-9_]{4,}$/.test(form.username)) {
-      e.username = "Min 4 chars, letters/numbers/_ only";
-    }
-
-    if (!form.name.trim()) {
-      e.name = "Full name is required";
-    } else if (!/^[A-Za-z\s]+$/.test(form.name)) {
+    if (!form.name.trim()) e.name = "Full name is required";
+    else if (!/^[A-Za-z\s]+$/.test(form.name))
       e.name = "Only alphabets allowed";
-    }
 
-    if (!form.email.trim()) {
-      e.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email)) {
+    if (!form.email.trim()) e.email = "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email))
       e.email = "Enter valid email address";
-    }
 
-    if (!/^\d{10}$/.test(form.phone)) {
+    if (!/^\d{10}$/.test(form.phone))
       e.phone = "Phone must be 10 digits";
-    }
 
-    if (!form.gender) {
-      e.gender = "Select gender";
-    }
+    if (!form.gender) e.gender = "Select gender";
+    if (!form.dob) e.dob = "Date of birth required";
 
-    if (!form.dob) {
-      e.dob = "Date of birth required";
-    } else {
-      const dob = new Date(form.dob);
-      const today = new Date();
-      let age = today.getFullYear() - dob.getFullYear();
-      const m = today.getMonth() - dob.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
-      if (age < 13) e.dob = "Age must be 13+";
-    }
-
-    if (form.password.length < 6) {
+    if (form.password.length < 6)
       e.password = "Minimum 6 characters required";
-    }
+
+    if (form.password !== form.password_confirmation)
+      e.password_confirmation = "Passwords do not match";
 
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -74,16 +53,36 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setErrors({});
+
     if (!validate()) return;
 
     setLoading(true);
     try {
-      const fd = new FormData();
-      Object.entries(form).forEach(([k, v]) => fd.append(k, v));
-      await api.post("/auth/register", fd);
+      // ✅ SEND JSON (NOT FormData)
+      await api.post("auth/register", {
+        ...form,
+      });
+
       navigate("/login");
-    } catch {
-      setError("Username or Email already exists");
+    } catch (err) {
+      const apiErrors = err?.response?.data?.errors;
+
+      if (apiErrors) {
+        setErrors({
+          name: apiErrors.name?.[0],
+          email: apiErrors.email?.[0],
+          phone: apiErrors.phone?.[0],
+          password: apiErrors.password?.[0],
+          password_confirmation:
+            apiErrors.password_confirmation?.[0],
+        });
+      } else {
+        setError(
+          err?.response?.data?.message ||
+          "Registration failed. Try again."
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -92,25 +91,16 @@ export default function Register() {
   /* ================= UI CLASSES ================= */
   const inputClass =
     "w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-200";
-
   const labelClass = "text-xs sm:text-sm font-medium text-gray-600";
-
   const errorClass = "text-xs text-red-500 mt-1";
 
   return (
-    
-    <div className="min-h-screen flex items-start sm:items-center justify-center 
-bg-gradient-to-br from-rose-900 via-white to-rose-300 
-px-3 sm:px-4 py-8 sm:py-0">
-
+    <div className="min-h-screen flex items-start sm:items-center justify-center bg-gradient-to-br from-rose-900 via-white to-rose-300 px-3 sm:px-4 py-8 sm:py-0">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-    
-        className="w-full max-w-2xl bg-white rounded-2xl sm:rounded-3xl 
-shadow-xl p-5 sm:p-8 my-4 sm:my-0"
-
+        className="w-full max-w-2xl bg-white rounded-2xl sm:rounded-3xl shadow-xl p-5 sm:p-8"
       >
         <h1 className="text-2xl sm:text-3xl font-extrabold text-center text-red-600 mb-1">
           Create Account
@@ -126,23 +116,10 @@ shadow-xl p-5 sm:p-8 my-4 sm:my-0"
           </p>
         )}
 
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5" onSubmit={handleSubmit}>
-          {/* Username */}
-          <div>
-            <label className={labelClass}>Username</label>
-            <input
-              className={inputClass}
-              value={form.username}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  username: e.target.value.replace(/[^a-zA-Z0-9_]/g, ""),
-                })
-              }
-            />
-            {errors.username && <p className={errorClass}>{errors.username}</p>}
-          </div>
-
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5"
+        >
           {/* Full Name */}
           <div>
             <label className={labelClass}>Full Name</label>
@@ -166,7 +143,9 @@ shadow-xl p-5 sm:p-8 my-4 sm:my-0"
               type="email"
               className={inputClass}
               value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, email: e.target.value })
+              }
             />
             {errors.email && <p className={errorClass}>{errors.email}</p>}
           </div>
@@ -179,7 +158,10 @@ shadow-xl p-5 sm:p-8 my-4 sm:my-0"
               className={inputClass}
               value={form.phone}
               onChange={(e) =>
-                setForm({ ...form, phone: e.target.value.replace(/\D/g, "") })
+                setForm({
+                  ...form,
+                  phone: e.target.value.replace(/\D/g, ""),
+                })
               }
             />
             {errors.phone && <p className={errorClass}>{errors.phone}</p>}
@@ -191,7 +173,9 @@ shadow-xl p-5 sm:p-8 my-4 sm:my-0"
             <select
               className={inputClass}
               value={form.gender}
-              onChange={(e) => setForm({ ...form, gender: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, gender: e.target.value })
+              }
             >
               <option value="">Select</option>
               <option value="male">Male</option>
@@ -208,21 +192,46 @@ shadow-xl p-5 sm:p-8 my-4 sm:my-0"
               className={inputClass}
               value={form.dob}
               max={new Date().toISOString().split("T")[0]}
-              onChange={(e) => setForm({ ...form, dob: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, dob: e.target.value })
+              }
             />
             {errors.dob && <p className={errorClass}>{errors.dob}</p>}
           </div>
 
           {/* Password */}
-          <div className="md:col-span-2">
+          <div>
             <label className={labelClass}>Password</label>
             <input
               type="password"
               className={inputClass}
               value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, password: e.target.value })
+              }
             />
             {errors.password && <p className={errorClass}>{errors.password}</p>}
+          </div>
+
+          {/* Confirm Password */}
+          <div>
+            <label className={labelClass}>Confirm Password</label>
+            <input
+              type="password"
+              className={inputClass}
+              value={form.password_confirmation}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  password_confirmation: e.target.value,
+                })
+              }
+            />
+            {errors.password_confirmation && (
+              <p className={errorClass}>
+                {errors.password_confirmation}
+              </p>
+            )}
           </div>
 
           <motion.button

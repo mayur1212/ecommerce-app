@@ -19,16 +19,12 @@ export default function Login() {
   const validate = () => {
     const e = {};
 
-    // Email validation
     if (!form.email.trim()) {
       e.email = "Email is required";
-    } else if (
-      !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email)
-    ) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email)) {
       e.email = "Enter valid email address";
     }
 
-    // Password validation
     if (!form.password) {
       e.password = "Password is required";
     } else if (form.password.length < 6) {
@@ -43,18 +39,20 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setErrors({});
 
     if (!validate()) return;
 
     setLoading(true);
     try {
-      const fd = new FormData();
-      fd.append("type", "email");
-      fd.append("identifier", form.email);
-      fd.append("password", form.password);
+      const payload = new FormData();
+      payload.append("type", "email");
+      payload.append("identifier", form.email);
+      payload.append("password", form.password);
 
-      const res = await api.post("/auth/login", fd);
+      const res = await api.post("auth/login", payload);
 
+      // ✅ SAVE AUTH DATA
       localStorage.setItem("token", res.data.data.access_token);
       localStorage.setItem(
         "user",
@@ -62,17 +60,18 @@ export default function Login() {
       );
 
       navigate("/");
-    } catch {
-      setError("Invalid email or password");
+    } catch (err) {
+      setError(
+        err?.response?.data?.message ||
+        "Invalid email or password"
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center 
-    bg-gradient-to-br from-rose-900 via-white to-red-200 px-4">
-
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-900 via-white to-red-200 px-4">
       <motion.div
         initial={{ opacity: 0, y: 40, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -88,7 +87,7 @@ export default function Login() {
         </p>
 
         {error && (
-          <p className="bg-red-100 text-red-600 text-sm p-2 rounded-lg mb-4">
+          <p className="bg-red-100 text-red-600 text-sm p-2 rounded-lg mb-4 text-center">
             {error}
           </p>
         )}
@@ -102,7 +101,7 @@ export default function Login() {
             <input
               type="email"
               placeholder="you@example.com"
-              className="mt-1 w-full px-4 py-3 border rounded-xl outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+              className="mt-1 w-full px-4 py-3 border rounded-xl outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
               value={form.email}
               onChange={(e) =>
                 setForm({ ...form, email: e.target.value })
@@ -123,7 +122,7 @@ export default function Login() {
             <input
               type="password"
               placeholder="••••••••"
-              className="mt-1 w-full px-4 py-3 border rounded-xl outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+              className="mt-1 w-full px-4 py-3 border rounded-xl outline-none focus:ring-2 focus:ring-red-500"
               value={form.password}
               onChange={(e) =>
                 setForm({
@@ -132,6 +131,16 @@ export default function Login() {
                 })
               }
             />
+
+            <div className="text-right mt-1">
+              <Link
+                to="/forgot-password"
+                className="text-sm text-red-600 hover:underline"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+
             {errors.password && (
               <p className="text-xs text-red-500 mt-1">
                 {errors.password}
@@ -151,10 +160,7 @@ export default function Login() {
 
         <p className="text-center text-sm mt-6 text-gray-600">
           Don’t have an account?{" "}
-          <Link
-            to="/register"
-            className="text-red-600 font-semibold hover:underline"
-          >
+          <Link to="/register" className="text-red-600 font-semibold">
             Register
           </Link>
         </p>
