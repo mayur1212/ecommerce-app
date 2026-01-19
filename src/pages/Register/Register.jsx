@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "../../api/axios";
+import toast from "react-hot-toast";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -50,43 +51,57 @@ export default function Register() {
   };
 
   /* ================= SUBMIT ================= */
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setErrors({});
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
+  setErrors({});
 
-    if (!validate()) return;
+  if (!validate()) return;
 
-    setLoading(true);
-    try {
-      // ✅ SEND JSON (NOT FormData)
-      await api.post("auth/register", {
-        ...form,
+  setLoading(true);
+  try {
+    // ✅ SEND JSON (NOT FormData)
+    await api.post("auth/register", {
+      ...form,
+    });
+
+    // ✅ SUCCESS POPUP
+    toast.success("Account created successfully 🎉");
+
+    // ✅ Redirect after short delay
+    setTimeout(() => {
+      navigate("/login");
+    }, 1500);
+
+  } catch (err) {
+    const apiErrors = err?.response?.data?.errors;
+
+    if (apiErrors) {
+      // ✅ Field-wise validation errors from Laravel
+      setErrors({
+        name: apiErrors.name?.[0],
+        email: apiErrors.email?.[0],
+        phone: apiErrors.phone?.[0],
+        password: apiErrors.password?.[0],
+        password_confirmation:
+          apiErrors.password_confirmation?.[0],
       });
 
-      navigate("/login");
-    } catch (err) {
-      const apiErrors = err?.response?.data?.errors;
+      // Optional generic error toast
+      toast.error("Please fix the highlighted errors");
+    } else {
+      const message =
+        err?.response?.data?.message ||
+        "Registration failed. Try again.";
 
-      if (apiErrors) {
-        setErrors({
-          name: apiErrors.name?.[0],
-          email: apiErrors.email?.[0],
-          phone: apiErrors.phone?.[0],
-          password: apiErrors.password?.[0],
-          password_confirmation:
-            apiErrors.password_confirmation?.[0],
-        });
-      } else {
-        setError(
-          err?.response?.data?.message ||
-          "Registration failed. Try again."
-        );
-      }
-    } finally {
-      setLoading(false);
+      setError(message);
+      toast.error(message);
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   /* ================= UI CLASSES ================= */
   const inputClass =

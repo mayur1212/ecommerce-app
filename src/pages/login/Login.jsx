@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "../../api/axios";
+import toast from "react-hot-toast";
+
 
 export default function Login() {
   const navigate = useNavigate();
@@ -37,38 +39,48 @@ export default function Login() {
 
   /* ================= SUBMIT ================= */
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setErrors({});
+  e.preventDefault();
+  setError("");
+  setErrors({});
 
-    if (!validate()) return;
+  if (!validate()) return;
 
-    setLoading(true);
-    try {
-      const payload = new FormData();
-      payload.append("type", "email");
-      payload.append("identifier", form.email);
-      payload.append("password", form.password);
+  setLoading(true);
+  try {
+    const payload = new FormData();
+    payload.append("type", "email");
+    payload.append("identifier", form.email);
+    payload.append("password", form.password);
 
-      const res = await api.post("auth/login", payload);
+    const res = await api.post("auth/login", payload);
 
-      // ✅ SAVE AUTH DATA
-      localStorage.setItem("token", res.data.data.access_token);
-      localStorage.setItem(
-        "user",
-        JSON.stringify(res.data.data.customer)
-      );
+    // ✅ SAVE AUTH DATA
+    localStorage.setItem("token", res.data.data.access_token);
+    localStorage.setItem(
+      "user",
+      JSON.stringify(res.data.data.customer)
+    );
 
+    // ✅ SUCCESS NOTIFICATION
+    toast.success("Login successful 🎉");
+
+    // ✅ Redirect after short delay
+    setTimeout(() => {
       navigate("/");
-    } catch (err) {
-      setError(
-        err?.response?.data?.message ||
-        "Invalid email or password"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+    }, 1200);
+
+  } catch (err) {
+    const message =
+      err?.response?.data?.message ||
+      "Invalid email or password";
+
+    setError(message);
+    toast.error(message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-900 via-white to-red-200 px-4">
