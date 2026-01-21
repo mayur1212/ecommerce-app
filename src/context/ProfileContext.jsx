@@ -1,67 +1,74 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import api from "../api/axios";
 
 const ProfileContext = createContext(null);
 
 export function ProfileProvider({ children }) {
-  /* ================= USER PROFILE ================= */
-  const [user, setUser] = useState({
-    firstName: "Mayur",
-    lastName: "Takke",
+  const [user, setUser] = useState(null);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    // ecommerce identity (NOT instagram)
-    email: "mayur@email.com",
-    mobile: "9876543210",
+  // ✅ EDIT MODAL STATE
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
-    location: "Mumbai, India",
+  /* ================= FETCH PROFILE ================= */
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await api.get("customer/profile");
+        const data = res.data.data;
 
-    // ✅ STATIC LIVE IMAGE LINK (CDN)
-    avatar:
-      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
-  });
+        const baseURL = import.meta.env.VITE_API_BASE_URL_PROD.replace(
+          "/api/v1",
+          ""
+        );
 
-  /* ================= STATS ================= */
-  const [stats, setStats] = useState({
-    followers: 1300,
-    following: 210,
-    posts: 98,
-    likes: 920,
-  });
+        setUser({
+          firstName: data.first_name,
+          lastName: data.last_name,
+          email: data.email,
+          mobile: data.mobile,
+          location: data.location,
+          avatar: data.avatar
+            ? data.avatar.startsWith("http")
+              ? data.avatar
+              : `${baseURL}/${data.avatar}`
+            : "/default-avatar.png",
+        });
 
-  /* ================= ACTION STATES ================= */
-  const [isFollowing, setIsFollowing] = useState(false);
+        setStats({
+          followers: data.followers ?? 0,
+          following: data.following ?? 0,
+          posts: data.posts ?? 0,
+          likes: data.likes ?? 0,
+        });
+      } catch (error) {
+        console.error("Profile fetch failed", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  /* ================= TABS ================= */
-  const [activeTab, setActiveTab] = useState("services");
-  // services | stories | reels | posts | blogs
+    fetchProfile();
+  }, []);
 
-  /* ================= ACTIONS ================= */
-  const toggleFollow = () => {
-    setIsFollowing((prev) => !prev);
-
-    setStats((prev) => ({
-      ...prev,
-      followers: isFollowing
-        ? prev.followers - 1
-        : prev.followers + 1,
-    }));
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-600">
+        Loading profile...
+      </div>
+    );
+  }
 
   return (
     <ProfileContext.Provider
       value={{
-        /* data */
         user,
         stats,
-
-        /* actions */
         setUser,
         setStats,
-        isFollowing,
-        toggleFollow,
-
-        /* tabs */
-        activeTab,
-        setActiveTab,
+        isEditOpen,
+        setIsEditOpen,
       }}
     >
       {children}

@@ -6,6 +6,9 @@ export default function ProfileHeader() {
   const { user, setIsEditOpen } = useProfile();
   const navigate = useNavigate();
 
+  // 🛡 SAFETY CHECK
+  if (!user) return null;
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -23,17 +26,10 @@ export default function ProfileHeader() {
           className="w-28 h-28 rounded-full object-cover border"
         />
 
-        {/* EDIT BUTTON ON IMAGE (MOBILE) */}
+        {/* EDIT BUTTON (MOBILE) */}
         <button
           onClick={() => setIsEditOpen(true)}
-          className="
-            absolute bottom-1 right-1
-            sm:hidden
-            bg-black text-white
-            p-2 rounded-full
-            shadow-md
-            hover:bg-gray-800
-          "
+          className="absolute bottom-1 right-1 sm:hidden bg-black text-white p-2 rounded-full shadow-md hover:bg-gray-800"
         >
           <Pencil size={16} />
         </button>
@@ -52,12 +48,7 @@ export default function ProfileHeader() {
         {/* LOGOUT (MOBILE) */}
         <button
           onClick={handleLogout}
-          className="
-            sm:hidden
-            mt-4
-            flex items-center justify-center gap-2
-            text-red-600 text-sm font-semibold
-          "
+          className="sm:hidden mt-4 flex items-center justify-center gap-2 text-red-600 text-sm font-semibold"
         >
           <LogOut size={16} />
           Logout
@@ -68,12 +59,7 @@ export default function ProfileHeader() {
       <div className="hidden sm:flex flex-col gap-2 absolute top-4 right-4">
         <button
           onClick={() => setIsEditOpen(true)}
-          className="
-            flex items-center gap-2
-            border px-4 py-1.5
-            rounded-full text-sm font-semibold
-            hover:bg-gray-100
-          "
+          className="flex items-center gap-2 border px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-gray-100"
         >
           <Pencil size={14} />
           Edit Profile
@@ -81,13 +67,7 @@ export default function ProfileHeader() {
 
         <button
           onClick={handleLogout}
-          className="
-            flex items-center gap-2
-            px-4 py-1.5
-            rounded-full text-sm font-semibold
-            text-red-600
-            hover:bg-red-50
-          "
+          className="flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold text-red-600 hover:bg-red-50"
         >
           <LogOut size={14} />
           Logout
