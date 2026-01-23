@@ -1,8 +1,58 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import categories from "../../data/categories";
+import { getCategories } from "../../api/category.api";
 
-export default function CategorySection() {
+/* SWIPER */
+import { Swiper, SwiperSlide } from "swiper/react";
+import { FreeMode } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/free-mode";
+
+export default function CategorySlider() {
   const navigate = useNavigate();
+
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        // ✅ FIX: function call
+        const res = await getCategories();
+
+        // ✅ FIX: correct response structure
+        const list =
+          res.data?.data?.categories ||
+          res.data?.data ||
+          [];
+
+        console.log("CATEGORY SLIDER DATA 👉", list);
+        setCategories(list);
+      } catch (err) {
+        console.error("Category slider error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-2xl p-4 shadow-sm">
+        Loading categories...
+      </div>
+    );
+  }
+
+  if (!categories.length) {
+    return (
+      <div className="bg-white rounded-2xl p-4 shadow-sm text-gray-500">
+        No categories found
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-2xl p-4 shadow-sm">
@@ -20,62 +70,53 @@ export default function CategorySection() {
         </button>
       </div>
 
-      {/* GRID */}
-      <div
-        className="
-          grid
-          grid-cols-4
-          sm:grid-cols-4
-          md:grid-cols-6
-          lg:grid-cols-8
-          gap-4
-        "
+      {/* SLIDER */}
+      <Swiper
+        modules={[FreeMode]}
+        freeMode
+        spaceBetween={14}
+        slidesPerView="auto"
+        className="!pb-2"
       >
-        {categories.slice(0, 8).map((item) => {
-          const Icon = item.icon;
-
-          return (
+        {categories.map((item) => (
+          <SwiperSlide
+            key={item.id}
+            className="!w-[90px]"
+          >
             <div
-              key={item.id}
               onClick={() => navigate(`/category/${item.id}`)}
-              className="
-                cursor-pointer
-                flex
-                flex-col
-                items-center
-                gap-2
-                group
-              "
+              className="cursor-pointer flex flex-col items-center gap-2 group"
             >
-              {/* ICON */}
-              <div
-                className="
-                  w-16
-                  h-16
-                  rounded-2xl
-                  bg-red-50
-                  flex
-                  items-center
-                  justify-center
-                  text-red-600
-                  text-2xl
-                  transition
-                  group-hover:bg-red-600
-                  group-hover:text-white
-                  group-hover:scale-105
-                "
-              >
-                <Icon />
+              {/* IMAGE */}
+              <div className="
+                w-16 h-16 rounded-2xl bg-red-50
+                border border-red-100
+                flex items-center justify-center
+                transition
+                group-hover:bg-red-600
+                group-hover:scale-105
+              ">
+                {item.image ? (
+                  <img
+                    src={`${import.meta.env.VITE_API_BASE_URL_PROD}/${item.image}`}
+                    alt={item.name}
+                    className="w-8 h-8 object-contain group-hover:brightness-0 group-hover:invert"
+                  />
+                ) : (
+                  <span className="text-xl font-bold text-red-600 group-hover:text-white">
+                    {item.name?.charAt(0)}
+                  </span>
+                )}
               </div>
 
-              {/* TITLE */}
-              <p className="text-xs font-semibold text-center text-gray-700">
-                {item.title}
+              {/* NAME */}
+              <p className="text-[11px] font-semibold text-center text-gray-700 leading-tight">
+                {item.name}
               </p>
             </div>
-          );
-        })}
-      </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
     </div>
   );
 }

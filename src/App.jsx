@@ -34,7 +34,10 @@ import Videos from "./pages/Videos/Videos";
 import Live from "./pages/Live/Live";
 import Reels from "./pages/Reels/ReelsList";
 import ReelDetails from "./pages/Reels/ReelDetails";
-import CategoryPage from "./pages/Category/CategoryPage";
+import CategoryPage from "./pages/CategoryPage/CategoryPage";
+import SubCategoryPage from "./pages/SubCategoryPage/SubCategoryPage";
+import ChildCategoryPage from "./pages/ChildCategoryPage/ChildCategoryPage";
+
 
 import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
@@ -288,8 +291,21 @@ export default function App() {
                 <Route path="shopping/:id" element={<ProductsDetails />} />
                 <Route path="seller/:sellerSlug" element={<SellerPage />} />
 
-                <Route path="categories" element={<CategoryPage />} />
-                <Route path="category/:id" element={<CategoryPage />} />
+                
+
+                {/* ===== CATEGORY FLOW ===== */}
+<Route path="categories" element={<CategoryPage />} />
+
+<Route
+  path="category/:categoryId"
+  element={<SubCategoryPage />}
+/>
+
+<Route
+  path="category/:categoryId/:subId"
+  element={<ChildCategoryPage />}
+/>
+
 
                 <Route path="cart" element={<CartPage />} />
 
