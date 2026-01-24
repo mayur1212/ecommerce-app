@@ -1,122 +1,174 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCategories } from "../../api/category.api";
 
 /* SWIPER */
 import { Swiper, SwiperSlide } from "swiper/react";
-import { FreeMode } from "swiper/modules";
+import { FreeMode, Navigation, Mousewheel } from "swiper/modules";
 import "swiper/css";
-import "swiper/css/free-mode";
+
+/* ICONS */
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function CategorySlider() {
   const navigate = useNavigate();
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
 
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        // ✅ FIX: function call
-        const res = await getCategories();
-
-        // ✅ FIX: correct response structure
-        const list =
-          res.data?.data?.categories ||
-          res.data?.data ||
-          [];
-
-        console.log("CATEGORY SLIDER DATA 👉", list);
-        setCategories(list);
-      } catch (err) {
-        console.error("Category slider error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
+    getCategories()
+      .then((res) => setCategories(res.data?.data || []))
+      .catch(console.error);
   }, []);
 
-  if (loading) {
-    return (
-      <div className="bg-white rounded-2xl p-4 shadow-sm">
-        Loading categories...
-      </div>
-    );
-  }
-
-  if (!categories.length) {
-    return (
-      <div className="bg-white rounded-2xl p-4 shadow-sm text-gray-500">
-        No categories found
-      </div>
-    );
-  }
+  if (!categories.length) return null;
 
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm">
+    <section className="relative bg-white rounded-3xl p-5 shadow-md">
       {/* HEADER */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-gray-900">
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="text-base md:text-lg font-bold text-gray-900">
           Shop by Category
         </h2>
 
         <button
           onClick={() => navigate("/categories")}
-          className="text-sm font-semibold text-red-600 hover:underline"
+          className="text-xs md:text-sm font-semibold text-red-600 hover:text-red-700 transition"
         >
-          View All
+          View all →
         </button>
       </div>
 
+      {/* LEFT ARROW – DESKTOP ONLY */}
+      <button
+        ref={prevRef}
+        className="
+          hidden lg:flex
+          absolute left-2
+          top-1/2 -translate-y-1/2
+          z-30
+          w-11 h-11
+          rounded-full
+          bg-white/80
+          backdrop-blur
+          shadow-xl
+          border
+          items-center justify-center
+          hover:bg-red-600 hover:text-white
+          hover:scale-110
+          transition-all
+        "
+      >
+        <ChevronLeft size={22} />
+      </button>
+
+      {/* RIGHT ARROW – DESKTOP ONLY */}
+      <button
+        ref={nextRef}
+        className="
+          hidden lg:flex
+          absolute right-2
+          top-1/2 -translate-y-1/2
+          z-30
+          w-11 h-11
+          rounded-full
+          bg-white/80
+          backdrop-blur
+          shadow-xl
+          border
+          items-center justify-center
+          hover:bg-red-600 hover:text-white
+          hover:scale-110
+          transition-all
+        "
+      >
+        <ChevronRight size={22} />
+      </button>
+
       {/* SLIDER */}
       <Swiper
-        modules={[FreeMode]}
-        freeMode
-        spaceBetween={14}
-        slidesPerView="auto"
-        className="!pb-2"
+        modules={[FreeMode, Navigation, Mousewheel]}
+        freeMode={{ enabled: true, momentum: true }}
+        grabCursor
+        simulateTouch
+        mousewheel={{ forceToAxis: true }}
+        navigation={{
+          prevEl: prevRef.current,
+          nextEl: nextRef.current,
+        }}
+        onBeforeInit={(swiper) => {
+          swiper.params.navigation.prevEl = prevRef.current;
+          swiper.params.navigation.nextEl = nextRef.current;
+        }}
+        spaceBetween={18}
+        breakpoints={{
+          0: { slidesPerView: 3 },      // 📱 Mobile
+          768: { slidesPerView: 5 },    // 📲 Tablet
+          1024: { slidesPerView: 8 },   // 🖥 Desktop ✅
+        }}
+        className="px-1 lg:px-14 cursor-grab active:cursor-grabbing select-none"
       >
         {categories.map((item) => (
-          <SwiperSlide
-            key={item.id}
-            className="!w-[90px]"
-          >
+          <SwiperSlide key={item.id}>
             <div
               onClick={() => navigate(`/category/${item.id}`)}
-              className="cursor-pointer flex flex-col items-center gap-2 group"
+              className="group cursor-pointer flex flex-col items-center gap-3 active:scale-95 transition"
             >
-              {/* IMAGE */}
-              <div className="
-                w-16 h-16 rounded-2xl bg-red-50
-                border border-red-100
-                flex items-center justify-center
-                transition
-                group-hover:bg-red-600
-                group-hover:scale-105
-              ">
+              {/* CARD */}
+              <div
+                className="
+                  relative
+                  w-20 h-20 md:w-24 md:h-24
+                  rounded-3xl
+                  bg-gradient-to-br
+                  from-red-50 via-white to-red-100
+                  flex items-center justify-center
+                  shadow-sm
+                  group-hover:shadow-xl
+                  group-hover:ring-2
+                  group-hover:ring-red-500/40
+                  transition-all
+                "
+              >
                 {item.image ? (
                   <img
                     src={`${import.meta.env.VITE_API_BASE_URL_PROD}/${item.image}`}
                     alt={item.name}
-                    className="w-8 h-8 object-contain group-hover:brightness-0 group-hover:invert"
+                    className="
+                      w-10 h-10 md:w-12 md:h-12
+                      object-contain
+                      transition
+                      group-hover:scale-110
+                      group-hover:brightness-0
+                      group-hover:invert
+                    "
                   />
                 ) : (
-                  <span className="text-xl font-bold text-red-600 group-hover:text-white">
+                  <span className="text-2xl font-bold text-red-600 group-hover:text-white">
                     {item.name?.charAt(0)}
                   </span>
                 )}
               </div>
 
-              {/* NAME */}
-              <p className="text-[11px] font-semibold text-center text-gray-700 leading-tight">
+              {/* LABEL */}
+              <p
+                className="
+                  text-[11px] md:text-sm
+                  font-semibold
+                  text-center
+                  text-gray-800
+                  group-hover:text-red-600
+                  transition
+                "
+              >
                 {item.name}
               </p>
             </div>
           </SwiperSlide>
         ))}
       </Swiper>
-    </div>
+    </section>
   );
 }

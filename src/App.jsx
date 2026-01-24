@@ -1,6 +1,8 @@
 // src/App.jsx
 import React, { useState } from "react";
-import { Routes, Route, useNavigate, Outlet } from "react-router-dom";
+
+import { Routes, Route, useNavigate, Outlet, Navigate } from "react-router-dom";
+
 import ScrollToTop from "./components/ScrollToTop";
 
 /* ================= COMPONENTS ================= */
@@ -270,7 +272,8 @@ export default function App() {
 
               {/* ===== MAIN APP ===== */}
               <Route path="/" element={<MainAppLayout />}>
-                <Route index element={<Home />} />
+                
+                 <Route index element={<Navigate to="/shopping" replace />} />
 
                 {/* PROTECTED */}
                 <Route
