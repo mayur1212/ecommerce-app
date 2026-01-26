@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCategories } from "../../api/category.api";
-import { Search } from "lucide-react";
+import { useSearch } from "../../context/SearchContext";
 
 export default function CategoryPage() {
   const navigate = useNavigate();
+  const { searchText } = useSearch(); // ✅ GLOBAL SEARCH
 
   const [categories, setCategories] = useState([]);
-  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState("");
 
-  /* ================= INITIAL CATEGORY LOAD ================= */
+  /* ================= INITIAL LOAD ================= */
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -29,14 +29,20 @@ export default function CategoryPage() {
     loadCategories();
   }, []);
 
-  /* ================= SEARCH (ONLY WHEN TYPING) ================= */
+  /* ================= SEARCH FROM GLOBAL SEARCH BAR ================= */
   useEffect(() => {
-    if (!search.trim()) return; // ✅ NO search = no API call
+    // 🔁 If search cleared → reload normal list
+    if (!searchText.trim()) {
+      getCategories().then((res) =>
+        setCategories(res.data?.data || [])
+      );
+      return;
+    }
 
     const timer = setTimeout(async () => {
       try {
         setSearchLoading(true);
-        const res = await getCategories(search);
+        const res = await getCategories(searchText);
         setCategories(res.data?.data || []);
       } finally {
         setSearchLoading(false);
@@ -44,7 +50,7 @@ export default function CategoryPage() {
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [searchText]);
 
   /* ================= UI STATES ================= */
 
@@ -78,39 +84,6 @@ export default function CategoryPage() {
         </p>
       </div>
 
-      {/* SEARCH BAR */}
-      <div className="relative mb-6 max-w-md">
-        <Search
-          size={18}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-        />
-        <input
-          value={search}
-          onChange={(e) => {
-            const val = e.target.value;
-            setSearch(val);
-
-            // ✅ Reset to normal list when cleared
-            if (!val.trim()) {
-              getCategories().then((res) =>
-                setCategories(res.data?.data || [])
-              );
-            }
-          }}
-          placeholder="Search category…"
-          className="
-            w-full
-            pl-10 pr-4 py-2.5
-            rounded-xl
-            border
-            text-sm
-            outline-none
-            focus:ring-2 focus:ring-red-500/30
-            focus:border-red-500
-          "
-        />
-      </div>
-
       {/* SEARCH LOADING */}
       {searchLoading && (
         <p className="text-sm text-gray-500 mb-4">
@@ -119,7 +92,7 @@ export default function CategoryPage() {
       )}
 
       {/* EMPTY STATE (ONLY AFTER SEARCH) */}
-      {!searchLoading && search && !categories.length && (
+      {!searchLoading && searchText && !categories.length && (
         <div className="text-gray-500 text-sm">
           No categories found
         </div>

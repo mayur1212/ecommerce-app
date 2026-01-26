@@ -14,6 +14,7 @@ import Footer from "./components/Footer";
 import LocationPopup from "./components/LocationPopup";
 import SearchBar from "./components/SearchBar";
 import { MapPin, SlidersHorizontal } from "lucide-react";
+import { SearchProvider } from "./context/SearchContext";
 
 /* ================= PAGES ================= */
 import Home from "./pages/Home";
@@ -247,6 +248,7 @@ function MainAppLayout() {
 /* ================= MAIN APP ================= */
 export default function App() {
   return (
+    <SearchProvider>
     <AuthProvider>
       <CartProvider>
         <OrderProvider>
@@ -375,5 +377,6 @@ export default function App() {
         </OrderProvider>
       </CartProvider>
     </AuthProvider>
+    </SearchProvider>
   );
 }

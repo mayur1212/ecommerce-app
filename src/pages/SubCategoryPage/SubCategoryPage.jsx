@@ -1,51 +1,74 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getSubCategories } from "../../api/category.api";
-import { Search } from "lucide-react";
+import { useSearch } from "../../context/SearchContext";
 
 export default function SubCategoryPage() {
   const { categoryId } = useParams();
   const navigate = useNavigate();
+  const { searchText } = useSearch(); // ✅ GLOBAL SEARCH
 
   const [subCategories, setSubCategories] = useState([]);
-  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState("");
 
   /* ================= INITIAL LOAD ================= */
   useEffect(() => {
+    let active = true;
+
     const loadSubCategories = async () => {
       try {
         setLoading(true);
         const res = await getSubCategories(categoryId);
-        setSubCategories(res.data?.data || []);
+        if (active) {
+          setSubCategories(res.data?.data || []);
+        }
       } catch (err) {
-        setError("Failed to load sub categories");
+        if (active) setError("Failed to load sub categories");
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
 
     loadSubCategories();
+    return () => {
+      active = false;
+    };
   }, [categoryId]);
 
-  /* ================= SEARCH (ONLY WHEN TYPING) ================= */
+  /* ================= GLOBAL SEARCH HANDLER ================= */
   useEffect(() => {
-    if (!search.trim()) return; // ✅ stop unnecessary calls
+    let active = true;
+
+    // 🔁 Search cleared → reload default list
+    if (!searchText.trim()) {
+      setSearchLoading(false);
+      getSubCategories(categoryId).then((res) => {
+        if (active) {
+          setSubCategories(res.data?.data || []);
+        }
+      });
+      return;
+    }
 
     const timer = setTimeout(async () => {
       try {
         setSearchLoading(true);
-        const res = await getSubCategories(categoryId, search);
-        setSubCategories(res.data?.data || []);
+        const res = await getSubCategories(categoryId, searchText);
+        if (active) {
+          setSubCategories(res.data?.data || []);
+        }
       } finally {
-        setSearchLoading(false);
+        if (active) setSearchLoading(false);
       }
     }, 400);
 
-    return () => clearTimeout(timer);
-  }, [search, categoryId]);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [searchText, categoryId]);
 
   /* ================= UI STATES ================= */
 
@@ -79,39 +102,6 @@ export default function SubCategoryPage() {
         </p>
       </div>
 
-      {/* SEARCH BAR */}
-      <div className="relative mb-6 max-w-md">
-        <Search
-          size={18}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-        />
-        <input
-          value={search}
-          onChange={(e) => {
-            const val = e.target.value;
-            setSearch(val);
-
-            // ✅ reset list when cleared
-            if (!val.trim()) {
-              getSubCategories(categoryId).then((res) =>
-                setSubCategories(res.data?.data || [])
-              );
-            }
-          }}
-          placeholder="Search sub category…"
-          className="
-            w-full
-            pl-10 pr-4 py-2.5
-            rounded-xl
-            border
-            text-sm
-            outline-none
-            focus:ring-2 focus:ring-red-500/30
-            focus:border-red-500
-          "
-        />
-      </div>
-
       {/* SEARCH LOADING */}
       {searchLoading && (
         <p className="text-sm text-gray-500 mb-4">
@@ -120,7 +110,7 @@ export default function SubCategoryPage() {
       )}
 
       {/* EMPTY STATE (ONLY AFTER SEARCH) */}
-      {!searchLoading && search && !subCategories.length && (
+      {!searchLoading && searchText && !subCategories.length && (
         <div className="text-gray-500 text-sm">
           No sub categories found
         </div>

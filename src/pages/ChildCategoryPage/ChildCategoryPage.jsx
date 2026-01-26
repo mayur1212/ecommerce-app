@@ -1,39 +1,59 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getChildCategories } from "../../api/category.api";
-import { Search } from "lucide-react";
+import { useSearch } from "../../context/SearchContext";
 
 export default function ChildCategoryPage() {
   const { categoryId, subId } = useParams();
   const navigate = useNavigate();
+  const { searchText } = useSearch(); // ✅ GLOBAL SEARCH
 
   const [childCategories, setChildCategories] = useState([]);
-  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState("");
 
   /* ================= INITIAL LOAD ================= */
   useEffect(() => {
+    let active = true;
+
     const loadChildCategories = async () => {
       try {
         setLoading(true);
         const res = await getChildCategories(categoryId, subId);
-        setChildCategories(res.data?.data || []);
+        if (active) {
+          setChildCategories(res.data?.data || []);
+        }
       } catch (err) {
-        console.error("ChildCategory API Error:", err);
-        setError("Failed to load child categories");
+        if (active) {
+          setError("Failed to load child categories");
+        }
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
 
     loadChildCategories();
+
+    return () => {
+      active = false;
+    };
   }, [categoryId, subId]);
 
-  /* ================= SEARCH (ONLY WHEN TYPING) ================= */
+  /* ================= GLOBAL SEARCH HANDLER ================= */
   useEffect(() => {
-    if (!search.trim()) return; // ✅ stop search on empty input
+    let active = true;
+
+    // 🔁 Search cleared → reload default list
+    if (!searchText.trim()) {
+      setSearchLoading(false);
+      getChildCategories(categoryId, subId).then((res) => {
+        if (active) {
+          setChildCategories(res.data?.data || []);
+        }
+      });
+      return;
+    }
 
     const timer = setTimeout(async () => {
       try {
@@ -41,16 +61,21 @@ export default function ChildCategoryPage() {
         const res = await getChildCategories(
           categoryId,
           subId,
-          search
+          searchText
         );
-        setChildCategories(res.data?.data || []);
+        if (active) {
+          setChildCategories(res.data?.data || []);
+        }
       } finally {
-        setSearchLoading(false);
+        if (active) setSearchLoading(false);
       }
     }, 400);
 
-    return () => clearTimeout(timer);
-  }, [search, categoryId, subId]);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [searchText, categoryId, subId]);
 
   /* ================= UI STATES ================= */
 
@@ -84,39 +109,6 @@ export default function ChildCategoryPage() {
         </p>
       </div>
 
-      {/* SEARCH BAR */}
-      <div className="relative mb-6 max-w-md">
-        <Search
-          size={18}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-        />
-        <input
-          value={search}
-          onChange={(e) => {
-            const value = e.target.value;
-            setSearch(value);
-
-            // ✅ reset list when cleared
-            if (!value.trim()) {
-              getChildCategories(categoryId, subId).then((res) =>
-                setChildCategories(res.data?.data || [])
-              );
-            }
-          }}
-          placeholder="Search child category…"
-          className="
-            w-full
-            pl-10 pr-4 py-2.5
-            rounded-xl
-            border
-            text-sm
-            outline-none
-            focus:ring-2 focus:ring-red-500/30
-            focus:border-red-500
-          "
-        />
-      </div>
-
       {/* SEARCH LOADING */}
       {searchLoading && (
         <p className="text-sm text-gray-500 mb-4">
@@ -125,7 +117,7 @@ export default function ChildCategoryPage() {
       )}
 
       {/* EMPTY STATE (ONLY AFTER SEARCH) */}
-      {!searchLoading && search && !childCategories.length && (
+      {!searchLoading && searchText && !childCategories.length && (
         <div className="text-gray-500 text-sm">
           No child categories found
         </div>
