@@ -1,21 +1,51 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getSubCategories } from "../../api/category.api";
+import { Search } from "lucide-react";
 
 export default function SubCategoryPage() {
   const { categoryId } = useParams();
   const navigate = useNavigate();
 
   const [subCategories, setSubCategories] = useState([]);
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [error, setError] = useState("");
 
+  /* ================= INITIAL LOAD ================= */
   useEffect(() => {
-    getSubCategories(categoryId)
-      .then((res) => {
+    const loadSubCategories = async () => {
+      try {
+        setLoading(true);
+        const res = await getSubCategories(categoryId);
         setSubCategories(res.data?.data || []);
-      })
-      .finally(() => setLoading(false));
+      } catch (err) {
+        setError("Failed to load sub categories");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSubCategories();
   }, [categoryId]);
+
+  /* ================= SEARCH (ONLY WHEN TYPING) ================= */
+  useEffect(() => {
+    if (!search.trim()) return; // ✅ stop unnecessary calls
+
+    const timer = setTimeout(async () => {
+      try {
+        setSearchLoading(true);
+        const res = await getSubCategories(categoryId, search);
+        setSubCategories(res.data?.data || []);
+      } finally {
+        setSearchLoading(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [search, categoryId]);
 
   /* ================= UI STATES ================= */
 
@@ -27,10 +57,10 @@ export default function SubCategoryPage() {
     );
   }
 
-  if (!subCategories.length) {
+  if (error) {
     return (
-      <div className="p-6 text-gray-500">
-        No sub categories found
+      <div className="p-6 text-red-600 font-semibold">
+        {error}
       </div>
     );
   }
@@ -48,6 +78,53 @@ export default function SubCategoryPage() {
           Choose a category to continue
         </p>
       </div>
+
+      {/* SEARCH BAR */}
+      <div className="relative mb-6 max-w-md">
+        <Search
+          size={18}
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+        />
+        <input
+          value={search}
+          onChange={(e) => {
+            const val = e.target.value;
+            setSearch(val);
+
+            // ✅ reset list when cleared
+            if (!val.trim()) {
+              getSubCategories(categoryId).then((res) =>
+                setSubCategories(res.data?.data || [])
+              );
+            }
+          }}
+          placeholder="Search sub category…"
+          className="
+            w-full
+            pl-10 pr-4 py-2.5
+            rounded-xl
+            border
+            text-sm
+            outline-none
+            focus:ring-2 focus:ring-red-500/30
+            focus:border-red-500
+          "
+        />
+      </div>
+
+      {/* SEARCH LOADING */}
+      {searchLoading && (
+        <p className="text-sm text-gray-500 mb-4">
+          Searching sub categories…
+        </p>
+      )}
+
+      {/* EMPTY STATE (ONLY AFTER SEARCH) */}
+      {!searchLoading && search && !subCategories.length && (
+        <div className="text-gray-500 text-sm">
+          No sub categories found
+        </div>
+      )}
 
       {/* GRID */}
       <div
@@ -79,72 +156,39 @@ export default function SubCategoryPage() {
               active:scale-95
             "
           >
-            {/* ICON / IMAGE */}
+            {/* ICON */}
             <div
               className="
-                w-16 h-16
-                mx-auto
-                mb-3
+                w-16 h-16 mx-auto mb-3
                 rounded-2xl
                 bg-gradient-to-br
                 from-red-50 via-white to-red-100
                 flex items-center justify-center
                 group-hover:from-red-500
                 group-hover:to-red-600
-                transition
               "
             >
               {sub.image ? (
                 <img
                   src={`${import.meta.env.VITE_API_BASE_URL_PROD}/${sub.image}`}
                   alt={sub.name}
-                  className="
-                    w-9 h-9
-                    object-contain
-                    transition
-                    group-hover:brightness-0
-                    group-hover:invert
-                  "
+                  className="w-9 h-9 object-contain group-hover:brightness-0 group-hover:invert"
                 />
               ) : (
-                <span
-                  className="
-                    text-xl
-                    font-bold
-                    text-red-600
-                    group-hover:text-white
-                  "
-                >
+                <span className="text-xl font-bold text-red-600 group-hover:text-white">
                   {sub.name?.charAt(0)}
                 </span>
               )}
             </div>
 
             {/* NAME */}
-            <h3
-              className="
-                text-sm
-                font-semibold
-                text-center
-                text-gray-800
-                group-hover:text-red-600
-                transition
-              "
-            >
+            <h3 className="text-sm font-semibold text-center text-gray-800 group-hover:text-red-600">
               {sub.name}
             </h3>
 
-            {/* OPTIONAL DESCRIPTION */}
+            {/* DESCRIPTION */}
             {sub.description && (
-              <p
-                className="
-                  text-xs
-                  text-gray-500
-                  text-center
-                  mt-1
-                  line-clamp-2
-                "
-              >
+              <p className="text-xs text-gray-500 text-center mt-1 line-clamp-2">
                 {sub.description}
               </p>
             )}

@@ -1,38 +1,50 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCategories } from "../../api/category.api";
+import { Search } from "lucide-react";
 
 export default function CategoryPage() {
   const navigate = useNavigate();
 
   const [categories, setCategories] = useState([]);
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState("");
 
+  /* ================= INITIAL CATEGORY LOAD ================= */
   useEffect(() => {
-    let mounted = true;
-
-    const fetchCategories = async () => {
+    const loadCategories = async () => {
       try {
+        setLoading(true);
         const res = await getCategories();
-        if (mounted) {
-          setCategories(res.data?.data || []);
-        }
+        setCategories(res.data?.data || []);
       } catch (err) {
-        console.error("Category API Error:", err);
-        if (mounted) {
-          setError("Failed to load categories");
-        }
+        setError("Failed to load categories");
       } finally {
-        if (mounted) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     };
 
-    fetchCategories();
-    return () => (mounted = false);
+    loadCategories();
   }, []);
+
+  /* ================= SEARCH (ONLY WHEN TYPING) ================= */
+  useEffect(() => {
+    if (!search.trim()) return; // ✅ NO search = no API call
+
+    const timer = setTimeout(async () => {
+      try {
+        setSearchLoading(true);
+        const res = await getCategories(search);
+        setCategories(res.data?.data || []);
+      } finally {
+        setSearchLoading(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [search]);
 
   /* ================= UI STATES ================= */
 
@@ -52,14 +64,6 @@ export default function CategoryPage() {
     );
   }
 
-  if (!categories.length) {
-    return (
-      <div className="p-6 text-gray-500">
-        No categories found
-      </div>
-    );
-  }
-
   /* ================= MAIN UI ================= */
 
   return (
@@ -74,15 +78,64 @@ export default function CategoryPage() {
         </p>
       </div>
 
+      {/* SEARCH BAR */}
+      <div className="relative mb-6 max-w-md">
+        <Search
+          size={18}
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+        />
+        <input
+          value={search}
+          onChange={(e) => {
+            const val = e.target.value;
+            setSearch(val);
+
+            // ✅ Reset to normal list when cleared
+            if (!val.trim()) {
+              getCategories().then((res) =>
+                setCategories(res.data?.data || [])
+              );
+            }
+          }}
+          placeholder="Search category…"
+          className="
+            w-full
+            pl-10 pr-4 py-2.5
+            rounded-xl
+            border
+            text-sm
+            outline-none
+            focus:ring-2 focus:ring-red-500/30
+            focus:border-red-500
+          "
+        />
+      </div>
+
+      {/* SEARCH LOADING */}
+      {searchLoading && (
+        <p className="text-sm text-gray-500 mb-4">
+          Searching categories…
+        </p>
+      )}
+
+      {/* EMPTY STATE (ONLY AFTER SEARCH) */}
+      {!searchLoading && search && !categories.length && (
+        <div className="text-gray-500 text-sm">
+          No categories found
+        </div>
+      )}
+
       {/* GRID */}
-      <div className="
-        grid
-        grid-cols-2
-        sm:grid-cols-3
-        md:grid-cols-4
-        lg:grid-cols-5
-        gap-4
-      ">
+      <div
+        className="
+          grid
+          grid-cols-2
+          sm:grid-cols-3
+          md:grid-cols-4
+          lg:grid-cols-5
+          gap-4
+        "
+      >
         {categories.map((cat) => (
           <div
             key={cat.id}
@@ -95,72 +148,40 @@ export default function CategoryPage() {
               p-4
               shadow-sm
               hover:shadow-xl
+              border
               transition-all
               active:scale-95
-              border
             "
           >
-            {/* ICON / IMAGE */}
-            <div className="
-              w-16 h-16
-              mx-auto
-              mb-3
-              rounded-2xl
-              bg-gradient-to-br
-              from-red-50 via-white to-red-100
-              flex items-center justify-center
-              group-hover:from-red-500
-              group-hover:to-red-600
-              transition
-            ">
+            {/* ICON */}
+            <div
+              className="
+                w-16 h-16 mx-auto mb-3
+                rounded-2xl
+                bg-gradient-to-br
+                from-red-50 via-white to-red-100
+                flex items-center justify-center
+                group-hover:from-red-500
+                group-hover:to-red-600
+              "
+            >
               {cat.image ? (
                 <img
                   src={`${import.meta.env.VITE_API_BASE_URL_PROD}/${cat.image}`}
                   alt={cat.name}
-                  className="
-                    w-9 h-9
-                    object-contain
-                    transition
-                    group-hover:brightness-0
-                    group-hover:invert
-                  "
+                  className="w-9 h-9 object-contain group-hover:brightness-0 group-hover:invert"
                 />
               ) : (
-                <span className="
-                  text-xl
-                  font-bold
-                  text-red-600
-                  group-hover:text-white
-                ">
+                <span className="text-xl font-bold text-red-600 group-hover:text-white">
                   {cat.name?.charAt(0)}
                 </span>
               )}
             </div>
 
             {/* NAME */}
-            <h3 className="
-              text-sm
-              font-semibold
-              text-center
-              text-gray-800
-              group-hover:text-red-600
-              transition
-            ">
+            <h3 className="text-sm font-semibold text-center text-gray-800 group-hover:text-red-600">
               {cat.name}
             </h3>
-
-            {/* DESCRIPTION */}
-            {cat.description && (
-              <p className="
-                text-xs
-                text-gray-500
-                text-center
-                mt-1
-                line-clamp-2
-              ">
-                {cat.description}
-              </p>
-            )}
           </div>
         ))}
       </div>

@@ -16,22 +16,34 @@ export default function CategorySlider() {
   const nextRef = useRef(null);
 
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  /* ================= FETCH CATEGORIES ================= */
   useEffect(() => {
     getCategories()
-      .then((res) => setCategories(res.data?.data || []))
-      .catch(console.error);
+      .then((res) => {
+        setCategories(res.data?.data || []);
+      })
+      .catch((err) => {
+        console.error("Category slider error:", err);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  if (!categories.length) return null;
+  if (!categories.length && !loading) return null;
 
   return (
     <section className="relative bg-white rounded-3xl p-5 shadow-md">
       {/* HEADER */}
       <div className="flex items-center justify-between mb-5">
-        <h2 className="text-base md:text-lg font-bold text-gray-900">
-          Shop by Category
-        </h2>
+        <div>
+          <h2 className="text-base md:text-lg font-bold text-gray-900">
+            Shop by Category
+          </h2>
+          <p className="text-xs text-gray-500">
+            Browse by product category
+          </p>
+        </div>
 
         <button
           onClick={() => navigate("/categories")}
@@ -106,7 +118,7 @@ export default function CategorySlider() {
         breakpoints={{
           0: { slidesPerView: 3 },      // 📱 Mobile
           768: { slidesPerView: 5 },    // 📲 Tablet
-          1024: { slidesPerView: 8 },   // 🖥 Desktop ✅
+          1024: { slidesPerView: 8 },   // 🖥 Desktop
         }}
         className="px-1 lg:px-14 cursor-grab active:cursor-grabbing select-none"
       >
@@ -114,12 +126,18 @@ export default function CategorySlider() {
           <SwiperSlide key={item.id}>
             <div
               onClick={() => navigate(`/category/${item.id}`)}
-              className="group cursor-pointer flex flex-col items-center gap-3 active:scale-95 transition"
+              className="
+                group
+                cursor-pointer
+                flex flex-col items-center
+                gap-3
+                active:scale-95
+                transition
+              "
             >
               {/* CARD */}
               <div
                 className="
-                  relative
                   w-20 h-20 md:w-24 md:h-24
                   rounded-3xl
                   bg-gradient-to-br
@@ -169,6 +187,13 @@ export default function CategorySlider() {
           </SwiperSlide>
         ))}
       </Swiper>
+
+      {/* LOADING */}
+      {loading && (
+        <p className="mt-3 text-xs text-gray-500">
+          Loading categories…
+        </p>
+      )}
     </section>
   );
 }

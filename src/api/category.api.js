@@ -1,26 +1,35 @@
 import api from "./axios";
 
-// GET all categories
+/* ===============================
+   GET ALL CATEGORIES (PRODUCT)
+   {{baseURL}}/categories?category_type=product&search=
+================================ */
 export const getCategories = (search = "") => {
   return api.get(
-    `/categories?category_type=product&search=${search}`
+    `/categories?category_type=product&search=${encodeURIComponent(search)}`
   );
 };
 
-// GET subcategories by category
+/* ===============================
+   GET SUB CATEGORIES
+   {{baseURL}}/subcategories?category_id=2&search=
+================================ */
 export const getSubCategories = (categoryId, search = "") => {
   return api.get(
-    `/subcategories?category_id=${categoryId}&search=${search}`
+    `/subcategories?category_id=${categoryId}&search=${encodeURIComponent(search)}`
   );
 };
 
-// GET child categories
+/* ===============================
+   GET CHILD CATEGORIES
+   {{baseURL}}/child-categories?category_id=2&sub_category_id=9&search=Shorts
+================================ */
 export const getChildCategories = (
   categoryId,
   subCategoryId,
   search = ""
 ) => {
   return api.get(
-    `/child-categories?category_id=${categoryId}&sub_category_id=${subCategoryId}&search=${search}`
+    `/child-categories?category_id=${categoryId}&sub_category_id=${subCategoryId}&search=${encodeURIComponent(search)}`
   );
 };
