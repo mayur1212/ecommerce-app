@@ -273,6 +273,10 @@ export default function App() {
               
 
               {/* ===== MAIN APP ===== */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+  <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/" element={<MainAppLayout />}>
                 
                  <Route index element={<Navigate to="/shopping" replace />} />
@@ -287,10 +291,7 @@ export default function App() {
                   }
                 />
                 {/* ===== AUTH ROUTES ===== */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-  <Route path="/reset-password" element={<ResetPassword />} />
+              
 
                 <Route path="shopping" element={<Shopping />} />
                 <Route path="shopping/:id" element={<ProductsDetails />} />

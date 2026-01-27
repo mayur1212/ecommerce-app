@@ -1,173 +1,171 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import api from "../../api/axios";
 import toast from "react-hot-toast";
-
 
 export default function Login() {
   const navigate = useNavigate();
 
+  const [tab, setTab] = useState("email"); // email | mobile
+  const [loading, setLoading] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
+
   const [form, setForm] = useState({
     email: "",
+    mobile: "",
     password: "",
+    otp: "",
   });
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [errors, setErrors] = useState({});
+  const [showOtp, setShowOtp] = useState(false);
 
-  /* ================= VALIDATION ================= */
-  const validate = () => {
-    const e = {};
-
-    if (!form.email.trim()) {
-      e.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email)) {
-      e.email = "Enter valid email address";
-    }
+  /* ================= LOGIN ================= */
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
     if (!form.password) {
-      e.password = "Password is required";
-    } else if (form.password.length < 6) {
-      e.password = "Minimum 6 characters required";
+      toast.error("Password required");
+      return;
     }
 
-    setErrors(e);
-    return Object.keys(e).length === 0;
+    if (tab === "email" && !form.email) {
+      toast.error("Email required");
+      return;
+    }
+
+    if (tab === "mobile" && !form.mobile) {
+      toast.error("Mobile number required");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // 🔥 ONLY LOGIN API (NO OTP VERIFY BACKEND)
+      const payload = new FormData();
+      payload.append("type", tab);
+      payload.append(
+        "identifier",
+        tab === "email" ? form.email : form.mobile
+      );
+      payload.append("password", form.password);
+
+      await api.post("auth/login", payload);
+
+      toast.success("OTP sent successfully 📩");
+      setShowOtp(true);
+    } catch (err) {
+      toast.error(
+        err?.response?.data?.message || "Login failed"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
-  /* ================= SUBMIT ================= */
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
-  setErrors({});
+  /* ================= STATIC OTP VERIFY ================= */
+  const verifyOtp = async () => {
+    // ✅ ANY 6 DIGIT OTP ACCEPT
+    if (!/^\d{6}$/.test(form.otp)) {
+      toast.error("Enter valid 6 digit OTP");
+      return;
+    }
 
-  if (!validate()) return;
+    try {
+      setOtpLoading(true);
 
-  setLoading(true);
-  try {
-    const payload = new FormData();
-    payload.append("type", "email");
-    payload.append("identifier", form.email);
-    payload.append("password", form.password);
+      // 🎯 STATIC SUCCESS (NO API CALL)
+      toast.success("Login successful 🎉");
 
-    const res = await api.post("auth/login", payload);
+      // 👉 Fake token & user (for now)
+      localStorage.setItem("token", "static-demo-token");
 
-    // ✅ SAVE AUTH DATA
-    localStorage.setItem("token", res.data.data.access_token);
-    localStorage.setItem(
-      "user",
-      JSON.stringify(res.data.data.customer)
-    );
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          email: form.email,
+          mobile: form.mobile,
+        })
+      );
 
-    // ✅ SUCCESS NOTIFICATION
-    toast.success("Login successful 🎉");
-
-    // ✅ Redirect after short delay
-    setTimeout(() => {
       navigate("/");
-    }, 1200);
-
-  } catch (err) {
-    const message =
-      err?.response?.data?.message ||
-      "Invalid email or password";
-
-    setError(message);
-    toast.error(message);
-  } finally {
-    setLoading(false);
-  }
-};
-
+    } finally {
+      setOtpLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-900 via-white to-red-200 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-700 via-white to-red-200 px-4">
       <motion.div
-        initial={{ opacity: 0, y: 40, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8"
       >
-        <h1 className="text-3xl font-extrabold text-center text-red-600 mb-2">
-          Welcome Back 👋
+        <h1 className="text-3xl font-extrabold text-center text-red-600">
+          Login
         </h1>
-
         <p className="text-center text-gray-500 text-sm mb-6">
-          Login to continue shopping
+          Welcome back 👋
         </p>
 
-        {error && (
-          <p className="bg-red-100 text-red-600 text-sm p-2 rounded-lg mb-4 text-center">
-            {error}
-          </p>
-        )}
+        {/* TABS */}
+        <div className="flex mb-6 bg-gray-100 rounded-xl p-1">
+          {["email", "mobile"].map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`flex-1 py-2 rounded-xl text-sm font-semibold transition ${
+                tab === t
+                  ? "bg-red-600 text-white shadow"
+                  : "text-gray-600"
+              }`}
+            >
+              {t === "email" ? "Email Login" : "Mobile Login"}
+            </button>
+          ))}
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email */}
-          <div>
-            <label className="text-sm font-medium text-gray-700">
-              Email
-            </label>
+        {/* FORM */}
+        <form onSubmit={handleLogin} className="space-y-4">
+          {tab === "email" ? (
             <input
               type="email"
               placeholder="you@example.com"
-              className="mt-1 w-full px-4 py-3 border rounded-xl outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-red-500"
               value={form.email}
               onChange={(e) =>
                 setForm({ ...form, email: e.target.value })
               }
             />
-            {errors.email && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.email}
-              </p>
-            )}
-          </div>
-
-          {/* Password */}
-          <div>
-            <label className="text-sm font-medium text-gray-700">
-              Password
-            </label>
+          ) : (
             <input
-              type="password"
-              placeholder="••••••••"
-              className="mt-1 w-full px-4 py-3 border rounded-xl outline-none focus:ring-2 focus:ring-red-500"
-              value={form.password}
+              type="tel"
+              placeholder="Mobile number"
+              className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-red-500"
+              value={form.mobile}
               onChange={(e) =>
-                setForm({
-                  ...form,
-                  password: e.target.value.replace(/\s/g, ""),
-                })
+                setForm({ ...form, mobile: e.target.value })
               }
             />
+          )}
 
-            <div className="text-right mt-1">
-              <Link
-                to="/forgot-password"
-                className="text-sm text-red-600 hover:underline"
-              >
-                Forgot Password?
-              </Link>
-            </div>
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-red-500"
+            value={form.password}
+            onChange={(e) =>
+              setForm({ ...form, password: e.target.value })
+            }
+          />
 
-            {errors.password && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.password}
-              </p>
-            )}
-          </div>
-
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+          <button
             disabled={loading}
-            className="w-full bg-red-600 text-white py-3 rounded-xl font-semibold shadow-lg hover:bg-red-700 transition"
+            className="w-full bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 transition"
           >
-            {loading ? "Logging in..." : "Login"}
-          </motion.button>
+            {loading ? "Sending OTP..." : "Login"}
+          </button>
         </form>
 
         <p className="text-center text-sm mt-6 text-gray-600">
@@ -177,6 +175,58 @@ export default function Login() {
           </Link>
         </p>
       </motion.div>
+
+      {/* ================= OTP MODAL ================= */}
+      <AnimatePresence>
+        {showOtp && (
+          <motion.div
+            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              className="bg-white rounded-2xl p-6 w-[90%] max-w-sm"
+            >
+              <h2 className="text-xl font-bold text-center text-red-600">
+                OTP Verification
+              </h2>
+
+              <p className="text-sm text-center text-gray-500 mt-1">
+                Enter any <b>6 digit OTP</b>
+              </p>
+
+              <input
+                type="text"
+                maxLength={6}
+                placeholder="******"
+                className="mt-4 w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-red-500 text-center tracking-widest"
+                value={form.otp}
+                onChange={(e) =>
+                  setForm({ ...form, otp: e.target.value })
+                }
+              />
+
+              <button
+                onClick={verifyOtp}
+                disabled={otpLoading}
+                className="mt-4 w-full bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700"
+              >
+                {otpLoading ? "Verifying..." : "Verify OTP"}
+              </button>
+
+              <button
+                onClick={() => setShowOtp(false)}
+                className="mt-3 w-full text-sm text-gray-500"
+              >
+                Cancel
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
