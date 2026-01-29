@@ -1,17 +1,25 @@
 import { Navigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 /**
  * PrivateRoute
  * ----------------
- * - Checks if user is logged in (JWT token)
- * - If NOT logged in → redirect to /login
- * - Remembers last page for redirect after login
+ * - Uses AuthContext (single source of truth)
+ * - Shows nothing while auth is loading
+ * - Redirects to login if not authenticated
+ * - Remembers last page for post-login redirect
  */
 export default function PrivateRoute({ children }) {
+  const { isAuthenticated, loading } = useAuth();
   const location = useLocation();
-  const token = localStorage.getItem("token");
 
-  if (!token) {
+  // ⏳ Wait till auth check finishes
+  if (loading) {
+    return null; // or loader
+  }
+
+  // 🔒 Not logged in → redirect
+  if (!isAuthenticated) {
     return (
       <Navigate
         to="/login"
@@ -21,5 +29,6 @@ export default function PrivateRoute({ children }) {
     );
   }
 
+  // ✅ Logged in
   return children;
 }
