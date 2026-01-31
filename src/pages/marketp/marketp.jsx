@@ -5,6 +5,7 @@ import MarketBanner from "../../components/market/MarketBanner";
 import MarketHeroOfferBanner from "../../components/market/MarketHeroOfferBanner";
 import TrendingProducts from "../../components/market/TrendingProducts";
 import Productlist from "../../components/market/Productlist";
+import CategorySection from "../../components/Category/CategorySection";
 
 /* OPTIONAL: CATEGORY (agar market me bhi chahiye) */
 // import CategorySection from "../../components/Category/CategorySection";
@@ -16,6 +17,7 @@ export default function Marketp() {
       {/* 🔥 TOP MARKET BANNERS */}
       <MarketBanner />
       <MarketHeroOfferBanner />
+        <CategorySection />
 
       {/* 🔥 CATEGORY SECTION (optional – Shopping jaisa) */}
       {/* <CategorySection /> */}

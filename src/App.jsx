@@ -31,6 +31,12 @@ import Storedetails from "./components/Store/Storedetails";
 import Marketp from "./pages/marketp/marketp";
 import MarketProductsdetails from "./components/market/Productsdetails";
 
+
+import ServicesPage from "./pages/services/ServicesPage";
+import ServiceDetails from "./components/services/ServiceDetails";
+
+
+
 import Account from "./pages/Account/Account";
 import Chat from "./pages/Chat/Chat";
 import Videos from "./pages/Videos/Videos";
@@ -76,17 +82,7 @@ import CartProductDetail from "./pages/cartproductdetail/CartProductDetail";
 import Profile from "./pages/profile/Profile";
 
 
-/* ================= SERVICES PAGE ================= */
-function ServicesPage() {
-  return (
-    <div className="p-4">
-      <h1 className="text-xl font-semibold mb-2">Services</h1>
-      <p className="text-gray-600 text-sm">
-        Services page content goes here.
-      </p>
-    </div>
-  );
-}
+
 
 /* ================= MAIN LAYOUT ================= */
 function MainAppLayout() {
@@ -355,7 +351,12 @@ export default function App() {
                 <Route path="market" element={<Marketp />} />
                 <Route path="market/:id" element={<MarketProductsdetails />} />
 
+
                 <Route path="services" element={<ServicesPage />} />
+<Route path="services/:id" element={<ServiceDetails />} />
+
+
+                
 
                 <Route path="blog" element={<Blog />} />
                 <Route path="blog/:slug" element={<BlogDetails />} />
