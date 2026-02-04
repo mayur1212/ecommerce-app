@@ -8,25 +8,30 @@ export default function EditProfileModal() {
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
-    email: "",
     mobile: "",
-    location: "",
+    city: "",
+    state: "",
+    country: "",
+    pincode: "",
     avatar: null,
+    socials: {},
   });
 
   const [preview, setPreview] = useState("");
   const [loading, setLoading] = useState(false);
 
-  /* 🧠 Fill form */
   useEffect(() => {
     if (user && isEditOpen) {
       setForm({
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
-        email: user.email || "",
-        mobile: user.mobile || "",
-        location: user.location || "",
+        firstName: user.firstName,
+        lastName: user.lastName,
+        mobile: user.mobile,
+        city: user.city,
+        state: user.state,
+        country: user.country,
+        pincode: user.pincode,
         avatar: null,
+        socials: user.socials,
       });
       setPreview(user.avatar);
     }
@@ -41,60 +46,39 @@ export default function EditProfileModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center px-4">
-      <div className="bg-white w-full max-w-md rounded-2xl p-6 shadow-xl relative">
-
-        {/* CLOSE */}
-        <button
-          onClick={() => setIsEditOpen(false)}
-          className="absolute top-4 right-4 text-gray-500 hover:text-black"
-        >
-          <X size={20} />
+    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
+      <div className="bg-white w-full max-w-md p-6 rounded-2xl relative">
+        <button onClick={() => setIsEditOpen(false)} className="absolute top-4 right-4">
+          <X />
         </button>
 
-        <h2 className="text-xl font-bold text-center text-red-600 mb-5">
-          Edit Profile
-        </h2>
+        <h2 className="text-xl font-bold text-center mb-5">Edit Profile</h2>
 
-        {/* PROFILE IMAGE */}
-        <div className="flex justify-center mb-5">
-          <label className="relative cursor-pointer">
-            <img
-              src={preview || "/default-avatar.png"}
-              alt="avatar"
-              className="w-28 h-28 rounded-full object-cover border"
-            />
-            <div className="absolute bottom-1 right-1 bg-red-600 p-2 rounded-full text-white">
-              <Camera size={16} />
-            </div>
+        {/* IMAGE */}
+        <label className="flex justify-center mb-5 cursor-pointer">
+          <img src={preview} className="w-28 h-28 rounded-full object-cover" />
+          <input
+            type="file"
+            hidden
+            onChange={(e) => {
+              const f = e.target.files[0];
+              setForm({ ...form, avatar: f });
+              setPreview(URL.createObjectURL(f));
+            }}
+          />
+        </label>
 
-            <input
-              type="file"
-              accept="image/*"
-              hidden
-              onChange={(e) => {
-                const file = e.target.files[0];
-                if (file) {
-                  setForm({ ...form, avatar: file });
-                  setPreview(URL.createObjectURL(file));
-                }
-              }}
-            />
-          </label>
-        </div>
-
-        <div className="space-y-3">
-          <Input label="First Name" value={form.firstName} onChange={(v) => setForm({ ...form, firstName: v })} />
-          <Input label="Last Name" value={form.lastName} onChange={(v) => setForm({ ...form, lastName: v })} />
-          <Input label="Email" value={form.email} onChange={(v) => setForm({ ...form, email: v })} />
-          <Input label="Mobile" value={form.mobile} onChange={(v) => setForm({ ...form, mobile: v })} />
-          <Input label="Location" value={form.location} onChange={(v) => setForm({ ...form, location: v })} />
-        </div>
+        <Input label="First Name" value={form.firstName} onChange={(v) => setForm({ ...form, firstName: v })} />
+        <Input label="Last Name" value={form.lastName} onChange={(v) => setForm({ ...form, lastName: v })} />
+        <Input label="Mobile" value={form.mobile} onChange={(v) => setForm({ ...form, mobile: v })} />
+        <Input label="City" value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
+        <Input label="State" value={form.state} onChange={(v) => setForm({ ...form, state: v })} />
+        <Input label="Country" value={form.country} onChange={(v) => setForm({ ...form, country: v })} />
+        <Input label="Pincode" value={form.pincode} onChange={(v) => setForm({ ...form, pincode: v })} />
 
         <button
           onClick={handleSave}
-          disabled={loading}
-          className="mt-6 w-full bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 transition"
+          className="mt-6 w-full bg-red-600 text-white py-3 rounded-xl"
         >
           {loading ? "Saving..." : "Save Changes"}
         </button>
@@ -103,15 +87,14 @@ export default function EditProfileModal() {
   );
 }
 
-/* INPUT */
 function Input({ label, value, onChange }) {
   return (
-    <div>
-      <label className="text-sm text-gray-600">{label}</label>
+    <div className="mt-3">
+      <label className="text-sm">{label}</label>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-red-500"
+        className="w-full border px-3 py-2 rounded-lg"
       />
     </div>
   );

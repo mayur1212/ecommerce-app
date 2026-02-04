@@ -1,270 +1,206 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "../../api/axios";
 import toast from "react-hot-toast";
 
-export default function Register() {
-  const navigate = useNavigate();
-
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    country_code: "91",
-    phone: "",
-    gender: "",
-    dob: "",
-    password: "",
-    password_confirmation: "",
-  });
-
+/* ================= OTP MODAL ================= */
+function OtpModal({ phone, onClose, onSuccess }) {
+  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [errors, setErrors] = useState({});
+  const [cooldown, setCooldown] = useState(0);
 
-  /* ================= VALIDATION ================= */
-  const validate = () => {
-    const e = {};
+  /* ===== VERIFY OTP ===== */
+  const verifyOtp = async () => {
+    if (!/^\d{6}$/.test(otp)) {
+      toast.error("Enter valid 6 digit OTP");
+      return;
+    }
 
-    if (!form.name.trim()) e.name = "Full name is required";
-    else if (!/^[A-Za-z\s]+$/.test(form.name))
-      e.name = "Only alphabets allowed";
+    try {
+      setLoading(true);
 
-    if (!form.email.trim()) e.email = "Email is required";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email))
-      e.email = "Enter valid email address";
+      const formData = new FormData();
+      formData.append("phone", phone);
+      formData.append("otp", otp);
 
-    if (!/^\d{10}$/.test(form.phone))
-      e.phone = "Phone must be 10 digits";
+      await api.post("/auth/verify-registration-otp", formData);
 
-    if (!form.gender) e.gender = "Select gender";
-    if (!form.dob) e.dob = "Date of birth required";
-
-    if (form.password.length < 6)
-      e.password = "Minimum 6 characters required";
-
-    if (form.password !== form.password_confirmation)
-      e.password_confirmation = "Passwords do not match";
-
-    setErrors(e);
-    return Object.keys(e).length === 0;
+      toast.success("Registration successful 🎉");
+      onSuccess();
+    } catch (err) {
+      toast.error(
+        err?.response?.data?.message || "Invalid or expired OTP"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
-  /* ================= SUBMIT ================= */
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
-  setErrors({});
+  /* ===== RESEND OTP ===== */
+  const resendOtp = async () => {
+    if (cooldown > 0) return;
 
-  if (!validate()) return;
+    try {
+      const formData = new FormData();
+      formData.append("country_code", "91");
+      formData.append("phone", phone);
 
-  setLoading(true);
-  try {
-    // ✅ SEND JSON (NOT FormData)
-    await api.post("auth/register", {
-      ...form,
-    });
+      await api.post("/auth/resend-registration-otp", formData);
 
-    // ✅ SUCCESS POPUP
-    toast.success("Account created successfully 🎉");
-
-    // ✅ Redirect after short delay
-    setTimeout(() => {
-      navigate("/login");
-    }, 1500);
-
-  } catch (err) {
-    const apiErrors = err?.response?.data?.errors;
-
-    if (apiErrors) {
-      // ✅ Field-wise validation errors from Laravel
-      setErrors({
-        name: apiErrors.name?.[0],
-        email: apiErrors.email?.[0],
-        phone: apiErrors.phone?.[0],
-        password: apiErrors.password?.[0],
-        password_confirmation:
-          apiErrors.password_confirmation?.[0],
-      });
-
-      // Optional generic error toast
-      toast.error("Please fix the highlighted errors");
-    } else {
-      const message =
-        err?.response?.data?.message ||
-        "Registration failed. Try again.";
-
-      setError(message);
-      toast.error(message);
+      toast.success("OTP resent 📲");
+      setCooldown(30); // ⏱ 30 sec wait
+    } catch (err) {
+      if (err?.response?.status === 429) {
+        toast.error("Please wait before resending OTP");
+      } else {
+        toast.error("Failed to resend OTP");
+      }
     }
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
-
-  /* ================= UI CLASSES ================= */
-  const inputClass =
-    "w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-200";
-  const labelClass = "text-xs sm:text-sm font-medium text-gray-600";
-  const errorClass = "text-xs text-red-500 mt-1";
+  /* ===== COOLDOWN TIMER ===== */
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => {
+      setCooldown((c) => c - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
 
   return (
-    <div className="min-h-screen flex items-start sm:items-center justify-center bg-gradient-to-br from-rose-900 via-white to-rose-300 px-3 sm:px-4 py-8 sm:py-0">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-2xl bg-white rounded-2xl sm:rounded-3xl shadow-xl p-5 sm:p-8"
-      >
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-center text-red-600 mb-1">
-          Create Account
-        </h1>
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-white rounded-2xl p-6 w-[90%] max-w-sm">
+        <h2 className="text-xl font-bold text-center text-red-600">
+          Verify OTP
+        </h2>
 
-        <p className="text-center text-gray-500 mb-5 text-xs sm:text-sm">
-          Register to get started 🚀
+        <p className="text-sm text-center text-gray-500 mt-1">
+          OTP sent to <b>+91 {phone}</b>
         </p>
 
-        {error && (
-          <p className="bg-red-50 text-red-600 text-xs sm:text-sm p-2 rounded-lg mb-4 text-center">
-            {error}
-          </p>
-        )}
+        <input
+          maxLength={6}
+          className="mt-4 w-full border px-4 py-3 rounded-xl text-center tracking-widest"
+          value={otp}
+          onChange={(e) =>
+            setOtp(e.target.value.replace(/\D/g, ""))
+          }
+        />
 
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5"
+        <button
+          onClick={verifyOtp}
+          disabled={loading}
+          className="mt-4 w-full bg-red-600 text-white py-3 rounded-xl"
         >
-          {/* Full Name */}
-          <div>
-            <label className={labelClass}>Full Name</label>
-            <input
-              className={inputClass}
-              value={form.name}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  name: e.target.value.replace(/[^A-Za-z\s]/g, ""),
-                })
-              }
-            />
-            {errors.name && <p className={errorClass}>{errors.name}</p>}
-          </div>
+          {loading ? "Verifying..." : "Verify OTP"}
+        </button>
 
-          {/* Email */}
-          <div>
-            <label className={labelClass}>Email</label>
-            <input
-              type="email"
-              className={inputClass}
-              value={form.email}
-              onChange={(e) =>
-                setForm({ ...form, email: e.target.value })
-              }
-            />
-            {errors.email && <p className={errorClass}>{errors.email}</p>}
-          </div>
+        <button
+          onClick={resendOtp}
+          disabled={cooldown > 0}
+          className="mt-2 w-full text-red-600 text-sm disabled:opacity-50"
+        >
+          {cooldown > 0
+            ? `Resend in ${cooldown}s`
+            : "Resend OTP"}
+        </button>
 
-          {/* Phone */}
-          <div>
-            <label className={labelClass}>Phone</label>
+        <button
+          onClick={onClose}
+          className="mt-2 w-full text-gray-500 text-sm"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ================= REGISTER PAGE ================= */
+export default function Register() {
+  const navigate = useNavigate();
+  const [phone, setPhone] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showOtp, setShowOtp] = useState(false);
+
+  /* ===== SEND OTP ===== */
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (showOtp) return; // ⛔ prevent double register
+
+    if (!/^\d{10}$/.test(phone)) {
+      toast.error("Phone must be 10 digits");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const formData = new FormData();
+      formData.append("country_code", "91");
+      formData.append("phone", phone);
+
+      await api.post("/auth/register", formData);
+
+      toast.success("OTP sent 📲");
+      setShowOtp(true);
+    } catch (err) {
+      toast.error(
+        err?.response?.data?.message || "OTP already sent"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-900 via-white to-rose-300 px-4">
+      <motion.div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-xl">
+        <h1 className="text-2xl font-bold text-center text-red-600">
+          Register
+        </h1>
+
+        <form onSubmit={handleSubmit} className="mt-6">
+          <div className="flex">
+            <span className="px-3 py-3 border bg-gray-100 rounded-l-xl">
+              +91
+            </span>
             <input
               maxLength={10}
-              className={inputClass}
-              value={form.phone}
+              className="w-full border px-4 py-3 rounded-r-xl"
+              placeholder="Mobile number"
+              value={phone}
               onChange={(e) =>
-                setForm({
-                  ...form,
-                  phone: e.target.value.replace(/\D/g, ""),
-                })
+                setPhone(e.target.value.replace(/\D/g, ""))
               }
             />
-            {errors.phone && <p className={errorClass}>{errors.phone}</p>}
           </div>
 
-          {/* Gender */}
-          <div>
-            <label className={labelClass}>Gender</label>
-            <select
-              className={inputClass}
-              value={form.gender}
-              onChange={(e) =>
-                setForm({ ...form, gender: e.target.value })
-              }
-            >
-              <option value="">Select</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-            {errors.gender && <p className={errorClass}>{errors.gender}</p>}
-          </div>
-
-          {/* DOB */}
-          <div>
-            <label className={labelClass}>Date of Birth</label>
-            <input
-              type="date"
-              className={inputClass}
-              value={form.dob}
-              max={new Date().toISOString().split("T")[0]}
-              onChange={(e) =>
-                setForm({ ...form, dob: e.target.value })
-              }
-            />
-            {errors.dob && <p className={errorClass}>{errors.dob}</p>}
-          </div>
-
-          {/* Password */}
-          <div>
-            <label className={labelClass}>Password</label>
-            <input
-              type="password"
-              className={inputClass}
-              value={form.password}
-              onChange={(e) =>
-                setForm({ ...form, password: e.target.value })
-              }
-            />
-            {errors.password && <p className={errorClass}>{errors.password}</p>}
-          </div>
-
-          {/* Confirm Password */}
-          <div>
-            <label className={labelClass}>Confirm Password</label>
-            <input
-              type="password"
-              className={inputClass}
-              value={form.password_confirmation}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  password_confirmation: e.target.value,
-                })
-              }
-            />
-            {errors.password_confirmation && (
-              <p className={errorClass}>
-                {errors.password_confirmation}
-              </p>
-            )}
-          </div>
-
-          <motion.button
-            whileHover={{ scale: 1.02 }}
+          <button
             disabled={loading}
-            className="md:col-span-2 bg-gradient-to-r from-red-600 to-rose-500 text-white py-3 rounded-xl font-semibold shadow-md"
+            className="w-full mt-4 bg-red-600 text-white py-3 rounded-xl"
           >
-            {loading ? "Creating..." : "Create Account"}
-          </motion.button>
+            {loading ? "Sending OTP..." : "Send OTP"}
+          </button>
         </form>
 
-        <p className="text-center mt-5 text-xs sm:text-sm text-gray-600">
-          Already have an account?{" "}
+        <p className="text-center mt-4 text-sm">
+          Already registered?{" "}
           <Link to="/login" className="text-red-600 font-semibold">
             Login
           </Link>
         </p>
       </motion.div>
+
+      {showOtp && (
+        <OtpModal
+          phone={phone}
+          onClose={() => setShowOtp(false)}
+          onSuccess={() => navigate("/login")}
+        />
+      )}
     </div>
   );
 }

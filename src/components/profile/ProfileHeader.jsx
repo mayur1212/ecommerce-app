@@ -1,23 +1,24 @@
 import { useProfile } from "../../context/ProfileContext";
+import { useAuth } from "../../context/AuthContext";
 import { Pencil, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function ProfileHeader() {
   const { user, setIsEditOpen } = useProfile();
+  const { logout } = useAuth(); // ✅ AuthContext logout
   const navigate = useNavigate();
 
   // 🛡 SAFETY
   if (!user) return null;
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    logout(); // 🔥 clears token + auth state
     navigate("/login", { replace: true });
   };
 
   return (
     <div className="relative flex flex-col sm:flex-row items-center gap-6 bg-white p-6 rounded-2xl shadow-sm">
-
+      
       {/* ================= PROFILE IMAGE ================= */}
       <div className="relative">
         <img

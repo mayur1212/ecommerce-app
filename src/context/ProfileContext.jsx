@@ -1,112 +1,114 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import api from "../api/axios";
 import toast from "react-hot-toast";
+import {
+  getProfile,
+  updateProfileApi,
+  updateProfileImageApi,
+  updateSocialLinksApi,
+} from "../api/profile.api";
+import { useAuth } from "./AuthContext";
 
 const ProfileContext = createContext(null);
 
 export function ProfileProvider({ children }) {
+  const { token } = useAuth();
   const [user, setUser] = useState(null);
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  /* ================= FETCH PROFILE ================= */
+  /* ================= FETCH ================= */
   const fetchProfile = async () => {
     try {
-      const res = await api.get("customer/profile");
-      const data = res.data.data;
+      const res = await getProfile();
+      const d = res.data?.data;
 
-      const baseURL = import.meta.env.VITE_API_BASE_URL_PROD.replace(
-        "/api/v1",
-        ""
-      );
+      const name = (d.name || "").split(" ");
 
       setUser({
-        firstName: data.first_name,
-        lastName: data.last_name,
-        email: data.email,
-        mobile: data.mobile,
-        location: data.location,
-        avatar: data.avatar
-          ? data.avatar.startsWith("http")
-            ? data.avatar
-            : `${baseURL}/${data.avatar}`
-          : "/default-avatar.png",
+        firstName: name[0] || "",
+        lastName: name.slice(1).join(" "),
+        username: d.username || "",
+        mobile: d.phone || "",
+        gender: d.gender || "",
+        dob: d.dob || "",
+        address: d.address || "",
+        city: d.city || "",
+        state: d.state || "",
+        country: d.country || "",
+        pincode: d.pincode || "",
+        avatar: d.avatar || "/default-avatar.png",
+        socials: {
+          whatsapp: d.whatsapp || "",
+          website: d.website || "",
+          facebook: d.facebook || "",
+          instagram: d.instagram || "",
+          linkedin: d.linkedin || "",
+          youtube: d.youtube || "",
+          telegram: d.telegram || "",
+          twitter: d.twitter || "",
+        },
       });
-
-      setStats({
-        followers: data.followers ?? 0,
-        following: data.following ?? 0,
-        posts: data.posts ?? 0,
-        likes: data.likes ?? 0,
-      });
-    } catch (err) {
-      console.error("Profile fetch failed", err);
+    } catch {
+      toast.error("Failed to load profile");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  /* ================= UPDATE PROFILE ================= */
+  /* ================= UPDATE ================= */
   const updateProfile = async (form) => {
     try {
-      const payload = new FormData();
-      payload.append("first_name", form.firstName);
-      payload.append("last_name", form.lastName);
-      payload.append("email", form.email);
-      payload.append("mobile", form.mobile);
-      payload.append("location", form.location);
+      // 🔹 PROFILE + LOCATION
+      const profileFD = new FormData();
+      profileFD.append("name", `${form.firstName} ${form.lastName}`.trim());
+      profileFD.append("username", form.username || "");
+      profileFD.append("phone", form.mobile || "");
+      profileFD.append("gender", form.gender || "");
+      profileFD.append("dob", form.dob || "");
+      profileFD.append("address", form.address || "");
+      profileFD.append("city", form.city || "");
+      profileFD.append("state", form.state || "");
+      profileFD.append("country", form.country || "");
+      profileFD.append("pincode", form.pincode || "");
 
+      await updateProfileApi(profileFD);
+
+      // 🔹 SOCIAL LINKS
+      const socialFD = new FormData();
+      Object.entries(form.socials || {}).forEach(([k, v]) =>
+        socialFD.append(k, v || "")
+      );
+
+      await updateSocialLinksApi(socialFD);
+
+      // 🔹 IMAGE
       if (form.avatar) {
-        payload.append("avatar", form.avatar); // ✅ IMAGE
+        const imgFD = new FormData();
+        imgFD.append("avatar", form.avatar);
+        await updateProfileImageApi(imgFD);
       }
 
-      await api.post("customer/profile", payload, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
       toast.success("Profile updated successfully ✅");
-
-      await fetchProfile();
       setIsEditOpen(false);
-      return true;
-    } catch (err) {
-      toast.error("Failed to update profile ❌");
-      return false;
+      fetchProfile();
+    } catch (e) {
+      toast.error("Profile update failed ❌");
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-gray-600">
-        Loading profile...
-      </div>
-    );
-  }
+  useEffect(() => {
+    token ? fetchProfile() : setUser(null);
+  }, [token]);
+
+  if (loading) return <div className="p-10">Loading...</div>;
 
   return (
     <ProfileContext.Provider
-      value={{
-        user,
-        stats,
-        isEditOpen,
-        setIsEditOpen,
-        updateProfile,
-      }}
+      value={{ user, isEditOpen, setIsEditOpen, updateProfile }}
     >
       {children}
     </ProfileContext.Provider>
   );
 }
 
-export function useProfile() {
-  const context = useContext(ProfileContext);
-  if (!context) {
-    throw new Error("useProfile must be used inside ProfileProvider");
-  }
-  return context;
-}
+export const useProfile = () => useContext(ProfileContext);

@@ -5,36 +5,65 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("token");
-
-  // Load profile if token exists
+  /* ================= SET AUTH HEADER ================= */
   useEffect(() => {
     if (token) {
-      api
-        .get("/customer/profile")
-        .then((res) => {
-          setUser(res.data.data);
-        })
-        .catch(() => {
-          logout();
-        })
-        .finally(() => setLoading(false));
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     } else {
-      setLoading(false);
+      delete api.defaults.headers.common["Authorization"];
     }
-  }, []);
+  }, [token]);
 
-  const login = (userData, accessToken) => {
+  /* ================= LOAD USER FROM TOKEN ================= */
+  useEffect(() => {
+    if (!token) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
+    let isMounted = true;
+
+    const fetchUser = async () => {
+      try {
+        const res = await api.get("/customer/profile");
+
+        if (isMounted) {
+          setUser(res.data?.data || null);
+        }
+      } catch (err) {
+        console.error("Auth profile fetch failed", err);
+
+        // ❌ invalid / expired token
+        localStorage.removeItem("token");
+        setToken(null);
+        setUser(null);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetchUser();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [token]);
+
+  /* ================= LOGIN ================= */
+  const login = (accessToken) => {
     localStorage.setItem("token", accessToken);
-    localStorage.setItem("user", JSON.stringify(userData));
-    setUser(userData);
+    setToken(accessToken);
   };
 
+  /* ================= LOGOUT ================= */
   const logout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    delete api.defaults.headers.common["Authorization"];
+    setToken(null);
     setUser(null);
   };
 
@@ -43,9 +72,10 @@ export function AuthProvider({ children }) {
       value={{
         user,
         setUser,
+        token,
         login,
         logout,
-        isAuthenticated: !!token,
+        isAuthenticated: Boolean(token),
         loading,
       }}
     >
@@ -54,6 +84,11 @@ export function AuthProvider({ children }) {
   );
 }
 
+/* ================= HOOK ================= */
 export function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used inside AuthProvider");
+  }
+  return context;
 }
