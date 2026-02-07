@@ -14,6 +14,14 @@ export function ProfileProvider({ children }) {
   const { token } = useAuth();
   const [user, setUser] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("services");
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [stats, setStats] = useState({
+    followers: 0,
+    following: 0,
+    posts: 0,
+    likes: 0,
+  });
   const [loading, setLoading] = useState(true);
 
   /* ================= FETCH ================= */
@@ -27,6 +35,7 @@ export function ProfileProvider({ children }) {
       setUser({
         firstName: name[0] || "",
         lastName: name.slice(1).join(" "),
+        email: d.email || "",
         username: d.username || "",
         mobile: d.phone || "",
         gender: d.gender || "",
@@ -36,6 +45,9 @@ export function ProfileProvider({ children }) {
         state: d.state || "",
         country: d.country || "",
         pincode: d.pincode || "",
+        location:
+          d.location ||
+          [d.city, d.state, d.country].filter(Boolean).join(", "),
         avatar: d.avatar || "/default-avatar.png",
         socials: {
           whatsapp: d.whatsapp || "",
@@ -48,8 +60,21 @@ export function ProfileProvider({ children }) {
           twitter: d.twitter || "",
         },
       });
+
+      setStats({
+        followers: Number(d.followers ?? d.followers_count ?? 0),
+        following: Number(d.following ?? d.following_count ?? 0),
+        posts: Number(d.posts ?? d.posts_count ?? 0),
+        likes: Number(d.likes ?? d.likes_count ?? 0),
+      });
     } catch {
       toast.error("Failed to load profile");
+      setStats({
+        followers: 0,
+        following: 0,
+        posts: 0,
+        likes: 0,
+      });
     } finally {
       setLoading(false);
     }
@@ -96,15 +121,36 @@ export function ProfileProvider({ children }) {
     }
   };
 
+  const toggleFollow = () => {
+    setIsFollowing((prev) => !prev);
+  };
+
   useEffect(() => {
-    token ? fetchProfile() : setUser(null);
+    if (!token) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    fetchProfile();
   }, [token]);
 
   if (loading) return <div className="p-10">Loading...</div>;
 
   return (
     <ProfileContext.Provider
-      value={{ user, isEditOpen, setIsEditOpen, updateProfile }}
+      value={{
+        user,
+        isEditOpen,
+        setIsEditOpen,
+        updateProfile,
+        activeTab,
+        setActiveTab,
+        isFollowing,
+        toggleFollow,
+        stats,
+      }}
     >
       {children}
     </ProfileContext.Provider>

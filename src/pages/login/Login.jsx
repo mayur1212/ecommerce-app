@@ -41,7 +41,7 @@ function OtpModal({ type, identifier, onClose, onSuccess }) {
     );
 
     toast.success("Login successful 🎉");
-    onSuccess(res.data.token);
+    onSuccess(res.data);
   } catch (err) {
     console.error("VERIFY OTP ERROR 👉", err?.response?.data);
     toast.error(
@@ -133,7 +133,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
 
-  const redirectTo = location.state?.from || "/profile";
+  const redirectTo = location.state?.from || "/shopping";
 
   /* ===== SEND OTP ===== */
   const handleLogin = async (e) => {
@@ -172,8 +172,12 @@ export default function Login() {
   };
 
   /* ===== OTP SUCCESS ===== */
-  const handleOtpSuccess = (token) => {
-    login(token);
+  const handleOtpSuccess = (authPayload) => {
+    const isLoggedIn = login(authPayload);
+    if (!isLoggedIn) {
+      toast.error("Login succeeded but token was not received");
+      return;
+    }
     setShowOtp(false);
     navigate(redirectTo, { replace: true });
   };

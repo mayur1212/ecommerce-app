@@ -3,6 +3,34 @@ import api from "../api/axios";
 
 const AuthContext = createContext(null);
 
+function extractToken(payload) {
+  if (!payload) return null;
+
+  if (typeof payload === "string") {
+    const value = payload.trim();
+    return value ? value : null;
+  }
+
+  if (typeof payload !== "object") return null;
+
+  const directToken =
+    payload.token ||
+    payload.access_token ||
+    payload.accessToken ||
+    payload.jwt ||
+    null;
+
+  if (typeof directToken === "string" && directToken.trim()) {
+    return directToken.trim();
+  }
+
+  if (payload.data) {
+    return extractToken(payload.data);
+  }
+
+  return null;
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem("token"));
@@ -54,9 +82,13 @@ export function AuthProvider({ children }) {
   }, [token]);
 
   /* ================= LOGIN ================= */
-  const login = (accessToken) => {
-    localStorage.setItem("token", accessToken);
-    setToken(accessToken);
+  const login = (authPayload) => {
+    const nextToken = extractToken(authPayload);
+    if (!nextToken) return false;
+
+    localStorage.setItem("token", nextToken);
+    setToken(nextToken);
+    return true;
   };
 
   /* ================= LOGOUT ================= */
